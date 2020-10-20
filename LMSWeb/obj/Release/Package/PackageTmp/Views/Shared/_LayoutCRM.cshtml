@@ -1,0 +1,119 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <title>CRM</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/assets/images/favicon.ico" type="image/gif" sizes="16x16">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/CRM/style.css">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    @*<link rel="stylesheet" href="~/CSS/style.css" />
+    <link rel="stylesheet" href="~/CSS/bootstrap/css/bootstrap-steps.min.css" />*@
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css" />
+</head>
+<body>
+    @{
+
+        LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
+        List<LMSBL.DBModels.CRMNew.tblCRMClient> clientModel = new List<LMSBL.DBModels.CRMNew.tblCRMClient>();
+        model = (LMSBL.DBModels.TblUser)Session["UserSession"];
+        var fullname = model.FirstName + " " + model.LastName;
+        var LMSUrl = model.TenantURL;
+        if (!string.IsNullOrEmpty(model.CRMClientId))
+        {
+
+            LMSBL.Repository.CRMRepository CEMRepo = new LMSBL.Repository.CRMRepository();
+            clientModel = CEMRepo.GetClientById(Convert.ToInt32(model.CRMClientId));
+        }
+    }
+        <div class="wrapper d-flex align-items-stretch">
+            <nav id="sidebar">
+                <div class="custom-menu">
+                    <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                        <i class="fa fa-bars"></i>
+                        <span class="sr-only"></span>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h1><a href="#" class="logo">Welcome <span>@fullname</span></a></h1>
+                    <ul class="list-unstyled components mb-5">
+                        <li class="active">
+                            <a href="@Url.Action("Index", "CRM")"><span class="fa fa-home mr-3"></span> Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Enquiry", "CRMUsers")"><span class="fa fa-user mr-3"></span> Enquiry</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("PotentialClients", "CRMUsers")"><span class="fa fa-briefcase mr-3"></span> Potential Clients</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Clients", "CRMUsers")"><span class="fa fa-sticky-note mr-3"></span> Clients</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "FileNotes")"><span class="fa fa-suitcase mr-3"></span> File Notes</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Documents")"><span class="fa fa-cogs mr-3"></span> Documents</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Emails")"><span class="fa fa-cogs mr-3"></span> Emails</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Chat")"><span class="fa fa-paper-plane mr-3"></span> Chat</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Invoice")"><span class="fa fa-paper-plane mr-3"></span> Invoice</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "EnquiryForm")"><span class="fa fa-paper-plane mr-3"></span> Enquiry Form details</a>
+                        </li>
+                    </ul>
+                    <div>
+                        @if (!string.IsNullOrEmpty(model.CRMClientId))
+                        {
+                            if (clientModel[0].isLMS==true)
+                            {
+                                LMSUrl = "http://" + LMSUrl + ":61705/Home";//Need to Change
+                                <p><a href="@LMSUrl" style="color:white;">Learning</a></p>
+                            }
+                        }
+                        <p>
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script><br /> All rights reserved
+                        </p>
+
+                    </div>
+                </div>
+            </nav>
+            <div id="content" class="p-4 p-md-5 pt-5">
+
+                @RenderBody()
+            </div>
+        </div>
+        @*<script src="~/assets/CRM/jquery.min.js"></script>*@
+        <script src="~/assets/CRM/popper.js"></script>
+        <script src="~/assets/CRM/bootstrap.min.js"></script>
+        <script src="~/assets/CRM/main.js"></script>
+    </body>
+</html>
