@@ -97,7 +97,7 @@
                 console.log(data)
                 if (data == "True") {
                     toastr.success("User Updated");
-                   
+
                 }
                 else {
                     toastr.error('error occured while updateing data');
@@ -105,13 +105,13 @@
             }
         });
     }
-     function handleFileSelect(evt) {
-        
+    function handleFileSelect(evt) {
+
         var f = evt.target.files[0]; // FileList object
         var reader = new FileReader();
         // Closure to capture the file information.
         reader.onload = (function (theFile) {
-            return function (e) {                
+            return function (e) {
                 var binaryData = e.target.result;
                 var base64String = window.btoa(binaryData);
                 $("#imageJson").val(base64String);
@@ -121,7 +121,7 @@
         })(f);
         // Read in the image file as a data URL.
         reader.readAsBinaryString(f);
-       
+
     }
     function openPage(pageName, elmnt, color) {
         // Hide all elements with class="tabcontent" by default */
@@ -144,7 +144,7 @@
         //  Add the specific color to the button used to open the tab content
         elmnt.style.backgroundColor = color;
     }
-        
+
     document.getElementById("defaultOpen").click();
 </script>
 

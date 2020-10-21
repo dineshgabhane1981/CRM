@@ -11,7 +11,8 @@ using System.Net;
 using System.Collections;
 using LMSWeb.ViewModel;
 using LMSBL.DBModels.CRMNew;
-using System.Web.Script.Serialization;
+using System.IO;
+using System.Drawing;
 
 namespace LMSWeb.Controllers
 {
@@ -19,11 +20,8 @@ namespace LMSWeb.Controllers
     public class AdminSettingsController : Controller
     {
         UserRepository ur = new UserRepository();
-        RolesRepository rr = new RolesRepository();
-        TenantRepository tr = new TenantRepository();
         Exceptions newException = new Exceptions();
         CRMRepository cr = new CRMRepository();
-        CRMUsersRepository cur = new CRMUsersRepository();
         // GET: AdminSettings
         public ActionResult Index()
         {
@@ -31,112 +29,79 @@ namespace LMSWeb.Controllers
             LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
             model = (LMSBL.DBModels.TblUser)Session["UserSession"];
             TblUserViewModel objuserviewmodel = new TblUserViewModel();
-            List<TblUser> userDetails = new List<TblUser>();
-            userDetails = ur.GetUserById(model.UserId);
-            TblUser objEditData = new TblUser();
-            objEditData = userDetails[0];
-            objEditData.UserRoles = rr.GetAllRoles();
-            objEditData.IsMyProfile = true;
+            model.IsMyProfile = true;
             List<tblCRMClient> clientdetails = new List<tblCRMClient>();
             clientdetails = cr.GetClientById(Convert.ToInt32(model.CRMClientId));
-            tblCRMClient objcrmclient = new tblCRMClient();
-            objcrmclient = clientdetails[0];
-            objuserviewmodel.objtblCRMClient = objcrmclient;
-            objuserviewmodel.objtbluser = objEditData;
-            List<tblCRMClientStage> stagesdetails = new List<tblCRMClientStage>();
-            List<tblCRMClientSubStage> substagesdetails = new List<tblCRMClientSubStage>();
-            stagesdetails = cur.GetCRMClientStages(Convert.ToInt32(model.CRMClientId));
-            substagesdetails = cur.GetCRMClientSubStagesAll(Convert.ToInt32(model.CRMClientId));
-            objuserviewmodel.lstCRMClientStage = stagesdetails;
-            objuserviewmodel.lstCRMClientSubStage = substagesdetails;
+            objuserviewmodel.objtblCRMClient = clientdetails[0];
+            objuserviewmodel.objtbluser = model;
             return View("Index", objuserviewmodel);
-
-
-
 
         }
         [HttpPost]
-        public ActionResult UpdateUser(TblUserViewModel objUserviewmodel, HttpPostedFileBase file)
+        public bool UpdateUser(TblUserViewModel objUserviewmodel, HttpPostedFileBase file)
         {
-            LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
-            model = (LMSBL.DBModels.TblUser)Session["UserSession"];
-            int rows = 0;
-            bool ResultUpdate;
-
-            if (file != null)
+            bool status = false;
+            try
             {
-                //var profileURL = System.Configuration.ConfigurationManager.AppSettings["ProfileImages"];
-                //var profilePhysicalURL = System.Configuration.ConfigurationManager.AppSettings["ProfileImagesPhysicalURL"];
-
-                //if (!System.IO.Directory.Exists(profilePhysicalURL + "\\" + objUser.TenantId))
-                //{
-                //    System.IO.Directory.CreateDirectory(profilePhysicalURL + "\\" + objUser.TenantId);
-                //}
-
-                //string filePhysicalPath = System.IO.Path.Combine(profilePhysicalURL + "\\" + objUser.TenantId + "\\" + objUser.UserId + ".jpg");
-                //string path = System.IO.Path.Combine(profileURL + "\\" + objUser.TenantId + "\\" + objUser.UserId + ".jpg");
-                //file.SaveAs(filePhysicalPath);
-                //objUser.profileImage = path;
-            }
-
-            rows = ur.EditUser(objUserviewmodel.objtbluser);
-            if (!string.IsNullOrEmpty(objUserviewmodel.objtblCRMClient.ClientLogo))
-            {
-                ResultUpdate = cr.UpdateCRMClient(Convert.ToInt32(model.CRMClientId), objUserviewmodel.objtblCRMClient.ClientLogo);
-            }
-            if (objUserviewmodel.objtbluser.IsMyProfile)
-            {
-                if (!string.IsNullOrEmpty(objUserviewmodel.objtbluser.OldPassword) && !string.IsNullOrEmpty(objUserviewmodel.objtbluser.Password))
+                LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
+                model = (LMSBL.DBModels.TblUser)Session["UserSession"];
+                int rows = 0;
+                bool ResultUpdate;
+                string path = string.Empty;
+                if (!string.IsNullOrEmpty(objUserviewmodel.imageName))
                 {
-                    CommonFunctions common = new CommonFunctions();
-                    objUserviewmodel.objtbluser.OldPassword = common.GetEncodePassword(objUserviewmodel.objtbluser.OldPassword);
-                    objUserviewmodel.objtbluser.Password = common.GetEncodePassword(objUserviewmodel.objtbluser.Password);
-                    var result = ur.ChangePassword(objUserviewmodel.objtbluser, objUserviewmodel.objtbluser.Password);
 
+                    var profileURL = System.Configuration.ConfigurationManager.AppSettings["CRMLogoImages"];
+                    var profilePhysicalURL = System.Configuration.ConfigurationManager.AppSettings["CRMLogoPhysicalURL"];
+
+                    if (!System.IO.Directory.Exists(profilePhysicalURL + "\\" + model.CRMClientId))
+                    {
+                        System.IO.Directory.CreateDirectory(profilePhysicalURL + "\\" + model.CRMClientId);
+                    }
+
+                    string filePhysicalPath = System.IO.Path.Combine(profilePhysicalURL + "\\" + model.CRMClientId + "\\");
+                    path = System.IO.Path.Combine(profileURL + "/" + model.CRMClientId + "/" + model.CRMClientId + ".jpg");
+
+                    string base64String = Convert.ToString(objUserviewmodel.imageJson);
+
+                    byte[] newBytes = Convert.FromBase64String(base64String);
+                    MemoryStream ms = new MemoryStream(newBytes, 0, newBytes.Length);
+                    ms.Write(newBytes, 0, newBytes.Length);
+                    var fileName = Convert.ToString(model.CRMClientId + ".jpg");
+                    FileStream fileNew = new FileStream(filePhysicalPath + "\\" + fileName, FileMode.Create, FileAccess.Write);
+                    ms.WriteTo(fileNew);
+                    fileNew.Close();
+                    ms.Close();
                 }
 
+                rows = ur.EditUser(objUserviewmodel.objtbluser);
+                if (!string.IsNullOrEmpty(objUserviewmodel.imageName))
+                {
+                    ResultUpdate = cr.UpdateCRMClient(Convert.ToInt32(model.CRMClientId), path);
+                }
+                if (objUserviewmodel.objtbluser.IsMyProfile)
+                {
+                    if (!string.IsNullOrEmpty(objUserviewmodel.objtbluser.OldPassword) && !string.IsNullOrEmpty(objUserviewmodel.objtbluser.Password))
+                    {
+                        CommonFunctions common = new CommonFunctions();
+                        objUserviewmodel.objtbluser.OldPassword = common.GetEncodePassword(objUserviewmodel.objtbluser.OldPassword);
+                        objUserviewmodel.objtbluser.Password = common.GetEncodePassword(objUserviewmodel.objtbluser.Password);
+                        var result = ur.ChangePassword(objUserviewmodel.objtbluser, objUserviewmodel.objtbluser.Password);
+
+                    }
+
+                }
+                if (objUserviewmodel.objtbluser.IsMyProfile)
+                {
+                    var userDetails = ur.GetUserById(model.UserId);
+                    Session["UserSession"] = userDetails[0];
+                    status = true;
+                }
             }
-            if (objUserviewmodel.objtbluser.IsMyProfile)
+            catch (Exception ex)
             {
-                var userDetails = ur.GetUserById(model.UserId);
-                Session["UserSession"] = userDetails[0];
-                TempData["Message"] = "User Information Saved Successfully";
-                // return RedirectToAction("MyProfile", "Account");
+                newException.AddException(ex);
             }
-            //In case of Edit User
-            if (rows == 0)
-            {
-                TempData["IssueMessage"] = "Not Saved Successfully";
-                // return View("AddNewUser", objUserviewmodel.objtbluser);
-            }
-            else
-            {
-                TempData["UserMessage"] = "Saved Successfully";
-                // return View("AddNewUser", objUserviewmodel.objtbluser);
-            }
-
-            return View("Index", objUserviewmodel.objtbluser);
-        }
-
-        public bool UpdateStages(List<tblCRMClientStage> objlist)
-        {
-            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
-            json_serializer.MaxJsonLength = int.MaxValue;
-            // object[] objInvoiceData = (object[])json_serializer.DeserializeObject(objlist.JsonData);
-            List<tblCRMClientStage> lstcrmclientstage = new List<tblCRMClientStage>();
-            //foreach (Dictionary<string, object> item in objInvoiceData)
-            //{
-            //    tblCRMClientStage InvoiveItem = new tblCRMClientStage();
-            //    //InvoiveItem.ItemDescription = Convert.ToString(item["ItemDesc"]);
-            //    //InvoiveItem.Price = Convert.ToDecimal(item["ItemPrice"]);
-            //    //InvoiveItem.Amount = Convert.ToDecimal(item["ItemAmount"]);
-            //    //lstcrmclientstage.Add(InvoiveItem);
-            //}
-
-
-            //TblUser sessionUser = (TblUser)Session["UserSession"];
-            //var status = cur.UpdateStageName(Convert.ToInt32(sessionUser.CRMClientId), objuserviewmodel.objtblCRMClientStage.StageName, objuserviewmodel.objtblCRMClientStage.StageId);
-            var status = true;
             return status;
         }
     }
