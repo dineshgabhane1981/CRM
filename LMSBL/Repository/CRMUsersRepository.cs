@@ -599,6 +599,21 @@ namespace LMSBL.Repository
             return result;
 
         }
+        
+        public bool UpdateStageName(int id, string stagename, int stage)
+        {
+            bool result = false;
+            using (var context = new CRMContext())
+            {
+                var objtblCRMClientstage = context.tblCRMClientStages.FirstOrDefault(a => a.ClientId == id && a.StageId == stage);
+                objtblCRMClientstage.StageName = stagename;
+                context.tblCRMClientStages.AddOrUpdate(objtblCRMClientstage);
+                context.SaveChanges();
+                result = true;
+
+            }
+            return result;
+        }
 
         public bool AddEnquiryFromWebsite(tblCRMUser objCRMUser, string fileBase64String, string fileName)
         {
@@ -675,7 +690,15 @@ namespace LMSBL.Repository
             }
             return result;
         }
-
+        public List<tblCRMClientSubStage> GetCRMClientSubStagesAll(int id)
+        {
+            List<tblCRMClientSubStage> objCRMClientSubStage = new List<tblCRMClientSubStage>();
+            using (var context = new CRMContext())
+            {
+                objCRMClientSubStage = context.tblCRMClientSubStages.Where(a => a.ClientId == id).ToList();
+            }
+            return objCRMClientSubStage;
+        }
         public tblCRMClient GetClientDetails(int ClientId)
         {
             tblCRMClient objCRMClient = new tblCRMClient();
