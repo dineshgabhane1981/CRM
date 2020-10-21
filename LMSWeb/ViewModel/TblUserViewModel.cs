@@ -18,6 +18,13 @@ namespace LMSWeb.ViewModel
         public string imageName { get; set; }
 
         public HttpPostedFileBase newfileToSave { get; set; }
+        public tblCRMClientStage objtblCRMClientStage { get; set; }
+
+        public tblCRMClientSubStage objtblCRMClientSubStage { get; set; }
+
+        public List<tblCRMClientStage> lstCRMClientStage { get; set; }
+        public List<tblCRMClientSubStage> lstCRMClientSubStage { get; set; }
+        public string JsonData { get; set; }
 
 
     }
