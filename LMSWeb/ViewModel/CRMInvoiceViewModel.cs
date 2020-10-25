@@ -16,8 +16,15 @@ namespace LMSWeb.ViewModel
         public List<tblCRMInvoiceItem> ObjCRMInvoiceItemLST { get; set; }
         public List<SelectListItem> lstCRMclient { get; set; }
         public List<SelectListItem> lstCRMCurriencies { get; set; }
-
+        public List<SelectListItem> lstCRMInvoices { get; set; }
+        public string uploadInvoiceNo { get; set; }
         public string JsonData { get; set; }
+        public string filebase64 { get; set; }
+        public string UploadedFileName { get; set; }
         public int Client { get; set; }
+        public SelectListItem[] Type()
+        {
+            return new SelectListItem[2] { new SelectListItem() { Text = "Invoice",Value="Invoice" }, new SelectListItem() { Text = "Receipt", Value = "Receipt" } };
+        }
     }
 }

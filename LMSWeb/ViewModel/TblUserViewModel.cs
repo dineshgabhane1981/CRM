@@ -10,7 +10,8 @@ namespace LMSWeb.ViewModel
     public class TblUserViewModel
     {
         public TblUser objtbluser { get; set; }
-
+        public List<tblCRMClientStage> lstClientStages { get; set; }
+        public List<tblCRMClientSubStage> lstClientSubStages { get; set; }
         public tblCRMClient objtblCRMClient { get; set; }
 
         public List<TblUser> objlsttbluser { get; set; }

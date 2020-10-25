@@ -17,10 +17,10 @@ namespace LMSWeb.Controllers
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
             CRMDashboardViewModel objDashboardViewModel = new CRMDashboardViewModel();
-            objDashboardViewModel.objCRMEnquiryList = dashboardRepo.GetCRMDashboardList(Convert.ToInt32(sessionUser.CRMClientId), 1);
-            objDashboardViewModel.objCRMPotentialClientList = dashboardRepo.GetCRMDashboardList(Convert.ToInt32(sessionUser.CRMClientId), 2);
-            objDashboardViewModel.objCRMClientList = dashboardRepo.GetCRMDashboardList(Convert.ToInt32(sessionUser.CRMClientId), 3);
-            //objDashboardViewModel.objCRMDocumentList = dashboardRepo.GetCRMDocumentList(Convert.ToInt32(sessionUser.CRMClientId), 3);
+            objDashboardViewModel.objCRMEnquiryList = dashboardRepo.GetCRMDashboardEnquiryList(Convert.ToInt32(sessionUser.CRMClientId), 1);
+            
+            objDashboardViewModel.objCRMClientList = dashboardRepo.GetCRMDashboardClientList(Convert.ToInt32(sessionUser.CRMClientId), 3);
+            objDashboardViewModel.objCRMInvoiceList = dashboardRepo.GetCRMDashboardInvoiceList(Convert.ToInt32(sessionUser.CRMClientId));
 
             return View(objDashboardViewModel);
         }

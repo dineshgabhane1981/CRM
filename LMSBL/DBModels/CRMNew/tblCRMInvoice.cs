@@ -49,6 +49,12 @@ namespace LMSBL.DBModels.CRMNew
 
         public DateTime? UpdatedOn { get; set; }
 
-        public bool? IsAdvance { get; set; }
+        public bool? IsUploaded { get; set; }
+
+        [StringLength(20)]
+        public string InvoiceType { get; set; }
+
+        [StringLength(100)]
+        public string InvoiceFileName { get; set; }
     }
 }

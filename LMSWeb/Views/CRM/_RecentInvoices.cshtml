@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="col search-container">
-                <h5>Potential Clients</h5>
+                <h5>Recent Invoices</h5>
             </div>
         </div>
         <div class="row mt-3" id="dvpotentialClientData">
@@ -14,36 +14,48 @@
                 <table class="table" style="border-bottom:0px !important;" id="potentialClientTable">
                     <thead>
                         <tr>
-                            <th scope="col">User Name</th>
-                            <th scope="col">Updated Date</th>
+                            <th scope="col">Client Name</th>
+                            <th scope="col">Invoice No</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Due Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model != null)
                         {
-                            if (Model.objCRMPotentialClientList != null)
+                            if (Model.objCRMInvoiceList != null)
                             {
-                                if (Model.objCRMPotentialClientList.Count > 0)
+                                if (Model.objCRMInvoiceList.Count > 0)
                                 {
 
-                                    foreach (var user in Model.objCRMPotentialClientList)
+                                    foreach (var user in Model.objCRMInvoiceList)
                                     {
                                         LMSWeb.App_Start.CommonFunctions common = new LMSWeb.App_Start.CommonFunctions();
-                                        string userId = common.EncryptString(Convert.ToString(user.Id));
+                                        string userId = common.EncryptString(Convert.ToString(user.ClientId));
                                         <tr>
                                             <td>
-                                                <a href="@Url.Action("AddEnquiry", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FirstName @user.LastName</a>
+                                                <a href="@Url.Action("AddEnquiry", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FullName</a>
 
                                             </td>
-                                            <td>@user.CreatedOn</td>
+                                            <td>@user.InvoiceNumber</td>
+                                            <td>@user.Amount @user.Currency</td>
+                                            @if (!string.IsNullOrEmpty(Convert.ToString(user.InvoiceDueDate)))
+                                            {
+                                                <td>@Convert.ToDateTime(user.InvoiceDueDate).ToString("dd-MM-yyyy")</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                            }
+
                                         </tr>
                                     }
-                                    <tr><td colspan="2" style="text-align:end;"><a href="@Url.Action("PotentialClients", "CRMUsers")" class="login" title="View All">View All</a></td></tr>
+                                    @*<tr><td colspan="4" style="text-align:end;"><a href="@Url.Action("PotentialClients", "CRMUsers")" class="login" title="View All">View All</a></td></tr>*@
                                 }
                                 else
                                 {
                                     <tr>
-                                        <td colspan="2" align="center">No Potential Client Available</td>
+                                        <td colspan="4" align="center">No Potential Client Available</td>
                                     </tr>
                                 }
                             }

@@ -23,6 +23,7 @@ using iTextSharp.tool.xml.pipeline.css;
 using iTextSharp.tool.xml.pipeline.end;
 using iTextSharp.tool.xml.parser;
 using System.Text;
+using System.Configuration;
 
 namespace LMSWeb.Controllers
 {
@@ -41,6 +42,7 @@ namespace LMSWeb.Controllers
             CRMInvoiceModelView.ObjCRMInvoivce = objNewInvoice;
 
             CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
+            
             CRMInvoiceModelView.lstCRMclient = crmnr.GetClient(Convert.ToInt32(sessionUser.CRMClientId));
             return View(CRMInvoiceModelView);
         }
@@ -50,27 +52,43 @@ namespace LMSWeb.Controllers
         {
             bool result = false;
             TblUser sessionUser = (TblUser)Session["UserSession"];
-
-            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
-            json_serializer.MaxJsonLength = int.MaxValue;
-            object[] objInvoiceData = (object[])json_serializer.DeserializeObject(CRMInvoiceModelView.JsonData);
-
             CRMInvoiceModelView.ObjCRMInvoivce.CreatedBy = sessionUser.UserId;
             CRMInvoiceModelView.ObjCRMInvoivce.CreatedOn = DateTime.Now;
             CRMInvoiceModelView.ObjCRMInvoivce.UpdatedBy = sessionUser.UserId;
             CRMInvoiceModelView.ObjCRMInvoivce.UpdatedOn = DateTime.Now;
+            CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType = "Invoice";
+            
 
-            List<tblCRMInvoiceItem> lstInvoiceItems = new List<tblCRMInvoiceItem>();
-            foreach (Dictionary<string, object> item in objInvoiceData)
+            if (string.IsNullOrEmpty(CRMInvoiceModelView.filebase64))
             {
-                tblCRMInvoiceItem InvoiveItem = new tblCRMInvoiceItem();
-                InvoiveItem.ItemDescription = Convert.ToString(item["ItemDesc"]);
-                InvoiveItem.Price = Convert.ToDecimal(item["ItemPrice"]);
-                InvoiveItem.Amount = Convert.ToDecimal(item["ItemAmount"]);
-                lstInvoiceItems.Add(InvoiveItem);
+                JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+                json_serializer.MaxJsonLength = int.MaxValue;
+                object[] objInvoiceData = (object[])json_serializer.DeserializeObject(CRMInvoiceModelView.JsonData);
+
+                List<tblCRMInvoiceItem> lstInvoiceItems = new List<tblCRMInvoiceItem>();
+                foreach (Dictionary<string, object> item in objInvoiceData)
+                {
+                    tblCRMInvoiceItem InvoiveItem = new tblCRMInvoiceItem();
+                    InvoiveItem.ItemDescription = Convert.ToString(item["ItemDesc"]);
+                    InvoiveItem.Price = Convert.ToDecimal(item["ItemPrice"]);
+                    InvoiveItem.Amount = Convert.ToDecimal(item["ItemAmount"]);
+                    lstInvoiceItems.Add(InvoiveItem);
+                }
+
+                result = invoiceRepository.SaveInvoice(CRMInvoiceModelView.ObjCRMInvoivce, lstInvoiceItems);
+            }
+            else
+            {
+                CRMInvoiceModelView.ObjCRMInvoivce.Status = "Uploaded";
+                CRMInvoiceModelView.ObjCRMInvoivce.InvoiceFileName = CRMInvoiceModelView.UploadedFileName;
+                CRMInvoiceModelView.ObjCRMInvoivce.ClientId = CRMInvoiceModelView.Client;
+                if (CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType== "Receipt")
+                {
+                    CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber = CRMInvoiceModelView.uploadInvoiceNo + "_Receipt";
+                }
+                result = invoiceRepository.UploadInvoice(CRMInvoiceModelView.ObjCRMInvoivce, CRMInvoiceModelView.filebase64);
             }
 
-            result = invoiceRepository.SaveInvoice(CRMInvoiceModelView.ObjCRMInvoivce, lstInvoiceItems);
 
             return result;
         }
@@ -89,6 +107,11 @@ namespace LMSWeb.Controllers
             return PartialView("_InvoiceList", CRMInvoiceModelView);
         }
 
+        public ActionResult GetInvoicesList(int id)
+        {
+            var invoiceList = invoiceRepository.GetCRMInvoices(id);
+            return Json(invoiceList, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetInvoiceForEdit(int InvoiceId)
         {
             CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
@@ -106,29 +129,37 @@ namespace LMSWeb.Controllers
         }
 
 
-        public ActionResult DownloadInvoice(int InvoiceId)
+        public string DownloadInvoice(int InvoiceId)
         {
+            string fileName = string.Empty;
             CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
             CRMInvoiceModelView.ObjCRMInvoivce = invoiceRepository.GetInvoiceForEdit(InvoiceId);
             CRMInvoiceModelView.ObjCRMUser = crmUsersRepository.GetCRMUserById(CRMInvoiceModelView.ObjCRMInvoivce.ClientId);
-            string fileName = CRMInvoiceModelView.ObjCRMUser.FirstName + "_" + CRMInvoiceModelView.ObjCRMUser.LastName + "_" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber + ".pdf";
-            Document pdfDoc = new Document();
-            PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, HttpContext.Response.OutputStream);
-            pdfDoc.Open();
-            string strHTML = GetInvoiceHTML(InvoiceId);
-            HTMLWorker htmlWorker = new HTMLWorker(pdfDoc);
-            htmlWorker.Parse(new StringReader(strHTML));
-            pdfWriter.CloseStream = false;
-            pdfDoc.Close();
-            Response.Buffer = true;
-            Response.ContentType = "application/pdf";
-            Response.AddHeader("content-disposition", "attachment;filename=" + fileName);
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            Response.Write(pdfDoc);
-            Response.Flush();
-            Response.End();
+            string _FilePath = ConfigurationManager.AppSettings["SharedLocation"];
+            if (CRMInvoiceModelView.ObjCRMInvoivce.Status != "Uploaded")
+            {
+                fileName = CRMInvoiceModelView.ObjCRMUser.FirstName + "_" + CRMInvoiceModelView.ObjCRMUser.LastName + "_" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber + ".pdf";
 
-            return null;
+                _FilePath = _FilePath + "/" + fileName;
+                Document pdfDoc = new Document();
+                FileStream stream = new FileStream(_FilePath, FileMode.Create);
+                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
+                pdfDoc.Open();
+                string strHTML = GetInvoiceHTML(InvoiceId);
+                HTMLWorker htmlWorker = new HTMLWorker(pdfDoc);
+                htmlWorker.Parse(new StringReader(strHTML));
+                pdfWriter.CloseStream = false;
+                pdfDoc.Close();
+                stream.Close();               
+                
+            }
+            else
+            {
+                TblUser sessionUser = (TblUser)Session["UserSession"];
+                fileName = invoiceRepository.DownloadFileFromS3(InvoiceId, Convert.ToInt32(sessionUser.CRMClientId));
+            }
+
+            return fileName;
         }
 
         public string GetInvoiceHTML(int InvoiceId)

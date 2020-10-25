@@ -57,8 +57,8 @@
     @Html.HiddenFor(model => model.imageJson)
     @Html.HiddenFor(model => model.imageName)
     <div class="row justify-content-center">
-        <button type="button" class="tablink" onclick="openPage('dvprofile', this,'orange')" id="defaultOpen">profile</button>
-        <button type="button" class="tablink" onclick="openPage('dvmanageuser', this,'orange')">Manage User</button>
+        <button type="button" class="tablink" onclick="openPage('dvprofile', this,'orange')" id="defaultOpen">Profile</button>
+        <button type="button" class="tablink" onclick="openPage('dvmanageuser', this,'orange')">Manage Users</button>
         <button type="button" class="tablink" onclick="openPage('dvUpdateStages', this,'orange')">Update Stages</button>
     </div>
     <div id="dvmanageuser" class="tabcontent">
@@ -66,7 +66,7 @@
     </div>
 
     <div id="dvUpdateStages" class="tabcontent">
-        @*@Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml",Model)*@
+        @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml",Model)
     </div>
 
     <div id="dvprofile" class="tabcontent">
@@ -86,6 +86,16 @@
 
     });
     function UpdateToDB() {
+        if ($("#txtFirstName").val() == "" || $("#txtFirstName").val() == null) {
+            toastr.error('Please enter First Name');
+            $("#txtFirstName").focus();
+            return false
+        }
+        if ($("#txtEmail").val() == "" || $("#txtEmail").val() == null) {
+            toastr.error('Please enter Email');
+            $("#txtEmail").focus();
+            return false
+        }
         var data = $('#frmupdateUser').serialize();
         console.log(data);
         $.ajax({

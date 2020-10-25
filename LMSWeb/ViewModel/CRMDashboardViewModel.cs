@@ -10,10 +10,10 @@ namespace LMSWeb.ViewModel
 {
     public class CRMDashboardViewModel
     {
-        public List<tblCRMUser> objCRMEnquiryList { get; set; }
-        public List<tblCRMUser> objCRMPotentialClientList { get; set; }
-        public List<tblCRMUser> objCRMClientList { get; set; }
-        public List<tblCRMUser> objCRMFileNoteList { get; set; }
-        public List<tblCRMUser> objCRMDocumentList { get; set; }
+        public List<tblCRMUser> objCRMEnquiryList { get; set; }         
+        public List<CRMDashboardClients> objCRMClientList { get; set; }        
+        public List<CRMDashboardInvoices> objCRMInvoiceList { get; set; }
     }
+
+    
 }

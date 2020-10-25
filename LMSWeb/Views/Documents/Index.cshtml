@@ -6,7 +6,7 @@
 
 @using (Html.BeginForm("adddocuments", "Documents", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmadddocument" }))
 {
-    <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
+    <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white" data-animation="scaleIn">
         <h5 class="multisteps-form__title">Upload Documents</h5>
         <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto">
             <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto">
@@ -30,10 +30,10 @@
         <div class="row col-sm-12 col-md-12 col-xl-12">
 
             <div class="col-12 col-lg-12 ml-auto mr-auto" style="float:left;">
-                <div class="col-4 col-lg-4 ml-auto mr-auto" style="float:left;">
-                    @Html.TextBoxFor(model => model.objCRMDocument.DocumentName, new { @class = "input100", id = "txtDocName", placeholder = "Document Name" })
+                <div class="col-6 col-lg-6 ml-auto mr-auto" style="float:left;">
+                    @Html.TextBoxFor(model => model.objCRMDocument.DocumentName, new { @class = "input150", id = "txtDocName", placeholder = "Document Name" })
                 </div>
-                <div class="col-4 col-lg-4 ml-auto mr-auto" style="float:left; padding-left:50px; padding-top:5px;">
+                <div class="col-6 col-lg-6 ml-auto mr-auto" style="float:left; padding-left:15px; padding-top:5px;">
                     <input type="file" name="FileUpload" id="FileUpload" style="width: 100%;" /><br /><br />
                     <button type="button" id="btnDocAdd" class="btn btn-primary profle-submit-btn "><img src="~/assets/images/check-img.png" /> Add</button>
                 </div>

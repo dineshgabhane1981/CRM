@@ -84,14 +84,16 @@
 
         LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
         List<LMSBL.DBModels.CRMNew.tblCRMClient> clientModel = new List<LMSBL.DBModels.CRMNew.tblCRMClient>();
+        List<LMSBL.DBModels.CRMNew.tblCRMClientStage> stageModel = new List<LMSBL.DBModels.CRMNew.tblCRMClientStage>();
         model = (LMSBL.DBModels.TblUser)Session["UserSession"];
         var fullname = model.FirstName + " " + model.LastName;
         var LMSUrl = model.TenantURL;
         if (!string.IsNullOrEmpty(model.CRMClientId))
         {
 
-            LMSBL.Repository.CRMRepository CEMRepo = new LMSBL.Repository.CRMRepository();
-            clientModel = CEMRepo.GetClientById(Convert.ToInt32(model.CRMClientId));
+            LMSBL.Repository.CRMRepository CRMRepo = new LMSBL.Repository.CRMRepository();
+            clientModel = CRMRepo.GetClientById(Convert.ToInt32(model.CRMClientId));
+            stageModel = CRMRepo.GetCRMStagesList(Convert.ToInt32(model.CRMClientId));
         }
     }
     <div class="wrapper d-flex align-items-stretch">
@@ -108,19 +110,20 @@
                 </button>
             </div>
             <div class="p-4">
+                <img width="80%" src="@clientModel[0].ClientLogo" />
                 <h3>Welcome <h5><span>@fullname</span></h5></h3>
                 <ul class="list-unstyled components mb-5">
                     <li class="@Html.IsSelected(controller: "CRM", action: "Index")">
                         <a href="@Url.Action("Index", "CRM")"><span class="fa fa-home mr-3" style="color:white;"></span> Dashboard</a>
                     </li>
+                    <li class="@Html.IsSelected(controller: "CRMUsers", action: "Clients,AddClient")">
+                        <a href="@Url.Action("Clients", "CRMUsers")"><span class="fa fa-suitcase mr-3" style="color:white;"></span> @stageModel[2].StageName</a>
+                    </li>
                     <li class="@Html.IsSelected(controller: "CRMUsers", action: "Enquiry,AddEnquiry")">
-                        <a href="@Url.Action("Enquiry", "CRMUsers")"><span class="fa fa-user mr-3" style="color:white;"></span> Enquiry</a>
+                        <a href="@Url.Action("Enquiry", "CRMUsers")"><span class="fa fa-user mr-3" style="color:white;"></span>  @stageModel[0].StageName</a>
                     </li>
                     <li class="@Html.IsSelected(controller: "CRMUsers", action: "PotentialClients,AddPotentialClient")">
-                        <a href="@Url.Action("PotentialClients", "CRMUsers")"><span class="fa fa-briefcase mr-3" style="color:white;"></span> Potential Clients</a>
-                    </li>
-                    <li class="@Html.IsSelected(controller: "CRMUsers", action: "Clients,AddClient")">
-                        <a href="@Url.Action("Clients", "CRMUsers")"><span class="fa fa-suitcase mr-3" style="color:white;"></span> Clients</a>
+                        <a href="@Url.Action("PotentialClients", "CRMUsers")"><span class="fa fa-briefcase mr-3" style="color:white;"></span> @stageModel[1].StageName</a>
                     </li>
                     <li class="@Html.IsSelected(controller: "FileNotes", action: "Index")">
                         <a href="@Url.Action("Index", "FileNotes")"><span class="fa fa-sticky-note mr-3" style="color:white;"></span> File Notes</a>
@@ -128,12 +131,6 @@
                     <li class="@Html.IsSelected(controller: "Documents", action: "Index")">
                         <a href="@Url.Action("Index", "Documents")"><span class="fa fa-file mr-3" style="color:white;"></span> Documents</a>
                     </li>
-                    @*<li>
-                        <a href="@Url.Action("Index", "Emails")"><span class="fa fa-cogs mr-3"></span> Emails</a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index", "Chat")"><span class="fa fa-paper-plane mr-3"></span> Chat</a>
-                    </li>*@
                     <li class="@Html.IsSelected(controller: "Invoice", action: "Index")">
                         <a href="@Url.Action("Index", "Invoice")"><span class="fa fa-paper-plane mr-3" style="color:white;"></span> Invoice</a>
                     </li>
@@ -141,18 +138,21 @@
                         <a href="@Url.Action("Index", "EnquiryForm")"><span class="fa fa-wpforms mr-3" style="color:white;"></span> Enquiry Form</a>
                     </li>
                     <li class="@Html.IsSelected(controller: "AdminSettings", action: "Index")">
-                        <a href="@Url.Action("Index", "AdminSettings")"><span class="fa fa-cogs mr-3" style="color:white;"></span> Admin Setting</a>
+                        <a href="@Url.Action("Index", "AdminSettings")"><span class="fa fa-cogs mr-3" style="color:white;"></span> Admin Settings</a>
+                    </li>
+                    <li class="@Html.IsSelected(controller: "Login", action: "Logout")">
+                        <a href="@Url.Action("Logout", "Login")"><span class="fa fa-power-off mr-3" style="color:white;"></span> Log Out</a>
                     </li>
                 </ul>
                 <div>
                     @*@if (!string.IsNullOrEmpty(model.CRMClientId))
-                    {
-                        if (clientModel[0].isLMS == true)
-                        {
-                            LMSUrl = "http://" + LMSUrl + ":61705/Home";//Need to Change
-                            <p><a href="@LMSUrl" style="color:white;">Learning</a></p>
-                        }
-                    }*@
+            {
+                if (clientModel[0].isLMS == true)
+                {
+                    LMSUrl = "http://" + LMSUrl + ":61705/Home";//Need to Change
+                    <p><a href="@LMSUrl" style="color:white;">Learning</a></p>
+                }
+            }*@
                     <p>
                         Copyright &copy;
                         <script>document.write(new Date().getFullYear());</script><br /> All rights reserved
@@ -162,7 +162,8 @@
             </div>
         </nav>
 
-        <div id="content" class="p-4 p-md-5 pt-5">
+        <div id="content" class="p-4">
+            
             @RenderBody()
         </div>
     </div>

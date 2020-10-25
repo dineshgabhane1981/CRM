@@ -18,7 +18,7 @@ namespace LMSBL.DBModels.CRMNew
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int StageId { get; set; }
 
-        [Key]
+       
         [Column(Order = 2)]
         [StringLength(50)]
         public string StageName { get; set; }

@@ -51,7 +51,7 @@ namespace LMSWeb.ViewModel
         }
         public SelectListItem[] MedicalNotesDDL()
         {
-            return new SelectListItem[3] { new SelectListItem() { Text = "ASH" }, new SelectListItem() { Text = "ASH with Conditions" }, new SelectListItem() { Text = "Not ASH" } };
+            return new SelectListItem[3] { new SelectListItem() { Text = "Acceptable" }, new SelectListItem() { Text = "Conditions" }, new SelectListItem() { Text = "Non Acceptable" } };
         }
 
         public string Clone { get; set; }

@@ -8,7 +8,7 @@
 @using (Html.BeginForm("AddNotes", "FileNotes", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmaddNotes", @class = "multisteps-form__form" }))
 {
 
-    <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
+    <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white" data-animation="scaleIn">
         <h5 class="multisteps-form__title">File Notes</h5>
 
         @Html.DropDownListFor(model => model.objCRMnotes.ClientId, new SelectList(Model.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddlclientlist", @class = "input100" })

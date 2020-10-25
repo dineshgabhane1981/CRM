@@ -13,6 +13,7 @@ using LMSWeb.ViewModel;
 using LMSBL.DBModels.CRMNew;
 using System.IO;
 using System.Drawing;
+using System.Web.Script.Serialization;
 
 namespace LMSWeb.Controllers
 {
@@ -26,14 +27,17 @@ namespace LMSWeb.Controllers
         public ActionResult Index()
         {
 
-            LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
-            model = (LMSBL.DBModels.TblUser)Session["UserSession"];
+            TblUser sessionUser = (TblUser)Session["UserSession"];
             TblUserViewModel objuserviewmodel = new TblUserViewModel();
-            model.IsMyProfile = true;
+            sessionUser.IsMyProfile = true;
+
             List<tblCRMClient> clientdetails = new List<tblCRMClient>();
-            clientdetails = cr.GetClientById(Convert.ToInt32(model.CRMClientId));
+            clientdetails = cr.GetClientById(Convert.ToInt32(sessionUser.CRMClientId));
             objuserviewmodel.objtblCRMClient = clientdetails[0];
-            objuserviewmodel.objtbluser = model;
+            objuserviewmodel.objtbluser = sessionUser;
+
+            objuserviewmodel.lstClientStages = cr.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
+            objuserviewmodel.lstClientSubStages = cr.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
             return View("Index", objuserviewmodel);
 
         }
@@ -43,8 +47,7 @@ namespace LMSWeb.Controllers
             bool status = false;
             try
             {
-                LMSBL.DBModels.TblUser model = new LMSBL.DBModels.TblUser();
-                model = (LMSBL.DBModels.TblUser)Session["UserSession"];
+                TblUser model = (TblUser)Session["UserSession"];
                 int rows = 0;
                 bool ResultUpdate;
                 string path = string.Empty;
@@ -104,5 +107,47 @@ namespace LMSWeb.Controllers
             }
             return status;
         }
+
+        public bool UpdateStages(string jsonStageData, string jsonSubStageData)
+        {
+            bool status = false;
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            List<tblCRMClientStage> lstStage = new List<tblCRMClientStage>();
+
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            json_serializer.MaxJsonLength = int.MaxValue;
+            object[] objStageData = (object[])json_serializer.DeserializeObject(jsonStageData);
+
+            foreach (Dictionary<string, object> item in objStageData)
+            {
+                tblCRMClientStage objStage = new tblCRMClientStage();
+                objStage.StageId = Convert.ToInt32(item["StageId"]);
+                objStage.StageName = Convert.ToString(item["StageName"]);
+                objStage.ClientId = Convert.ToInt32(sessionUser.CRMClientId);
+                objStage.CreatedBy = sessionUser.UserId;
+                objStage.CreatedOn = DateTime.Now;
+
+                lstStage.Add(objStage);
+            }
+            List<tblCRMClientSubStage> lstSubStage = new List<tblCRMClientSubStage>();
+            object[] objSubStageData = (object[])json_serializer.DeserializeObject(jsonSubStageData);
+            foreach (Dictionary<string, object> item in objSubStageData)
+            {
+                tblCRMClientSubStage objSubStage = new tblCRMClientSubStage();
+                objSubStage.SubStageId= Convert.ToInt32(item["SubStageID"]);
+                objSubStage.SubStageName = Convert.ToString(item["SubStageName"]);
+                objSubStage.IsActive= Convert.ToBoolean(item["SubStageIsActive"]);
+                objSubStage.ClientId = Convert.ToInt32(sessionUser.CRMClientId);
+                objSubStage.CreatedBy = sessionUser.UserId;
+                objSubStage.CreatedOn = DateTime.Now;
+                lstSubStage.Add(objSubStage);
+
+            }
+            status = cr.UpdateStages(lstStage, lstSubStage);
+
+            return status;
+        }
+
+
     }
 }

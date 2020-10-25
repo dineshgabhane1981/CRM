@@ -941,7 +941,7 @@
     <Content Include="Views\Invoice\_DownloadInvoice.cshtml" />
     <Content Include="Views\Invoice\DownloadInvoice.cshtml" />
     <Content Include="Views\CRM\_EnquiryList.cshtml" />
-    <Content Include="Views\CRM\_PotentialClientsList.cshtml" />
+    <Content Include="Views\CRM\_RecentInvoices.cshtml" />
     <Content Include="Views\CRM\_Clients.cshtml" />
     <Content Include="Views\CRM\_DocumentUsers.cshtml" />
   </ItemGroup>

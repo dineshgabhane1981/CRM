@@ -14,5 +14,6 @@ namespace LMSBL.DBModels
         public int? CurrentSubStage { get; set; }
         public string ContactNo { get; set; }
         public DateTime? DueDate { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 }

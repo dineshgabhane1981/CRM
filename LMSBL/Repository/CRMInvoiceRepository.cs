@@ -8,6 +8,12 @@ using LMSBL.DBModels.CRMNew;
 using System.Web.Mvc;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Configuration;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using Amazon;
+using Amazon.S3.IO;
+using System.IO;
 
 namespace LMSBL.Repository
 {
@@ -17,12 +23,16 @@ namespace LMSBL.Repository
         DataRepository db = new DataRepository();
         Exceptions newException = new Exceptions();
 
+        string AWSAccessKey = ConfigurationManager.AppSettings["AWSAccessKey"];
+        string AWSSecretKey = ConfigurationManager.AppSettings["AWSSecretKey"];
+        string AWSBucketName = ConfigurationManager.AppSettings["AWSBucketName"];
+
         public string GetInvoiceNumber(int ClientId)
         {
             string invoiceNo = string.Empty;
             using (var context = new CRMContext())
             {
-                var result = context.tblCRMInvoices.Where(x => x.ClientId == ClientId).OrderByDescending(y => y.InvoiceNumber).FirstOrDefault();
+                var result = context.tblCRMInvoices.Where(x=>x.InvoiceType== "Invoice").OrderByDescending(y => y.InvoiceNumber).FirstOrDefault();
                 if (result != null)
                 {
                     invoiceNo = result.InvoiceNumber;
@@ -56,6 +66,26 @@ namespace LMSBL.Repository
             }
 
             return lstCRMCurriencies;
+        }
+        public List<SelectListItem> GetCRMInvoices(int CRMClientId)
+        {
+            List<SelectListItem> lstCRMInvoices = new List<SelectListItem>();
+
+            List<tblCRMInvoice> lstCRMInvoice = new List<tblCRMInvoice>();
+            using (var context = new CRMContext())
+            {
+                lstCRMInvoice = context.tblCRMInvoices.Where(a => a.ClientId == CRMClientId && a.InvoiceType == "Invoice").ToList();
+            }
+            foreach (var invoice in lstCRMInvoice)
+            {
+                lstCRMInvoices.Add(new SelectListItem
+                {
+                    Text = Convert.ToString(invoice.InvoiceNumber),
+                    Value = Convert.ToString(invoice.InvoiceNumber)
+                });
+            }
+
+            return lstCRMInvoices;
         }
 
         public bool SaveInvoice(tblCRMInvoice ObjCRMInvoivce, List<tblCRMInvoiceItem> ObjCRMInvoiceItemLST)
@@ -101,6 +131,58 @@ namespace LMSBL.Repository
             }
             return status;
         }
+        
+        public bool UploadInvoice(tblCRMInvoice ObjCRMInvoivce, string fileBase64)
+        {
+            bool status = false;
+            using (var context = new CRMContext())
+            {
+                using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        context.tblCRMInvoices.AddOrUpdate(ObjCRMInvoivce);
+                        context.SaveChanges();
+
+                        //Upload File
+                        
+                        IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
+                        TransferUtility utility = new TransferUtility(client);
+                        TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
+
+                        var clientName = GetUserFolderName(ObjCRMInvoivce.ClientId);
+                        string path = @"clients/" + clientName + "/Invoice";
+                       
+                        S3DirectoryInfo di = new S3DirectoryInfo(client, AWSBucketName, path);
+                        if (!di.Exists)
+                        {
+                            di.Create();
+                        }
+                        request.BucketName = AWSBucketName;
+                        request.Key = path + "/" + ObjCRMInvoivce.InvoiceFileName;
+
+                        byte[] newBytes = Convert.FromBase64String(fileBase64);
+                        MemoryStream ms = new MemoryStream(newBytes, 0, newBytes.Length);
+                        ms.Write(newBytes, 0, newBytes.Length);
+                        request.InputStream = ms;
+                        utility.Upload(request);
+
+
+                        transaction.Commit();
+                        status = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        newException.AddException(ex);
+                        throw ex;
+                    }
+                }
+            }
+            return status;
+        }
+        
+        
         public List<tblCRMInvoice> GetInvoices(int ClientId)
         {
             List<tblCRMInvoice> ObjCRMInvoices = new List<tblCRMInvoice>();
@@ -158,5 +240,61 @@ namespace LMSBL.Repository
             }
             return status;
         }
+
+        public string DownloadFileFromS3(int id,int clientId)
+        {
+            string returnLocation = string.Empty;
+            try
+            {
+                using (var context = new CRMContext())
+                {
+                    var objInvoice = context.tblCRMInvoices.FirstOrDefault(x => x.InvoiceId == id);
+                    var filelink = clientId+"/"+ objInvoice.ClientId+ "/Invoice/" + objInvoice.InvoiceFileName;
+                    string _FilePath = ConfigurationManager.AppSettings["SharedLocation"];
+                    string FileLocation = _FilePath + "/" + objInvoice.InvoiceFileName; ;
+                    FileStream fs = File.Create(FileLocation);
+                    fs.Close();
+                    string path = @"clients/" + filelink;
+                    IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
+                    TransferUtility fileTransferUtility = new TransferUtility(client);
+                    fileTransferUtility.Download(FileLocation, AWSBucketName, path);
+                    fileTransferUtility.Dispose();
+                    returnLocation = objInvoice.InvoiceFileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                newException.AddException(ex);
+            }
+
+            return returnLocation;
+        }
+        public string GetUserFolderName(int UserId)
+        {
+            string name = string.Empty;
+            try
+            {
+                using (var context = new CRMContext())
+                {
+                    var lstResult = (from a in context.tblCRMUsers
+                                     join b in context.tblCRMClients on a.ClientId equals b.ClientID
+                                     where a.Id == UserId
+                                     select new
+                                     {
+                                         AdviserCompanyName = b.ClientID + "/" + a.Id
+
+                                     }).Select(x => x.AdviserCompanyName);
+                    var result = lstResult.FirstOrDefault();
+                    name = result;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                newException.AddException(ex);
+            }
+            return name;
+        }
+
     }
 }

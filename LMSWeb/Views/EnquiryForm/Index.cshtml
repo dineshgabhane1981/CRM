@@ -20,15 +20,16 @@
         border: none; /* optional */
     }
 </style>
-<h5>Enquiry Form</h5>
+<div class="m-4">
+    <h5>Enquiry Form</h5>
+   
+    <span>Click <b><i>"Copy"</i></b> Button To Copy Enquiry Form code. You can use this code to embed Enquiry Form to your website</span>
+    <input type="button" id="btnCopy" name="btnCopy" class="btn btn-primary profle-submit-btn" onclick="CopyCode()" value="Copy" />
 
-<span>Click <b><i>"Copy"</i></b> Button To Copy Enquiry Form code. You can use this code to embed Enquiry Form to your website</span> 
-<input type="button" id="btnCopy" name="btnCopy" class="btn btn-primary profle-submit-btn" onclick="CopyCode()" value="Copy" />
 
-
-<iframe id="frameId" src="@formUrl" frameborder="0" class="frameId" scrolling="no" style="border:none;" onload="resizeIframe(this)">
-</iframe>
-
+    <iframe id="frameId" src="@formUrl" frameborder="0" class="frameId" scrolling="no" style="border:none;" onload="resizeIframe(this)">
+    </iframe>
+</div>
 <script>
     function resizeIframe(obj) {
         obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';

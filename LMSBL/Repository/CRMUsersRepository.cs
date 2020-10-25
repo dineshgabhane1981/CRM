@@ -559,9 +559,10 @@ namespace LMSBL.Repository
                                      CurrentSubStage = a.CurrentSubStage,
                                      ContactNo = a.MobileNoCountry + " " + a.MobileNo,
                                      VisaIntrested = d.VisaName,
-                                     DueDate=b.DueDate
+                                     DueDate = b.DueDate,
+                                     CreatedOn = a.CreatedOn
 
-                                 }).ToList();
+                                 }).OrderByDescending(x => x.CreatedOn).ToList();
 
                 return lstResult;
             }

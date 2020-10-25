@@ -76,6 +76,8 @@
     <Compile Include="Common\SharpZipLibHelper.cs" />
     <Compile Include="DBModels\CRMNew\ClientTicket.cs" />
     <Compile Include="DBModels\CRMNew\CRMContext.cs" />
+    <Compile Include="DBModels\CRMNew\CRMDashboardClients.cs" />
+    <Compile Include="DBModels\CRMNew\CRMDashboardInvoices.cs" />
     <Compile Include="DBModels\CRMNew\EnquiryListing.cs" />
     <Compile Include="DBModels\CRMNew\FileNotesDetails.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMClient.cs" />

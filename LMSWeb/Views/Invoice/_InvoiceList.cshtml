@@ -15,8 +15,9 @@
                 <table class="table" id="activityTable">
                     <thead>
                         <tr>
-                            <th scope="col">Invoice Number</th>
+                            <th scope="col">Invoice No</th>
                             <th scope="col">Invoice Amount</th>
+                            <th scope="col">Type</th>
                             <th scope="col">Status</th>
                             <th scope="col">Date</th>
                             <th scope="col" style="text-align:center;">Action</th>
@@ -35,6 +36,7 @@
                                         <tr>
                                             <td>@invoice.InvoiceNumber</td>
                                             <td>@invoice.InvoiceTotal @invoice.InvoiceCurrency</td>
+                                            <td>@invoice.InvoiceType</td>
                                             <td>@invoice.Status</td>
                                             <td>@invoice.UpdatedOn</td>
                                             <td style="text-align:end; padding-right:25px;">
@@ -42,11 +44,15 @@
                                                 {
                                                     <a href="#" onclick="MarkPaidInvoice(@invoice.InvoiceId);" class="login" title="Mark Paid"><img src="~/assets/images/invoice-paid.png" /></a>
                                                 }
-                                                @if (invoice.Status != "Paid")
+                                                @if (invoice.Status != "Paid" && invoice.Status != "Uploaded")
                                                 {
                                                     <a href="#" onclick="EditInvoice(@invoice.InvoiceId);" class="login" title="Edit Invoice"><img src="~/assets/images/shape_editUser.png" /></a>
                                                 }
-                                                <a href="@Url.Action("DownloadInvoice", "invoice", new { InvoiceId = invoice.InvoiceId })" target="_blank" class="login" title="Preview Invoice"><img src="~/assets/images/eye.png" /></a>
+                                                @*@if (invoice.Status != "Uploaded")
+                                                {
+                                                    <a href="#" onclick="EditInvoice(@invoice.InvoiceId);" class="login" title="Edit Invoice"><img src="~/assets/images/shape_editUser.png" /></a>
+                                                }*@
+                                                <a href="#" onclick="PreviewInvoice(@invoice.InvoiceId);" class="login" title="Download Invoice"><img src="~/assets/images/eye.png" /></a>
                                             </td>
                                         </tr>
 
