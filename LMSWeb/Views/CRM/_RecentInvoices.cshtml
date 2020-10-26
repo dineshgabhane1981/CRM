@@ -34,7 +34,7 @@
                                         string userId = common.EncryptString(Convert.ToString(user.ClientId));
                                         <tr>
                                             <td>
-                                                <a href="@Url.Action("AddEnquiry", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FullName</a>
+                                                <a href="@Url.Action("AddClient", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FullName</a>
 
                                             </td>
                                             <td>@user.InvoiceNumber</td>
@@ -55,21 +55,21 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="4" align="center">No Potential Client Available</td>
+                                        <td colspan="4" align="center">No data available</td>
                                     </tr>
                                 }
                             }
                             else
                             {
                                 <tr>
-                                    <td colspan="2" align="center">No Potential Client Available</td>
+                                    <td colspan="2" align="center">No data available</td>
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="2" align="center">No Potential Client Available</td>
+                                <td colspan="2" align="center">No data available</td>
                             </tr>
                         }
 

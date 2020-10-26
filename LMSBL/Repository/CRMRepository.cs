@@ -127,5 +127,80 @@ namespace LMSBL.Repository
             return result;
         }
 
+        public List<tblUser> GetCRMAdminUsers(int ClientId)
+        {
+            List<tblUser> objUserList = new List<tblUser>();
+            using (var context = new CRMContext())
+            {
+                objUserList = context.tblUsers.Where(a => a.CRMClientId == ClientId && a.roleId == 4 && a.isActive == true).ToList();
+            }
+
+            return objUserList;
+        }
+
+        public bool AddEditAdminUser(tblUser objUser)
+        {
+            bool result = false;
+            using (var context = new CRMContext())
+            {
+                try
+                {
+                    context.tblUsers.AddOrUpdate(objUser);
+                    context.SaveChanges();
+                    result = true;
+                }
+                catch (Exception ex)
+                {
+                    newException.AddException(ex);
+                }
+
+            }
+            return result;
+        }
+
+        public bool CheckEmailExist(string emailid)
+        {
+            bool result = false;
+            using (var context = new CRMContext())
+            {
+                try
+                {
+                    var objUser = context.tblUsers.Where(a => a.emailId == emailid).FirstOrDefault();
+
+                    if (objUser != null)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        result = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    newException.AddException(ex);
+                }
+
+            }
+            return result;
+        }
+        public tblUser GetUserForEdit(int userId)
+        {
+            tblUser objUser = new tblUser();            
+            using (var context = new CRMContext())
+            {
+                try
+                {
+                     objUser = context.tblUsers.Where(a => a.userId == userId).FirstOrDefault();
+                   
+                }
+                catch (Exception ex)
+                {
+                    newException.AddException(ex);
+                }
+
+            }
+            return objUser;
+        }
     }
 }

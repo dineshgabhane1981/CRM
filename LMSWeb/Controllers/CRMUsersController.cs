@@ -17,12 +17,12 @@ namespace LMSWeb.Controllers
     {
         CRMNotesRepository crmNotesRepository = new CRMNotesRepository();
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
-        CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();
+        CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();        
         public ActionResult Enquiry()
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
             List<EnquiryListing> listingViewModel = new List<EnquiryListing>();
-            listingViewModel = crmUsersRepository.GetCRMUsersAll(Convert.ToInt32(sessionUser.CRMClientId), 1);
+            listingViewModel = crmUsersRepository.GetCRMUsersAll(sessionUser, 1);
             ViewBag.StageForButton = 1;
             return View(listingViewModel);
         }
@@ -34,7 +34,7 @@ namespace LMSWeb.Controllers
             {
                 //Edit mode
                 CommonFunctions common = new CommonFunctions();
-                myid = common.DecryptString(myid);                
+                myid = common.DecryptString(myid);
                 int userId = Convert.ToInt32(myid);
                 objCRMUserViewModel = LoadModel(userId);
             }
@@ -53,7 +53,7 @@ namespace LMSWeb.Controllers
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
             List<EnquiryListing> listingViewModel = new List<EnquiryListing>();
-            listingViewModel = crmUsersRepository.GetCRMUsersAll(Convert.ToInt32(sessionUser.CRMClientId), 2);
+            listingViewModel = crmUsersRepository.GetCRMUsersAll(sessionUser, 2);
             ViewBag.StageForButton = 2;
             return View("Enquiry", listingViewModel);
         }
@@ -86,7 +86,7 @@ namespace LMSWeb.Controllers
             TblUser sessionUser = (TblUser)Session["UserSession"];
             CRMClientViewModel objCRMClientViewModel = new CRMClientViewModel();
             objCRMClientViewModel.lstClientSubStages = crmUsersRepository.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
-            objCRMClientViewModel.objClientTicketLST = crmUsersRepository.GetCRMTicketsAll(Convert.ToInt32(sessionUser.CRMClientId), 3);
+            objCRMClientViewModel.objClientTicketLST = crmUsersRepository.GetCRMTicketsAll(sessionUser, 3);
             //List<EnquiryListing> listingViewModel = new List<EnquiryListing>();
             //listingViewModel = crmUsersRepository.GetCRMUsersAll(Convert.ToInt32(sessionUser.CRMClientId), 3);
             ViewBag.StageForButton = 3;
@@ -120,9 +120,12 @@ namespace LMSWeb.Controllers
         }
 
         [HttpPost]
-        public bool AddCRMUser(CRMUserViewModel objCRMUserViewModel)
+        public string AddCRMUser(CRMUserViewModel objCRMUserViewModel)
         {
-            var status = false;
+            int id = 0;
+            int oldId = objCRMUserViewModel.ObjCRMUser.Id;
+            string returnId = string.Empty;
+            string url = "";
             TblUser sessionUser = (TblUser)Session["UserSession"];
             objCRMUserViewModel.ObjCRMUser.CreatedBy = sessionUser.UserId;
             objCRMUserViewModel.ObjCRMUser.CreatedOn = DateTime.Now;
@@ -131,19 +134,44 @@ namespace LMSWeb.Controllers
             objCRMUserViewModel.ObjCRMNote.CreatedDate = DateTime.Now;
             objCRMUserViewModel.ObjCRMNote.CreatedBy = sessionUser.UserId;
             objCRMUserViewModel.ObjCRMUser.ClientId = Convert.ToInt32(sessionUser.CRMClientId);
+            if(sessionUser.RoleId!=2)
+            {
+                objCRMUserViewModel.ObjCRMUser.AssignedTo = sessionUser.UserId;
+            }
             if (!string.IsNullOrEmpty(objCRMUserViewModel.Clone))
             {
-                status = crmUsersRepository.CloneUserData(objCRMUserViewModel.ObjCRMUser, objCRMUserViewModel.ObjCRMUsersVisaDetail, objCRMUserViewModel.ObjCRMUsersINZLoginDetail);
+                id = crmUsersRepository.CloneUserData(objCRMUserViewModel.ObjCRMUser, objCRMUserViewModel.ObjCRMUsersVisaDetail, objCRMUserViewModel.ObjCRMUsersINZLoginDetail);
             }
             else
             {
-                status = crmUsersRepository.SaveUserData(objCRMUserViewModel.ObjCRMUser, objCRMUserViewModel.ObjCRMUsersBillingAddress, objCRMUserViewModel.ObjCRMUsersPassportDetail,
+                id = crmUsersRepository.SaveUserData(objCRMUserViewModel.ObjCRMUser, objCRMUserViewModel.ObjCRMUsersBillingAddress, objCRMUserViewModel.ObjCRMUsersPassportDetail,
                     objCRMUserViewModel.ObjCRMUsersVisaDetail, objCRMUserViewModel.ObjCRMUsersMedicalDetail,
                     objCRMUserViewModel.ObjCRMUsersPoliceCertificateInfo, objCRMUserViewModel.ObjCRMUsersINZLoginDetail,
                     objCRMUserViewModel.ObjCRMUsersNZQADetail, objCRMUserViewModel.ObjCRMNote);
 
             }
-            return status;
+            if (oldId == 0)
+            {
+                if (id > 0)
+                {
+                    CommonFunctions common = new CommonFunctions();
+                    returnId = common.EncryptString(Convert.ToString(id));
+                }
+                if (objCRMUserViewModel.ObjCRMUser.CurrentStage == 1)
+                {
+                    url = "CRMUsers/AddEnquiry?myid=" + returnId;
+                }
+                if (objCRMUserViewModel.ObjCRMUser.CurrentStage == 2)
+                {
+                    url = "CRMUsers/AddPotentialClient?myid=" + returnId;
+                }
+                if (objCRMUserViewModel.ObjCRMUser.CurrentStage == 3)
+                {
+                    url = "CRMUsers/AddClient?myid=" + returnId;
+                }
+            }
+            // CRMUsers / AddEnquiry ? myid =
+            return url;
         }
 
         [HttpPost]
@@ -153,7 +181,7 @@ namespace LMSWeb.Controllers
 
             var result = crmUsersRepository.UpdateStage(id, stage);
             List<EnquiryListing> listingViewModel = new List<EnquiryListing>();
-            listingViewModel = crmUsersRepository.GetCRMUsersAll(Convert.ToInt32(sessionUser.CRMClientId), currentstage);
+            listingViewModel = crmUsersRepository.GetCRMUsersAll(sessionUser, currentstage);
             ViewBag.StageForButton = currentstage;
             return PartialView("_EnquiryList", listingViewModel);
         }
@@ -213,9 +241,11 @@ namespace LMSWeb.Controllers
             objModel.CurrentVisaTypeList = crmUsersRepository.GetVisaType();
             objModel.VisaStatusList = crmUsersRepository.GetVisaStatus();
 
+
             TblUser sessionUser = (TblUser)Session["UserSession"];
             objModel.SubStagesList = crmNotesRepository.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
             objModel.StagesList = crmUsersRepository.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
+            objModel.UserList = crmUsersRepository.GetCRMAdminUsers(Convert.ToInt32(sessionUser.CRMClientId));
             return objModel;
         }
 
@@ -231,7 +261,7 @@ namespace LMSWeb.Controllers
             {
                 objDocument.ClientId = Convert.ToInt32(item["ClientId"]);
                 objDocument.DocumentName = Convert.ToString(item["DocName"]);
-                objDocument.DocumentfileName = Convert.ToString(item["FileName"]);                
+                objDocument.DocumentfileName = Convert.ToString(item["FileName"]);
                 base64string = Convert.ToString(item["base64string"]);
             }
             bool status = false;
@@ -245,5 +275,17 @@ namespace LMSWeb.Controllers
             return status;
         }
 
+        public ActionResult GetSearchClient(string SearchText)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            CRMClientViewModel objCRMClientViewModel = new CRMClientViewModel();
+            objCRMClientViewModel.lstClientSubStages = crmUsersRepository.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
+            objCRMClientViewModel.objClientTicketLST = crmUsersRepository.GetCRMTicketsAll(sessionUser, 3);
+
+            objCRMClientViewModel.objClientTicketLST = objCRMClientViewModel.objClientTicketLST.Where(x => x.UserName.ToLower().Contains(SearchText.ToLower())).ToList();            
+            ViewBag.StageForButton = 3;
+            return View("_ClientList", objCRMClientViewModel);
+        }
+           
     }
 }

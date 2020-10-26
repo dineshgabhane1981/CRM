@@ -1,0 +1,22 @@
+﻿@model LMSWeb.ViewModel.TblUserViewModel
+<div class="pt-3 pl-3 pr-3 course-list-container list-box">
+    <div class="row pt-3 pl-4">
+        <div class="col-sm-12 col-lg-6">
+            @Html.HiddenFor(model => model.objAdminUser.UserId, new { @id = "txtAdminUserId" })
+            @Html.TextBoxFor(model => model.objAdminUser.FirstName, new { @class = "input100", placeholder = "First Name", @id = "txtAdminFirstName" })
+            @Html.TextBoxFor(model => model.objAdminUser.EmailId, new { @class = "input100", placeholder = "Email Id", @id = "txtAdminEmail" })
+            @Html.TextBoxFor(model => model.objAdminUser.ContactNo, new { @class = "input100", placeholder = "Contact No", @id = "txtAdminContact" })
+
+        </div>
+        <div class="col-sm-12 col-lg-6">
+            @Html.TextBoxFor(model => model.objAdminUser.LastName, new { @class = "input100", placeholder = "Last Name", @id = "txtAdminLastName" })
+            @Html.PasswordFor(model => model.objAdminUser.Password, new { @class = "input100", placeholder = "New Password", @id = "txtAdminPassword" })
+
+        </div>
+    </div>
+    <div class="row col-12 justify-content-end p-2">
+        <button type="button" id="btnUserAdd" onclick="AddUserToDB()" class="btn btn-primary profle-submit-btn mr-4"><img src="~/assets/images/check-img.png" /> Save Changes</button>
+        <button type="button" id="btnUserCancel" class="btn btn-primary profle-submit-btn mr-4"> Cancel</button>
+
+    </div>
+</div>

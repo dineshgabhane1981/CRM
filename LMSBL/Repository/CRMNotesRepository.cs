@@ -7,21 +7,30 @@ using LMSBL.Common;
 using LMSBL.DBModels.CRMNew;
 using System.Web.Mvc;
 using System.Data.Entity;
-
+using LMSBL.DBModels;
 
 namespace LMSBL.Repository
 {
     public class CRMNotesRepository
     {
         Exceptions newException = new Exceptions();
-        public List<SelectListItem> GetClient(int ClientId)
+        public List<SelectListItem> GetClient(TblUser objUser)
         {
             List<SelectListItem> lstCRMclient = new List<SelectListItem>();
 
             List<tblCRMUser> lstCRMUsers = new List<tblCRMUser>();
             using (var context = new CRMContext())
             {
-                lstCRMUsers = context.tblCRMUsers.Where(a => a.ClientId == ClientId && a.CurrentStage == 3).ToList();
+                var ClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    lstCRMUsers = context.tblCRMUsers.Where(a => a.ClientId == ClientId && a.CurrentStage == 3).ToList();
+                }
+                else
+                {
+                    lstCRMUsers = context.tblCRMUsers.Where(a => a.ClientId == ClientId && a.CurrentStage == 3 && a.AssignedTo == objUser.UserId).ToList();
+                }
+
             }
             foreach (var user in lstCRMUsers)
             {

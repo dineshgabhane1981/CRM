@@ -104,6 +104,7 @@
     <Compile Include="DBModels\CRMNew\tblCRMUsersVisaDetail.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMVisaStatu.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMVisaType.cs" />
+    <Compile Include="DBModels\CRMNew\tblUser.cs" />
     <Compile Include="DBModels\EnquiryResult.cs" />
     <Compile Include="DBModels\HomeModel.cs" />
     <Compile Include="DBModels\LMSContext.cs" />

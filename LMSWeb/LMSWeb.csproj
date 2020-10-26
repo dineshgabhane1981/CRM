@@ -944,6 +944,8 @@
     <Content Include="Views\CRM\_RecentInvoices.cshtml" />
     <Content Include="Views\CRM\_Clients.cshtml" />
     <Content Include="Views\CRM\_DocumentUsers.cshtml" />
+    <Content Include="Views\CRMUsers\_ClientList.cshtml" />
+    <Content Include="Views\AdminSettings\_AddAdminUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -164,9 +164,10 @@
     }
 
     function UploadInvoice() {
-        $("#divLoader").show();
+        
         var isValidate = ValidateUploadInvoice();
         if (isValidate) {
+            $("#divLoader").show();
             var data = $('#frmaddInvoice').serialize();
             console.log(data);
             $.ajax({

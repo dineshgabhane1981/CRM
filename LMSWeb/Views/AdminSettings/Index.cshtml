@@ -56,29 +56,53 @@
 {
     @Html.HiddenFor(model => model.imageJson)
     @Html.HiddenFor(model => model.imageName)
+    @Html.HiddenFor(model => model.objtbluser.CRMClientId, new { @id = "hdnCRMClientId" })
     <div class="row justify-content-center">
         <button type="button" class="tablink" onclick="openPage('dvprofile', this,'orange')" id="defaultOpen">Profile</button>
-        <button type="button" class="tablink" onclick="openPage('dvmanageuser', this,'orange')">Manage Users</button>
-        <button type="button" class="tablink" onclick="openPage('dvUpdateStages', this,'orange')">Update Stages</button>
+        @if (Model.objtbluser.RoleId == 2)
+        {
+            <button type="button" class="tablink" onclick="openPage('dvmanageuser', this,'orange')">Manage Users</button>
+            <button type="button" class="tablink" onclick="openPage('dvUpdateStages', this,'orange')">Update Stages</button>
+        }
     </div>
-    <div id="dvmanageuser" class="tabcontent">
-        @Html.Partial("~/Views/AdminSettings/_ManageUser.cshtml", Model)
-    </div>
-
-    <div id="dvUpdateStages" class="tabcontent">
-        @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml",Model)
-    </div>
-
     <div id="dvprofile" class="tabcontent">
         @Html.Partial("~/Views/AdminSettings/_UserProfile.cshtml", Model)
 
     </div>
+    <div id="dvmanageuser" class="tabcontent">
+        <div class="col-md-12 profile-details list-box" style="padding-left:20px;">
+            <div class="row pt-4 pl-3" style="display:flex;">
+                <h5 class="mb-2">Manage Users</h5>
+            </div>
+            <div class="container-fluid mt-4 mb-4 pl-4 pr-4" id="dvAddEditUser" style="display:none;">
+                @Html.Partial("~/Views/AdminSettings/_AddAdminUser.cshtml", Model)
+            </div>
+            <div class="row" id="dvUserList">
+                @Html.Partial("~/Views/AdminSettings/_ManageUser.cshtml", Model)
+            </div>
+        </div>
+    </div>
+
+    <div id="dvUpdateStages" class="tabcontent">
+        @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml", Model)
+    </div>
+
+
 }
 <script>
     $(document).ready(function () {
         document.getElementById("fileNew").addEventListener('change', handleFileSelect, false);
         $('#btnUsersubmit').on("click", function () {
             UpdateToDB();
+        });
+        $('#btnUserAdd').on("click", function () {
+            AddUserToDB();
+        });
+        $('#btnUserCancel').on("click", function () {
+            CloseAddSection();
+        });
+        $('#btnAdminUserAdd').on("click", function () {
+            OpenAddUser();
         });
         $('#btnProfilePic').on("click", function () {
             $('#file').click();
@@ -96,6 +120,7 @@
             $("#txtEmail").focus();
             return false
         }
+        $("#divLoader").show();
         var data = $('#frmupdateUser').serialize();
         console.log(data);
         $.ajax({
@@ -107,10 +132,12 @@
                 console.log(data)
                 if (data == "True") {
                     toastr.success("User Updated");
+                    $("#divLoader").hide();
 
                 }
                 else {
                     toastr.error('error occured while updateing data');
+                    $("#divLoader").hide();
                 }
             }
         });
@@ -156,6 +183,141 @@
     }
 
     document.getElementById("defaultOpen").click();
+
+    function CloseAddSection() {
+        $("#dvAddEditUser").hide(1000);
+    }
+    function OpenEditUser(id) {
+        $("#divLoader").show();
+        $("#txtAdminFirstName").val("");
+        $("#txtAdminEmail").val("");
+        $("#txtAdminContact").val("");
+        $("#txtAdminLastName").val("");
+        $("#txtAdminPassword").val("");
+
+        $.ajax({
+            type: "POST",
+            url: "/AdminSettings/GetAdminUserForEdit",
+            data: '{UserId: ' + JSON.stringify(id) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $("#dvAddEditUser").html(response);
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                $("#dvAddEditUser").html(response.responseText);
+                $("#divLoader").hide();
+
+            }
+        });
+        $("#dvAddEditUser").show(1000);
+        $("#divLoader").hide();
+
+    }
+    function OpenAddUser() {
+        $("#txtAdminFirstName").val("");
+        $("#txtAdminEmail").val("");
+        $("#txtAdminContact").val("");
+        $("#txtAdminLastName").val("");
+        $("#txtAdminPassword").val("");
+        $("#dvAddEditUser").show(1000);
+    }
+    function AddUserToDB() {
+
+        if (isValidate()) {
+            var ItemObject = [];
+            invoiceItem = {}
+            invoiceItem["UserId"] = $("#txtAdminUserId").val();
+            invoiceItem["FirstName"] = $("#txtAdminFirstName").val();
+            invoiceItem["Email"] = $("#txtAdminEmail").val();
+            invoiceItem["Contact"] = $("#txtAdminContact").val();
+            invoiceItem["LastName"] = $("#txtAdminLastName").val();
+            invoiceItem["Password"] = $("#txtAdminPassword").val();
+            ItemObject.push(invoiceItem);
+            $("#divLoader").show();
+            $.ajax({
+                type: "POST",
+                url: "/AdminSettings/AddAdminUser",
+                data: '{jsonData: ' + JSON.stringify(JSON.stringify(ItemObject)) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    console.log(1111)
+                    $("#divLoader").hide();
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                    if (response.responseText == "True") {
+
+                        $("#txtAdminFirstName").val("");
+                        $("#txtAdminEmail").val("");
+                        $("#txtAdminContact").val("");
+                        $("#txtAdminLastName").val("");
+                        $("#txtAdminPassword").val("");
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/AdminSettings/GetAllAdminUsers",
+                            data: '',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+
+                                $("#dvUserList").html(response);
+                                $("#divLoader").hide();
+                            },
+                            failure: function (response) {
+                            },
+                            error: function (response) {
+                                $("#dvUserList").html(response.responseText);
+                                $("#divLoader").hide();
+
+                            }
+                        });
+
+                        toastr.success("User Added Successfully");
+                        $("#dvAddEditUser").hide(1000);
+                        $("#divLoader").hide();
+                    }
+                    else {
+                        toastr.error('error occured while saving User');
+                        $("#divLoader").hide();
+                    }
+                    $("#divLoader").hide();
+                }
+            });
+        }
+
+    }
+
+    function isEmail(email) {
+        var regex = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        return regex.test(email);
+    }
+
+    function isValidate() {
+        if ($("#txtAdminFirstName").val() == "" || $("#txtAdminFirstName").val() == null) {
+            toastr.error('Please enter First Name');
+            $("#txtAdminFirstName").focus();
+            return false
+        }
+        if (!isEmail($("#txtAdminEmail").val()) || $("#txtAdminEmail").val() == "") {
+            toastr.error('Please enter correct Email');
+            $("#txtAdminEmail").focus();
+            return false
+        }
+        if ($("#txtAdminPassword").val() == "" || $("#txtAdminPassword").val() == null) {
+            toastr.error('Please enter Password');
+            $("#txtAdminPassword").focus();
+            return false
+        }
+        return true;
+    }
+
 </script>
 
 

@@ -84,7 +84,7 @@ namespace LMSBL.DBModels.CRMNew
 
         public DateTime? UpdatedOn { get; set; }
 
-        public int? ClientId { get; set; }
+        public int ClientId { get; set; }
 
         [StringLength(100)]
         public string Qualification { get; set; }
@@ -99,5 +99,7 @@ namespace LMSBL.DBModels.CRMNew
         public string CountryResideIn { get; set; }
 
         public string UserComments { get; set; }
+
+        public int? AssignedTo { get; set; }
     }
 }

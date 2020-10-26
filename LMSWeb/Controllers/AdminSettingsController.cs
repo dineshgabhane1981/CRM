@@ -38,6 +38,8 @@ namespace LMSWeb.Controllers
 
             objuserviewmodel.lstClientStages = cr.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
             objuserviewmodel.lstClientSubStages = cr.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
+
+            objuserviewmodel.lstUsers = cr.GetCRMAdminUsers(Convert.ToInt32(sessionUser.CRMClientId));
             return View("Index", objuserviewmodel);
 
         }
@@ -134,9 +136,9 @@ namespace LMSWeb.Controllers
             foreach (Dictionary<string, object> item in objSubStageData)
             {
                 tblCRMClientSubStage objSubStage = new tblCRMClientSubStage();
-                objSubStage.SubStageId= Convert.ToInt32(item["SubStageID"]);
+                objSubStage.SubStageId = Convert.ToInt32(item["SubStageID"]);
                 objSubStage.SubStageName = Convert.ToString(item["SubStageName"]);
-                objSubStage.IsActive= Convert.ToBoolean(item["SubStageIsActive"]);
+                objSubStage.IsActive = Convert.ToBoolean(item["SubStageIsActive"]);
                 objSubStage.ClientId = Convert.ToInt32(sessionUser.CRMClientId);
                 objSubStage.CreatedBy = sessionUser.UserId;
                 objSubStage.CreatedOn = DateTime.Now;
@@ -147,6 +149,77 @@ namespace LMSWeb.Controllers
 
             return status;
         }
+
+        public bool AddAdminUser(string jsonData)
+        {
+            bool result = false;
+            TblUser model = (TblUser)Session["UserSession"];
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            json_serializer.MaxJsonLength = int.MaxValue;
+            object[] objUserData = (object[])json_serializer.DeserializeObject(jsonData);
+
+            foreach (Dictionary<string, object> item in objUserData)
+            {
+                //var objUser = context.tblUsers.Where(a => a.userId == Convert.ToInt32(item["UserId"])).FirstOrDefault();
+                tblUser objUser = new tblUser();
+                if (string.IsNullOrEmpty(Convert.ToString(item["UserId"])))
+                {
+                    if (cr.CheckEmailExist(Convert.ToString(item["Email"])))
+                    {
+                        objUser.firstName = Convert.ToString(item["FirstName"]);
+                        objUser.emailId = Convert.ToString(item["Email"]);
+                        objUser.contactNo = Convert.ToString(item["Contact"]);
+                        objUser.lastName = Convert.ToString(item["LastName"]);
+                        CommonFunctions common = new CommonFunctions();
+                        objUser.password = common.GetEncodePassword(Convert.ToString(item["Password"]));
+                        objUser.CRMClientId = Convert.ToInt32(model.CRMClientId);
+                        objUser.tenantId = Convert.ToInt32(model.TenantId);
+                        objUser.roleId = 4;
+                        objUser.createdBy = Convert.ToInt32(model.UserId);
+                        objUser.createdOn = DateTime.Now;
+                        objUser.isActive = true;
+                        objUser.isLMS = true;
+                        objUser.isNew = false;
+
+                        result = cr.AddEditAdminUser(objUser);
+                    }
+                }
+                else
+                {
+                    objUser = cr.GetUserForEdit(Convert.ToInt32(item["UserId"]));
+                    objUser.firstName = Convert.ToString(item["FirstName"]);
+                    objUser.emailId = Convert.ToString(item["Email"]);
+                    objUser.contactNo = Convert.ToString(item["Contact"]);
+                    objUser.lastName = Convert.ToString(item["LastName"]);
+                    CommonFunctions common = new CommonFunctions();
+                    objUser.password = common.GetEncodePassword(Convert.ToString(item["Password"]));
+                    result = cr.AddEditAdminUser(objUser);
+                }
+            }
+
+
+            return result;
+        }
+
+
+        public ActionResult GetAllAdminUsers()
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            TblUserViewModel objuserviewmodel = new TblUserViewModel();
+            objuserviewmodel.lstUsers = cr.GetCRMAdminUsers(Convert.ToInt32(sessionUser.CRMClientId));
+            return PartialView("_ManageUser", objuserviewmodel);
+        }
+
+        public ActionResult GetAdminUserForEdit(string UserId)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            TblUserViewModel objuserviewmodel = new TblUserViewModel();
+            var userobject = ur.GetUserById(Convert.ToInt32(UserId));
+            objuserviewmodel.objAdminUser = userobject[0];
+            return PartialView("_AddAdminUser", objuserviewmodel);
+        }
+
+
 
 
     }

@@ -24,7 +24,7 @@ namespace LMSWeb.Controllers
         {
             CRMDocumentsViewModel objCRMDocument = new CRMDocumentsViewModel();
             TblUser sessionUser = (TblUser)Session["UserSession"];
-            var lstclient = crmnr.GetClient(Convert.ToInt32(sessionUser.CRMClientId));
+            var lstclient = crmnr.GetClient(sessionUser);
             objCRMDocument.lstCRMclient = lstclient;
             return View(objCRMDocument);
         }

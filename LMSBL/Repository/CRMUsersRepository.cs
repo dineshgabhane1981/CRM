@@ -275,16 +275,34 @@ namespace LMSBL.Repository
             }
             return Stages;
         }
+        public List<SelectListItem> GetCRMAdminUsers(int id)
+        {
+            List<SelectListItem> Stages = new List<SelectListItem>();
+            List<tblUser> objtblUsers = new List<tblUser>();
+            using (var context = new CRMContext())
+            {
+                objtblUsers = context.tblUsers.Where(a => a.CRMClientId == id && a.roleId != 2).ToList();
+            }
+            foreach (var item in objtblUsers)
+            {
+                Stages.Add(new SelectListItem
+                {
+                    Text = Convert.ToString(item.firstName) + " " + Convert.ToString(item.lastName),
+                    Value = Convert.ToString(item.userId)
+                });
+            }
+            return Stages;
+        }
 
         [HttpPost, ValidateInput(false)]
-        public bool SaveUserData(tblCRMUser ObjCRMUser,
+        public int SaveUserData(tblCRMUser ObjCRMUser,
             tblCRMUsersBillingAddress ObjCRMUsersBillingAddress, tblCRMUsersPassportDetail ObjCRMUsersPassportDetail,
             tblCRMUsersVisaDetail ObjCRMUsersVisaDetail, tblCRMUsersMedicalDetail ObjCRMUsersMedicalDetail,
             tblCRMUsersPoliceCertificateInfo ObjCRMUsersPoliceCertificateInfo,
             tblCRMUsersINZLoginDetail ObjCRMUsersINZLoginDetail, tblCRMUsersNZQADetail ObjCRMUsersNZQADetail,
             tblCRMNote ObjCRMNote)
         {
-            bool status = false;
+            int id = 0;
             using (var context = new CRMContext())
             {
 
@@ -336,7 +354,7 @@ namespace LMSBL.Repository
                         }
 
                         transaction.Commit();
-                        status = true;
+                        id = ObjCRMUser.Id;
                     }
                     catch (Exception ex)
                     {
@@ -347,12 +365,12 @@ namespace LMSBL.Repository
                 }
             }
 
-            return status;
+            return id;
         }
 
-        public bool CloneUserData(tblCRMUser ObjCRMUser, tblCRMUsersVisaDetail ObjCRMUsersVisaDetail, tblCRMUsersINZLoginDetail ObjCRMUsersINZLoginDetail)
+        public int CloneUserData(tblCRMUser ObjCRMUser, tblCRMUsersVisaDetail ObjCRMUsersVisaDetail, tblCRMUsersINZLoginDetail ObjCRMUsersINZLoginDetail)
         {
-            bool status = false;
+            int id = 0;
             using (var context = new CRMContext())
             {
 
@@ -373,7 +391,7 @@ namespace LMSBL.Repository
                         context.SaveChanges();
 
                         transaction.Commit();
-                        status = true;
+                        id = ObjCRMUser.Id;
                     }
                     catch (Exception ex)
                     {
@@ -384,19 +402,23 @@ namespace LMSBL.Repository
                 }
             }
 
-            return status;
+            return id;
         }
-        public List<EnquiryListing> GetCRMUsersAll(int ClientId, int stage)
+        public List<EnquiryListing> GetCRMUsersAll(TblUser objUser, int stage)
         {
             List<tblCRMUser> lstCRMUsers = new List<tblCRMUser>();
+            List<EnquiryListing> lstResult = new List<EnquiryListing>();
             using (var context = new CRMContext())
             {
-                var lstResult = (from a in context.tblCRMUsers
+                int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    lstResult = (from a in context.tblCRMUsers
                                  join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId into abc
                                  from x in abc.DefaultIfEmpty()
                                  join c in context.tblCRMVisaTypes on x.IntrestedVisa equals c.VisaId into temp
                                  from d in temp.DefaultIfEmpty()
-                                 where a.ClientId == ClientId && a.CurrentStage == stage
+                                 where a.ClientId == CRMClientId && a.CurrentStage == stage
                                  select new EnquiryListing
                                  {
                                      Id = a.Id,
@@ -407,6 +429,26 @@ namespace LMSBL.Repository
                                      IntrestedVisa = d.VisaName
 
                                  }).ToList();
+                }
+                else
+                {
+                    lstResult = (from a in context.tblCRMUsers
+                                 join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId into abc
+                                 from x in abc.DefaultIfEmpty()
+                                 join c in context.tblCRMVisaTypes on x.IntrestedVisa equals c.VisaId into temp
+                                 from d in temp.DefaultIfEmpty()
+                                 where a.ClientId == CRMClientId && a.CurrentStage == stage && a.AssignedTo == objUser.UserId
+                                 select new EnquiryListing
+                                 {
+                                     Id = a.Id,
+                                     Name = a.FirstName + " " + a.LastName,
+                                     Email = a.Email,
+                                     Contact = a.MobileNoCountry + " " + a.MobileNo,
+                                     CreatedDate = a.CreatedOn,
+                                     IntrestedVisa = d.VisaName
+
+                                 }).ToList();
+                }
 
                 return lstResult;
             }
@@ -541,30 +583,53 @@ namespace LMSBL.Repository
             return lstCRMUsers;
         }
 
-        public List<ClientTicket> GetCRMTicketsAll(int ClientId, int stage)
+        public List<ClientTicket> GetCRMTicketsAll(TblUser objUser, int stage)
         {
             List<ClientTicket> lstCRMUsers = new List<ClientTicket>();
             using (var context = new CRMContext())
             {
-                //lstCRMUsers = context.tblCRMUsers.Where(a => a.ClientId == ClientId && a.CurrentStage == stage).ToList();
-                var lstResult = (from a in context.tblCRMUsers
-                                 join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId
-                                 join c in context.tblCRMVisaTypes on b.IntrestedVisa equals c.VisaId into temp
-                                 from d in temp.DefaultIfEmpty()
-                                 where a.ClientId == ClientId && a.CurrentStage == stage
-                                 select new ClientTicket
-                                 {
-                                     UserId = a.Id,
-                                     UserName = a.FirstName + " " + a.LastName,
-                                     CurrentSubStage = a.CurrentSubStage,
-                                     ContactNo = a.MobileNoCountry + " " + a.MobileNo,
-                                     VisaIntrested = d.VisaName,
-                                     DueDate = b.DueDate,
-                                     CreatedOn = a.CreatedOn
+                int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    //lstCRMUsers = context.tblCRMUsers.Where(a => a.ClientId == ClientId && a.CurrentStage == stage).ToList();
+                    lstCRMUsers = (from a in context.tblCRMUsers
+                                   join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId
+                                   join c in context.tblCRMVisaTypes on b.IntrestedVisa equals c.VisaId into temp
+                                   from d in temp.DefaultIfEmpty()
+                                   where a.ClientId == CRMClientId && a.CurrentStage == stage
+                                   select new ClientTicket
+                                   {
+                                       UserId = a.Id,
+                                       UserName = a.FirstName + " " + a.LastName,
+                                       CurrentSubStage = a.CurrentSubStage,
+                                       ContactNo = a.MobileNoCountry + " " + a.MobileNo,
+                                       VisaIntrested = d.VisaName,
+                                       DueDate = b.DueDate,
+                                       CreatedOn = a.CreatedOn
 
-                                 }).OrderByDescending(x => x.CreatedOn).ToList();
+                                   }).OrderByDescending(x => x.CreatedOn).ToList();
+                }
+                else
+                {
+                    lstCRMUsers = (from a in context.tblCRMUsers
+                                   join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId
+                                   join c in context.tblCRMVisaTypes on b.IntrestedVisa equals c.VisaId into temp
+                                   from d in temp.DefaultIfEmpty()
+                                   where a.ClientId == CRMClientId && a.CurrentStage == stage && a.AssignedTo == objUser.UserId
+                                   select new ClientTicket
+                                   {
+                                       UserId = a.Id,
+                                       UserName = a.FirstName + " " + a.LastName,
+                                       CurrentSubStage = a.CurrentSubStage,
+                                       ContactNo = a.MobileNoCountry + " " + a.MobileNo,
+                                       VisaIntrested = d.VisaName,
+                                       DueDate = b.DueDate,
+                                       CreatedOn = a.CreatedOn
 
-                return lstResult;
+                                   }).OrderByDescending(x => x.CreatedOn).ToList();
+                }
+
+                return lstCRMUsers;
             }
             //return lstCRMUsers;
         }
@@ -600,7 +665,7 @@ namespace LMSBL.Repository
             return result;
 
         }
-        
+
         public bool UpdateStageName(int id, string stagename, int stage)
         {
             bool result = false;

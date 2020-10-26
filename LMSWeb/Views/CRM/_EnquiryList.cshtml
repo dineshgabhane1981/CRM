@@ -39,18 +39,24 @@
                                     }
                                     <tr><td colspan="2" style="text-align:end;"><a href="@Url.Action("Enquiry", "CRMUsers")" class="login" title="View All">View All</a></td></tr>
                                 }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2" align="center">No data available</td>
+                                    </tr>
+                                }
                             }
                             else
                             {
                                 <tr>
-                                    <td colspan="2" align="center">No Enquiry Available</td>
+                                    <td colspan="2" align="center">No data available</td>
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="2" align="center">No Enquiry Available</td>
+                                <td colspan="2" align="center">No data available</td>
                             </tr>
                         }
 

@@ -43,7 +43,7 @@ namespace LMSWeb.Controllers
 
             CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
             
-            CRMInvoiceModelView.lstCRMclient = crmnr.GetClient(Convert.ToInt32(sessionUser.CRMClientId));
+            CRMInvoiceModelView.lstCRMclient = crmnr.GetClient(sessionUser);
             return View(CRMInvoiceModelView);
         }
 

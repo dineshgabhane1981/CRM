@@ -22,7 +22,7 @@ namespace LMSWeb.Controllers
         {            
             CRMNotesViewModel CRMNotesView = new CRMNotesViewModel();
             TblUser sessionUser = (TblUser)Session["UserSession"];
-            var lstclient = crmnr.GetClient(Convert.ToInt32(sessionUser.CRMClientId));
+            var lstclient = crmnr.GetClient(sessionUser);
             var lstSubStages = crmnr.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
             CRMNotesView.lstSubStages = lstSubStages;
             CRMNotesView.lstCRMclient = lstclient;           

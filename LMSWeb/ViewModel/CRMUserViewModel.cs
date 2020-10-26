@@ -37,6 +37,7 @@ namespace LMSWeb.ViewModel
         public List<SelectListItem> VisaStatusList { get; set; }
         public List<SelectListItem> SubStagesList { get; set; }
         public List<SelectListItem> StagesList { get; set; }
+        public List<SelectListItem> UserList { get; set; }
         public SelectListItem[] Gender()
         {
             return new SelectListItem[2] { new SelectListItem() { Text = "Male" }, new SelectListItem() { Text = "Female" } };

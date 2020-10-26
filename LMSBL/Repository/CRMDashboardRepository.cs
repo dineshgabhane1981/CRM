@@ -8,6 +8,7 @@ using LMSBL.DBModels.CRMNew;
 using System.Web.Mvc;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using LMSBL.DBModels;
 
 namespace LMSBL.Repository
 {
@@ -16,25 +17,42 @@ namespace LMSBL.Repository
         DataRepository db = new DataRepository();
         Exceptions newException = new Exceptions();
 
-        public List<tblCRMUser> GetCRMDashboardEnquiryList(int clientID, int stage)
+        public List<tblCRMUser> GetCRMDashboardEnquiryList(TblUser objUser, int stage)
         {
             List<tblCRMUser> objCRMEnquiryList = new List<tblCRMUser>();
             using (var context = new CRMContext())
             {
-                objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == clientID && x.CurrentStage == stage)
+                int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == CRMClientId && x.CurrentStage == stage)
                     .OrderByDescending(p => p.CreatedOn).Take(5).ToList();
+                }
+                else
+                {
+                    objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == CRMClientId && x.CurrentStage == stage && x.AssignedTo == objUser.UserId)
+                    .OrderByDescending(p => p.CreatedOn).Take(5).ToList();
+                }
             }
             return objCRMEnquiryList;
         }
-        public List<CRMDashboardClients> GetCRMDashboardClientList(int clientID, int stage)
+        public List<CRMDashboardClients> GetCRMDashboardClientList(TblUser objUser, int stage)
         {
             List<CRMDashboardClients> lstClientDetails = new List<CRMDashboardClients>();
             List<tblCRMUser> objCRMEnquiryList = new List<tblCRMUser>();
             using (var context = new CRMContext())
             {
-                objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == clientID && x.CurrentStage == stage)
+                int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == CRMClientId && x.CurrentStage == stage)
                     .OrderByDescending(p => p.CreatedOn).Take(5).ToList();
-
+                }
+                else
+                {
+                    objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == CRMClientId && x.CurrentStage == stage && x.AssignedTo == objUser.UserId)
+                   .OrderByDescending(p => p.CreatedOn).Take(5).ToList();
+                }
 
                 lstClientDetails = (from a in objCRMEnquiryList
                                     join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId
@@ -51,62 +69,53 @@ namespace LMSBL.Repository
                                     }).ToList();
 
 
-
             }
             return lstClientDetails;
         }
-        public List<tblCRMUser> GetCRMDocumentList(int clientID, int stage)
-        {
-            //This function is not working, result is not getting, getting error
-            List<tblCRMUser> objCRMEnquiryList = new List<tblCRMUser>();
-            using (var context = new CRMContext())
-            {
-                objCRMEnquiryList = context.tblCRMUsers.Where(x => x.ClientId == clientID && x.CurrentStage == stage)
-                    .OrderByDescending(p => p.CreatedOn).Take(5).ToList();
 
-
-                var docs = context.tblCRMDocuments.OrderByDescending(m => m.UpdatedDate).ToLookup(p => p.ClientId).Select(coll => coll.FirstOrDefault()).ToList();
-
-                var lstResult = from a in context.tblCRMUsers
-                                join c in docs on a.Id equals c.ClientId
-                                where a.ClientId == clientID && a.CurrentStage == stage
-                                select new
-                                {
-                                    a.ClientId,
-                                    a.FirstName,
-                                    a.LastName,
-                                    c.UpdatedDate
-                                };
-
-                var result = lstResult.Select(x => x.ClientId).ToList();
-
-
-            }
-            return objCRMEnquiryList;
-        }
-
-        public List<CRMDashboardInvoices> GetCRMDashboardInvoiceList(int clientID)
+        public List<CRMDashboardInvoices> GetCRMDashboardInvoiceList(TblUser objUser)
         {
             List<CRMDashboardInvoices> lstInvoices = new List<CRMDashboardInvoices>();
             using (var context = new CRMContext())
             {
                 //lstInvoices = context.tblCRMInvoices.Where(x => x.ClientId == clientID).OrderByDescending(p => p.UpdatedOn).Take(5).ToList();
+                int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    lstInvoices = (from a in context.tblCRMInvoices
+                                   join b in context.tblCRMUsers on a.ClientId equals b.Id
+                                   where b.ClientId == CRMClientId && a.InvoiceType == "Invoice" && a.Status != "Uploaded"
+                                   select new CRMDashboardInvoices
+                                   {
+                                       InvoiceId = a.InvoiceId,
+                                       InvoiceNumber = a.InvoiceNumber,
+                                       InvoiceDueDate = a.InvoiceDueDate,
+                                       ClientId = a.ClientId,
+                                       FullName = b.FirstName + " " + b.LastName,
+                                       Amount = a.InvoiceTotal,
+                                       Currency = a.InvoiceCurrency,
+                                       UpdatedOn = a.UpdatedOn
 
-                lstInvoices = (from a in context.tblCRMInvoices
-                               join b in context.tblCRMUsers on a.ClientId equals b.Id
-                               where b.ClientId == clientID && a.InvoiceType == "Invoice" && a.Status != "Uploaded"
-                               select new CRMDashboardInvoices
-                               {
-                                   InvoiceId = a.InvoiceId,
-                                   InvoiceNumber = a.InvoiceNumber,
-                                   InvoiceDueDate = a.InvoiceDueDate,
-                                   ClientId = a.ClientId,
-                                   FullName = b.FirstName + " " + b.LastName,
-                                   Amount = a.InvoiceTotal,
-                                   Currency = a.InvoiceCurrency,
-                                   UpdatedOn=a.UpdatedOn
+                                   }).OrderByDescending(p => p.UpdatedOn).Take(5).ToList();
+                }
+                else
+                {
+                    lstInvoices = (from a in context.tblCRMInvoices
+                                   join b in context.tblCRMUsers on a.ClientId equals b.Id
+                                   where b.ClientId == CRMClientId && a.InvoiceType == "Invoice" && a.Status != "Uploaded" && b.AssignedTo == objUser.UserId
+                                   select new CRMDashboardInvoices
+                                   {
+                                       InvoiceId = a.InvoiceId,
+                                       InvoiceNumber = a.InvoiceNumber,
+                                       InvoiceDueDate = a.InvoiceDueDate,
+                                       ClientId = a.ClientId,
+                                       FullName = b.FirstName + " " + b.LastName,
+                                       Amount = a.InvoiceTotal,
+                                       Currency = a.InvoiceCurrency,
+                                       UpdatedOn = a.UpdatedOn
 
-                               }).OrderByDescending(p => p.UpdatedOn).Take(5).ToList();
+                                   }).OrderByDescending(p => p.UpdatedOn).Take(5).ToList();
+                }
 
 
 

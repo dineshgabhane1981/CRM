@@ -2,6 +2,9 @@
 @{
     ViewBag.Title = "Enquiry";
     Layout = "~/Views/Shared/_LayoutCRM.cshtml";
+    var baseURL = System.Configuration.ConfigurationManager.AppSettings["BaseURL"];
+    LMSBL.DBModels.TblUser userModel = new LMSBL.DBModels.TblUser();
+    userModel = (LMSBL.DBModels.TblUser)Session["UserSession"];
 }
 
 <link href="~/assets/CRM/styleSteps.css" rel="stylesheet" />
@@ -9,19 +12,33 @@
     .optionClass {
         background-color: lightgray;
     }
+
+    .grayed {
+        pointer-events: none;
+        opacity: 0.3;
+    }
 </style>
 @*<h5 class="">Add/Edit Client Details</h5>*@
 @if (Model != null)
 {
     if (Model.ObjCRMUser != null)
     {
-        if (Model.ObjCRMUser.CurrentStage == 3)
-        {
-            <div style="float:right;">
-                Move To
+        var movetotext = "Move To";
+        var assigntext = "Assigned To";
+        <div style="float:right;">
+            @if (Model.ObjCRMUser.CurrentStage == 3)
+            {
+                @movetotext
                 @Html.DropDownListFor(model => model.ObjCRMUser.CurrentSubStage, new SelectList(Model.SubStagesList, "Value", "Text"), htmlAttributes: new { id = "ddlclientlist", @class = "input100" })
-            </div>
-        }
+
+            }
+            @if (userModel.RoleId == 2)
+            {
+                @assigntext
+                @Html.DropDownListFor(model => model.ObjCRMUser.AssignedTo, new SelectList(Model.UserList, "Value", "Text"), "Please Select", htmlAttributes: new { id = "ddluserlist", @class = "input100" })
+
+            }
+        </div>
     }
 }
 <div>
@@ -65,6 +82,7 @@
                                     @Html.HiddenFor(model => model.ObjCRMUser.Id)
                                     @Html.HiddenFor(model => model.ObjCRMUser.CurrentStage)
                                     @Html.HiddenFor(model => model.ObjCRMUser.CurrentSubStage)
+                                    @Html.HiddenFor(model => model.ObjCRMUser.AssignedTo)
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white js-active" data-animation="scaleIn">
                                         <h5 class="multisteps-form__title">Personal Info</h5>
                                         <div class="multisteps-form__content" style="display:flex;">
@@ -96,7 +114,7 @@
                                                 @Html.TextBoxFor(model => model.ObjCRMUser.LandLine, new { @class = "input150", placeholder = "LandLine no", tabindex = 13 })
                                                 @Html.DropDownListFor(model => model.ObjCRMUser.MaritalStatus, Model.MaritalStatus(), "Select Marital Status", htmlAttributes: new { @class = "input150", tabindex = 16 })
                                                 @Html.TextBoxFor(model => model.ObjCRMUser.DependentChildren, new { @class = "input150", placeholder = "No of Dependent Children", tabindex = 18 })
-                                                
+
                                             </div>
                                         </div>
                                         <div class="button-row d-flex mt-4">
@@ -317,7 +335,7 @@
                                     <!--Documents-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
                                         <h5 class="multisteps-form__title">Upload Documents</h5>
-                                        <div class="multisteps-form__content">
+                                        <div class="multisteps-form__content" id="dvDocument">
                                             <div class="col-12 col-lg-12 ml-auto mr-auto" style="float:left;">
                                                 <div class="col-6 col-lg-6 ml-auto mr-auto" style="float:left;">
                                                     @Html.TextBoxFor(model => model.ObjCRMDocument.DocumentLink, new { @class = "input150", id = "txtDocLink", placeholder = "Document Location Path", tabindex = 64 })
@@ -373,10 +391,10 @@
                                             @*<button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="83">Save</button>*@
                                         </div>
                                     </div>
-                                    
+
                                 </form>
                             </div>
-                           
+
                         </div>
                         <div class="row  justify-content-end">
                             <div class="button-row d-flex mt-4">
@@ -419,12 +437,13 @@
             data: data,
             success: function (data) {
                 console.log(data)
-                if (data == "True") {
+                if (data != "") {
                     toastr.success("User Saved");
                     $("#divLoader").hide();
+                    window.location.href = "@baseURL/" + data;
                 }
                 else {
-                    toastr.error('error occured while saving data');
+                    toastr.success("User Saved");
                     $("#divLoader").hide();
                 }
             }
@@ -432,6 +451,15 @@
     }
 
     $(document).ready(function () {
+        var field = 'myid';
+        var url = window.location.href;
+        if (url.indexOf('?' + field + '=') == -1) {
+            $("#dvDocument").addClass("grayed");
+        }
+        else {
+            $("#dvDocument").removeClass("grayed");
+        }
+
         document.getElementById("FileUpload").addEventListener('change', handleFileSelect, false);
         var currentStage = $("#ObjCRMUser_CurrentStage").val();
         if (currentStage == 3) {
@@ -444,18 +472,7 @@
             $('#ddlSubStageList').val(CurrentSubStage);
             $("#ObjCRMUser_CurrentSubStage").val(CurrentSubStage);
             console.log($("#ObjCRMUser_CurrentSubStage").val());
-            //$('#ddlSubStageList option').each(function (item) {
-            //    $("#ddlSubStageList option[value*='" + item + "']").prop('disabled', false);
-            //    $("#ddlSubStageList option[value*='" + item + "']").removeClass('optionClass');
-            //});
-            //$('#ddlSubStageList option').each(function (item) {
 
-            //    if (item > CurrentSubStage) {
-            //        //console.log(item);
-            //        $("#ddlSubStageList option[value*='" + item + "']").prop('disabled', true);
-            //        $("#ddlSubStageList option[value*='" + item + "']").addClass('optionClass');
-            //    }
-            //});
         }
 
         $('#btnSubmitUser').on("click", function () {
@@ -628,6 +645,15 @@
                     var id = this.value;
                     console.log(id);
                     $("#ObjCRMUser_CurrentSubStage").val(id);
+                }
+            })
+        });
+         $('#ddluserlist').change(function () {
+            $('#ddluserlist option').each(function (index) {
+                if (($(this).is(':selected'))) {
+                    var id = this.value;
+                    console.log(id);
+                    $("#ObjCRMUser_AssignedTo").val(id);
                 }
             })
         });
