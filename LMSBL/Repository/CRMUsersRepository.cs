@@ -300,7 +300,7 @@ namespace LMSBL.Repository
             tblCRMUsersVisaDetail ObjCRMUsersVisaDetail, tblCRMUsersMedicalDetail ObjCRMUsersMedicalDetail,
             tblCRMUsersPoliceCertificateInfo ObjCRMUsersPoliceCertificateInfo,
             tblCRMUsersINZLoginDetail ObjCRMUsersINZLoginDetail, tblCRMUsersNZQADetail ObjCRMUsersNZQADetail,
-            tblCRMNote ObjCRMNote)
+            tblCRMNote ObjCRMNote, tblCRMUsersLoginQualificationDetail objCRMLoginQualificationDetail)
         {
             int id = 0;
             using (var context = new CRMContext())
@@ -334,12 +334,16 @@ namespace LMSBL.Repository
                         context.tblCRMUsersPoliceCertificateInfoes.AddOrUpdate(ObjCRMUsersPoliceCertificateInfo);
                         context.SaveChanges();
 
-                        ObjCRMUsersINZLoginDetail.CRMUserId = ObjCRMUser.Id;
-                        context.tblCRMUsersINZLoginDetails.AddOrUpdate(ObjCRMUsersINZLoginDetail);
-                        context.SaveChanges();
+                        //ObjCRMUsersINZLoginDetail.CRMUserId = ObjCRMUser.Id;
+                        //context.tblCRMUsersINZLoginDetails.AddOrUpdate(ObjCRMUsersINZLoginDetail);
+                        //context.SaveChanges();
 
-                        ObjCRMUsersNZQADetail.CRMUserId = ObjCRMUser.Id;
-                        context.tblCRMUsersNZQADetails.AddOrUpdate(ObjCRMUsersNZQADetail);
+                        //ObjCRMUsersNZQADetail.CRMUserId = ObjCRMUser.Id;
+                        //context.tblCRMUsersNZQADetails.AddOrUpdate(ObjCRMUsersNZQADetail);
+                        //context.SaveChanges();
+
+                        objCRMLoginQualificationDetail.ClientId = ObjCRMUser.Id;
+                        context.tblCRMUsersLoginQualificationDetails.AddOrUpdate(objCRMLoginQualificationDetail);
                         context.SaveChanges();
 
                         if (!string.IsNullOrEmpty(ObjCRMNote.Notes))
@@ -352,6 +356,7 @@ namespace LMSBL.Repository
                             context.tblCRMNotes.Add(ObjCRMNote);
                             context.SaveChanges();
                         }
+
 
                         transaction.Commit();
                         id = ObjCRMUser.Id;
@@ -775,5 +780,37 @@ namespace LMSBL.Repository
             return objCRMClient;
         }
 
+        public List<tblCRMUsersQualification> GetCRMUserQualification(int ClientId)
+        {
+            List<tblCRMUsersQualification> ObjQualification = new List<tblCRMUsersQualification>();
+            using (var context = new CRMContext())
+            {
+                ObjQualification = context.tblCRMUsersQualifications.Where(a => a.ClientId == ClientId).ToList();
+            }
+            return ObjQualification;
+        }
+
+        public tblCRMUsersLoginQualificationDetail GetCRMUserLoginQualificationDetail(int ClientId)
+        {
+            tblCRMUsersLoginQualificationDetail ObjLoginQualification = new tblCRMUsersLoginQualificationDetail();
+            using (var context = new CRMContext())
+            {
+                ObjLoginQualification = context.tblCRMUsersLoginQualificationDetails.FirstOrDefault(a => a.ClientId == ClientId);
+            }
+            return ObjLoginQualification;
+        }
+
+        public bool AddQualification(tblCRMUsersQualification objQualification)
+        {
+            bool result = false;
+            using (var context = new CRMContext())
+            {
+                context.tblCRMUsersQualifications.AddOrUpdate(objQualification);
+                context.SaveChanges();
+                result = true;
+            }
+
+            return result;
+        }
     }
 }

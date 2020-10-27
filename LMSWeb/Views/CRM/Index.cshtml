@@ -4,7 +4,17 @@
     Layout = "~/Views/Shared/_LayoutCRM.cshtml";
 }
 
-
+<div class="row" style="display:flex;">
+    <div class="col-5">
+        <input type="text" id="txtSearch" class="input150" placeholder="Search Client by Name" style="margin-left: 25px;" />
+    </div>
+    <div class="col-7" style="padding-top:10px;">
+        <button style="margin-left: 0px;" type="button" id="btnSearchAll" class="btn btn-primary js-btn-prev hoverable"><b>Search</b></button>
+    </div>
+</div>
+<div class="row p-4" id="dvSearchedResult" style="display:none;">
+    @Html.Partial("~/Views/CRM/_SearchResultDashboard.cshtml", Model)
+</div>
 <div class="row p-4">
     @Html.Partial("~/Views/CRM/_Clients.cshtml", Model)
 </div>
@@ -16,3 +26,36 @@
 <div class="row p-4">
     @Html.Partial("~/Views/CRM/_RecentInvoices.cshtml", Model)
 </div>
+<script>
+    $(document).ready(function () {
+        
+        $('#btnSearchAll').on("click", function () {
+            SearchClients();
+        });
+    });
+
+    function SearchClients() {
+        $("#divLoader").show();
+        var SearchText =  JSON.stringify($("#txtSearch").val());
+        $.ajax({
+            type: "POST",
+            url: "/CRM/GetSearchResult",
+            data: '{SearchText: ' + SearchText + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(111);
+                $('#dvSearchedResult').html(response);
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                console.log(2222);
+                $('#dvSearchedResult').html(response.responseText);
+                 $('#dvSearchedResult').show(1000)
+                $("#divLoader").hide();                
+            }
+        });
+       
+    }
+</script>

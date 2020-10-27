@@ -123,5 +123,18 @@ namespace LMSBL.Repository
 
             return lstInvoices;
         }
+
+        public List<tblCRMUser> GetSearchDashboardList(TblUser objUser, string searchText)
+        {
+            List<tblCRMUser> objResult = new List<tblCRMUser>();
+            using (var context = new CRMContext())
+            {
+                objResult = context.tblCRMUsers.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText)).OrderByDescending(a=>a.UpdatedOn).ToList();
+
+            }
+
+            return objResult;
+        }
+
     }
 }

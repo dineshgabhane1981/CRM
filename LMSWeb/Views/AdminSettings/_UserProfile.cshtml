@@ -13,7 +13,7 @@
             @Html.TextBoxFor(model => model.objtbluser.FirstName, new { @class = "input100", placeholder = "First Name", @id = "txtFirstName" })
             @Html.TextBoxFor(model => model.objtbluser.LastName, new { @class = "input100", placeholder = "Last Name" })
             @Html.TextBoxFor(model => model.objtbluser.EmailId, new { @class = "input100", @readonly = "readonly", placeholder = "Email Id", @id = "txtEmail" })
-            @Html.TextBoxFor(model => model.objtbluser.DOB, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtDOB", @readonly = "readonly", @autocomplete = "off", placeholder = "Date of Birth" })
+            @Html.TextBoxFor(model => model.objtbluser.DOB, "{0:dd/MM/yyyy}", new { @class = "input100 datepicker", @id = "dtDOB", @readonly = "readonly", @autocomplete = "off", placeholder = "Date of Birth" })
             @Html.TextBoxFor(model => model.objtbluser.ContactNo, new { @class = "input100", placeholder = "Contact No" })
 
         </div>
@@ -53,7 +53,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#dtDOB').datepicker({
-            format: 'mm/dd/yyyy',
+            format: 'dd/mm/yyyy',
             showWeek: true
         });
     });

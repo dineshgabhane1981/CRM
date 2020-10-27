@@ -17,7 +17,7 @@ namespace LMSWeb.Controllers
     {
         CRMNotesRepository crmNotesRepository = new CRMNotesRepository();
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
-        CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();        
+        CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();
         public ActionResult Enquiry()
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
@@ -134,7 +134,7 @@ namespace LMSWeb.Controllers
             objCRMUserViewModel.ObjCRMNote.CreatedDate = DateTime.Now;
             objCRMUserViewModel.ObjCRMNote.CreatedBy = sessionUser.UserId;
             objCRMUserViewModel.ObjCRMUser.ClientId = Convert.ToInt32(sessionUser.CRMClientId);
-            if(sessionUser.RoleId!=2)
+            if (sessionUser.RoleId != 2)
             {
                 objCRMUserViewModel.ObjCRMUser.AssignedTo = sessionUser.UserId;
             }
@@ -147,7 +147,7 @@ namespace LMSWeb.Controllers
                 id = crmUsersRepository.SaveUserData(objCRMUserViewModel.ObjCRMUser, objCRMUserViewModel.ObjCRMUsersBillingAddress, objCRMUserViewModel.ObjCRMUsersPassportDetail,
                     objCRMUserViewModel.ObjCRMUsersVisaDetail, objCRMUserViewModel.ObjCRMUsersMedicalDetail,
                     objCRMUserViewModel.ObjCRMUsersPoliceCertificateInfo, objCRMUserViewModel.ObjCRMUsersINZLoginDetail,
-                    objCRMUserViewModel.ObjCRMUsersNZQADetail, objCRMUserViewModel.ObjCRMNote);
+                    objCRMUserViewModel.ObjCRMUsersNZQADetail, objCRMUserViewModel.ObjCRMNote, objCRMUserViewModel.ObjLoginAndQualificationDetails);
 
             }
             if (oldId == 0)
@@ -226,6 +226,8 @@ namespace LMSWeb.Controllers
             objModel.lstNotes = crmNotesRepository.GetCRMUserFileNotesById(userId);
             objModel.lstNotesSubStages = crmNotesRepository.GetCRMUserFileNotesSubStagesById(userId);
             objModel.ObjCRMDocumentLST = crmDocRepo.GetCRMDocumentList(userId);
+            objModel.ObjCRMUserQualificationList = crmUsersRepository.GetCRMUserQualification(userId);
+            objModel.ObjLoginAndQualificationDetails = crmUsersRepository.GetCRMUserLoginQualificationDetail(userId);
 
             return objModel;
 
@@ -275,6 +277,30 @@ namespace LMSWeb.Controllers
             return status;
         }
 
+        [HttpPost]
+        public bool addqualification(string jsonData)
+        {
+            bool status = false;
+            tblCRMUsersQualification objQualification = new tblCRMUsersQualification();
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            json_serializer.MaxJsonLength = int.MaxValue;
+            object[] objQualificationData = (object[])json_serializer.DeserializeObject(jsonData);
+            foreach (Dictionary<string, object> item in objQualificationData)
+            {
+                objQualification.QualificationId = 0;                
+                objQualification.ClientId = Convert.ToInt32(item["ClientId"]);
+                objQualification.Qualification= Convert.ToString(item["Qualification"]);
+                objQualification.AwardingBody = Convert.ToString(item["AwardingBody"]);
+                objQualification.DateAwarded = Convert.ToDateTime(item["QualificationAwarded"]);
+                objQualification.Country = Convert.ToString(item["QualificationCountry"]);
+                objQualification.Exempt = Convert.ToBoolean(item["IsExempt"]);
+                objQualification.AddedDate = DateTime.Now;
+            }
+            status = crmUsersRepository.AddQualification(objQualification);
+
+            return status;
+
+        }
         public ActionResult GetSearchClient(string SearchText)
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
@@ -282,10 +308,10 @@ namespace LMSWeb.Controllers
             objCRMClientViewModel.lstClientSubStages = crmUsersRepository.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
             objCRMClientViewModel.objClientTicketLST = crmUsersRepository.GetCRMTicketsAll(sessionUser, 3);
 
-            objCRMClientViewModel.objClientTicketLST = objCRMClientViewModel.objClientTicketLST.Where(x => x.UserName.ToLower().Contains(SearchText.ToLower())).ToList();            
+            objCRMClientViewModel.objClientTicketLST = objCRMClientViewModel.objClientTicketLST.Where(x => x.UserName.ToLower().Contains(SearchText.ToLower())).ToList();
             ViewBag.StageForButton = 3;
             return View("_ClientList", objCRMClientViewModel);
         }
-           
+
     }
 }

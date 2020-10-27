@@ -347,34 +347,31 @@
         });
     }
 
-    $('#ddlclientlist').change(function () {
-        $("#divLoader").show();
+    $('#ddlclientlist').change(function () {        
         var id = $('#ddlclientlist').val();
         if (id != null && id != "") {
             GetInvoiceNumber(id);
             GetInvoices(id);
-            $('#dvClientInvoice').show();
+            $('#dvClientInvoice').show();           
         }
         else {
-
-            $('#dvClientInvoice').hide();
+            $('#dvClientInvoice').hide();              
         }
-        $("#divLoader").hide();
+       ;
     });
 
-    $('#ddluploadclientlist').change(function () {
-        $("#divLoader").show();
+    $('#ddluploadclientlist').change(function () {         
         var id = $('#ddluploadclientlist').val();
-        if (id != null && id != "") {
+        if (id != null && id != "") {           
             GetInvoiceNumberForUpload(id);
             GetInvoices(id);
             $('#dvClientInvoice').show();
         }
         else {
-
             $('#dvClientInvoice').hide();
+           
         }
-        $("#divLoader").hide();
+        
     });
 
     $('#ddlInvoiceTypelist').change(function () {
@@ -399,6 +396,7 @@
     });
 
     function GetInvoicesList(id) {
+         $("#divLoader").show();
         $.ajax({
             type: "POST",
             url: "/Invoice/GetInvoicesList",
@@ -415,7 +413,7 @@
                     option.value = item.Value;
                     listBox[0].append(option);
                 });
-
+                $("#divLoader").hide();
             },
             failure: function (response) {
             },
@@ -426,6 +424,7 @@
     }
 
     function GetInvoiceNumber(id) {
+        
         $.ajax({
             type: "POST",
             url: "/Invoice/GetInvoiceNumber",
@@ -435,12 +434,14 @@
             success: function (response) {
                 $("#invoiceNumber").val(response);
                 $("#ObjCRMInvoivce_InvoiceNumber").val(response);
+                
             },
             failure: function (response) {
             },
             error: function (response) {
                 $("#invoiceNumber").html(response.responseText);
                 $("#ObjCRMInvoivce_InvoiceNumber").val(response.responseText);
+                
             }
         });
     }
@@ -466,6 +467,7 @@
     }
 
     function GetInvoices(id) {
+        $("#divLoader").show();
         $.ajax({
             type: "POST",
             url: "/Invoice/GetInvoices",
@@ -474,11 +476,13 @@
             dataType: "json",
             success: function (response) {
                 $('#dvClientInvoice').html(response);
+                $("#divLoader").hide();
             },
             failure: function (response) {
             },
             error: function (response) {
                 $("#dvClientInvoice").html(response.responseText);
+                $("#divLoader").hide();
             }
         });
     }

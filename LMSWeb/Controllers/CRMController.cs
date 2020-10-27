@@ -21,8 +21,17 @@ namespace LMSWeb.Controllers
             
             objDashboardViewModel.objCRMClientList = dashboardRepo.GetCRMDashboardClientList(sessionUser, 3);
             objDashboardViewModel.objCRMInvoiceList = dashboardRepo.GetCRMDashboardInvoiceList(sessionUser);
+           
 
             return View(objDashboardViewModel);
+        }
+
+        public ActionResult GetSearchResult(string SearchText)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            CRMDashboardViewModel objDashboardViewModel = new CRMDashboardViewModel();
+            objDashboardViewModel.objSearchList = dashboardRepo.GetSearchDashboardList(sessionUser, SearchText);
+            return PartialView("_SearchResultDashboard", objDashboardViewModel);
         }
     }
 }

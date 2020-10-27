@@ -39,6 +39,8 @@ namespace LMSBL.DBModels.CRMNew
         public virtual DbSet<tblCRMInvoiceItem> tblCRMInvoiceItems { get; set; }
         public virtual DbSet<tblCRMCurrency> tblCRMCurrencies { get; set; }
         public virtual DbSet<tblUser> tblUsers { get; set; }
+        public virtual DbSet<tblCRMUsersLoginQualificationDetail> tblCRMUsersLoginQualificationDetails { get; set; }
+        public virtual DbSet<tblCRMUsersQualification> tblCRMUsersQualifications { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

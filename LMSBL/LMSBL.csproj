@@ -96,11 +96,13 @@
     <Compile Include="DBModels\CRMNew\tblCRMUser.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersBillingAddress.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersINZLoginDetail.cs" />
+    <Compile Include="DBModels\CRMNew\tblCRMUsersLoginQualificationDetail.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersMedicalDetail.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersNZQADetail.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersOtherInfo.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersPassportDetail.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersPoliceCertificateInfo.cs" />
+    <Compile Include="DBModels\CRMNew\tblCRMUsersQualification.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMUsersVisaDetail.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMVisaStatu.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMVisaType.cs" />

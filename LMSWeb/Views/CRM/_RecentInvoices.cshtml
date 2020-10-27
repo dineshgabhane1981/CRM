@@ -41,7 +41,7 @@
                                             <td>@user.Amount @user.Currency</td>
                                             @if (!string.IsNullOrEmpty(Convert.ToString(user.InvoiceDueDate)))
                                             {
-                                                <td>@Convert.ToDateTime(user.InvoiceDueDate).ToString("dd-MM-yyyy")</td>
+                                                <td>@Convert.ToDateTime(user.InvoiceDueDate).ToString("dd/MM/yyyy")</td>
                                             }
                                             else
                                             {

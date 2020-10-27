@@ -23,6 +23,9 @@ namespace LMSWeb.ViewModel
         public List<FileNotesDetails> lstNotes { get; set; }
         public tblCRMDocument ObjCRMDocument { get; set; }
         public List<tblCRMDocument> ObjCRMDocumentLST { get; set; }
+        public tblCRMUsersLoginQualificationDetail ObjLoginAndQualificationDetails { get; set; }
+        public tblCRMUsersQualification ObjCRMUserQualification { get; set; }
+        public List<tblCRMUsersQualification> ObjCRMUserQualificationList { get; set; }
         public List<string> lstNotesSubStages { get; set; }
 
         public List<SelectListItem> VisaCountriesList { get; set; }

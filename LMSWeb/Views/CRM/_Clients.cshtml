@@ -16,7 +16,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Client Name</th>
-                            <th scope="col">Updated Date</th>
+                            <th scope="col">Updated Date and Time</th>
                             <th scope="col" style="text-align:center;">Lodgement Due Date</th>
                             <th scope="col">Sub Stage</th>
                         </tr>
@@ -37,10 +37,10 @@
                                             <td>
                                                 <a href="@Url.Action("AddClient", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FullName</a>
                                             </td>
-                                            <td>@Convert.ToDateTime(user.UpdatedOn).ToString("dd-MM-yyyy HH:mm:ss tt")</td>
+                                            <td>@Convert.ToDateTime(user.UpdatedOn).ToString("dd/MM/yyyy HH:mm:ss tt")</td>
                                             @if (!string.IsNullOrEmpty(Convert.ToString(user.LodgementDate)))
                                             {
-                                                <td style="text-align:center;">@Convert.ToDateTime(user.LodgementDate).ToString("dd-MM-yyyy")</td>
+                                                <td style="text-align:center;">@Convert.ToDateTime(user.LodgementDate).ToString("dd/MM/yyyy")</td>
                                             }
                                             else
                                             {

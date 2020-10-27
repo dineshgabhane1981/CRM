@@ -85,7 +85,7 @@
                                                                 </b>
                                                                 @if (!string.IsNullOrEmpty(Convert.ToString(itemUser.DueDate)))
                                                                 {
-                                                                    var dueDate = ((DateTime)@itemUser.DueDate).ToString("MM/dd/yyyy");
+                                                                    var dueDate = ((DateTime)@itemUser.DueDate).ToString("dd/MM/yyyy");
                                                                     @dueDate
                                                                 }
 

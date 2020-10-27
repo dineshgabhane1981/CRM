@@ -23,13 +23,13 @@
 {
     if (Model.ObjCRMUser != null)
     {
-        var movetotext = "Move To";
-        var assigntext = "Assigned To";
+        var movetotext = "Move To  ";
+        var assigntext = "Assigned To  ";
         <div style="float:right;">
             @if (Model.ObjCRMUser.CurrentStage == 3)
             {
                 @movetotext
-                @Html.DropDownListFor(model => model.ObjCRMUser.CurrentSubStage, new SelectList(Model.SubStagesList, "Value", "Text"), htmlAttributes: new { id = "ddlclientlist", @class = "input100" })
+                @Html.DropDownListFor(model => model.ObjCRMUser.CurrentSubStage, new SelectList(Model.SubStagesList, "Value", "Text"), htmlAttributes: new { id = "ddlclientlist", @style="margin-right:30px;", @class = "input100" })
 
             }
             @if (userModel.RoleId == 2)
@@ -211,7 +211,7 @@
                                         </div>
 
                                     </div>
-                                    <!--Police Verification Info-->
+                                    <!--Character Info-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
                                         <h5 class="multisteps-form__title"></h5>
                                         <div class="multisteps-form__content" style="display:flex;">
@@ -235,26 +235,37 @@
                                             <button class="btn btn-primary ml-auto js-btn-next" type="button" title="Next" tabindex="55">Next</button>
                                         </div>
                                     </div>
-                                    <!--INZ Details-->
+                                    <!--Qualification Details-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
-                                        <h5 class="multisteps-form__title">INZ Login Details</h5>
-                                        <div class="multisteps-form__content" style="display:flex;">
-                                            <div class="col-sm-6">
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersINZLoginDetail.ClientNumber, new { @class = "input150", placeholder = "Client Number", tabindex = 56 })
-                                            </div>
-                                            <div class="col-sm-6">
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersINZLoginDetail.ClientUserName, new { @class = "input150", placeholder = "User Name", tabindex = 57 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersINZLoginDetail.ClientPassword, new { @class = "input150", placeholder = "Password", tabindex = 58 })
+                                        <h5 class="multisteps-form__title">Qualification</h5>
+                                        <div class="multisteps-form__content" style="display:flex;" id="dvQualification">
+                                            <div class="col-sm-12">
+                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.Qualification, new { @class = "input100", @id = "txtQualification", placeholder = "Qualification", tabindex = 56 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.AwardingBody, new { @class = "input100", @id = "txtAwardingBody", placeholder = "Awarding Body", tabindex = 57 })
+                                                @Html.CheckBoxFor(model => model.ObjCRMUserQualification.Exempt, new { @id = "chkExempt", @style = "margin-top:10px;margin-left:50px;width:20px;height:20px;", tabindex = 58 }) Is Exempt
+                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.DateAwarded, "{0:dd/MM/yyyy}", new { @class = "input100", @id = "dtQualificationAwarded", placeholder = "Date Awarded (DD/MM/YYYY)", tabindex = 58 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.Country, new { @class = "input100", @id = "txtQualificationCountry", placeholder = "Country", tabindex = 58 })
+                                                <button class="btn btn-primary" style="margin-left:50px;" type="button" id="btnQualification" title="Add Qualification" tabindex="62">Add</button>
                                             </div>
                                         </div>
-                                        <h5 class="multisteps-form__title">NZQA Details</h5>
-                                        <div class="multisteps-form__content" style="display:flex;">
-                                            <div class="col-sm-6">
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersNZQADetail.NZQAOnlineSubmissionDate, "{0:dd/MM/yyyy}", new { @class = "input150 datepicker", @id = "dtNZQAOnlineSubmissionDate", @readonly = "readonly", @autocomplete = "off", placeholder = "NZQA Online Submission Date", tabindex = 59 })
+                                        <div class="multisteps-form__content">
+                                            <div class="col-sm-12">
+                                                @if (Model.ObjCRMUserQualificationList != null)
+                                                {
+                                                    @Html.Partial("~/Views/CRMUsers/_QualificationList.cshtml", Model)
+                                                }
                                             </div>
-                                            <div class="col-sm-6">
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersNZQADetail.NZQADocumentsSubmissionDate, "{0:dd/MM/yyyy}", new { @class = "input150 datepicker", @id = "dtNZQADocumentsSubmissionDate", @readonly = "readonly", @autocomplete = "off", placeholder = "NZQA Documents Submission Date", tabindex = 60 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersNZQADetail.NZQADocumentsReturnedDate, "{0:dd/MM/yyyy}", new { @class = "input150 datepicker", @id = "dtNZQADocumentsReturnedDate", @readonly = "readonly", @autocomplete = "off", placeholder = "NZQA Documents Returned Date", tabindex = 61 })
+                                        </div>
+                                        <div class="multisteps-form__content" style="margin-top:20px;">
+                                            <div class="col-sm-12">
+                                                Immigration Login Details
+                                                @Html.TextAreaFor(model => model.ObjLoginAndQualificationDetails.ImmigrationLoginDetails, new { @class = "input150", id = "immigrationlogin", tabindex = 44 })
+                                            </div>
+                                        </div>
+                                        <div class="multisteps-form__content" style="margin-top:20px;">
+                                            <div class="col-sm-12">
+                                                Qualification Assessment Details
+                                                @Html.TextAreaFor(model => model.ObjLoginAndQualificationDetails.QualificationAssessmentDetails, new { @class = "input150", id = "qualificationassessment", tabindex = 44 })
                                             </div>
                                         </div>
                                         <div class="button-row d-flex mt-4">
@@ -329,8 +340,6 @@
 
                                             </div>
                                         </div>
-
-
                                     </div>
                                     <!--Documents-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
@@ -455,9 +464,12 @@
         var url = window.location.href;
         if (url.indexOf('?' + field + '=') == -1) {
             $("#dvDocument").addClass("grayed");
+            $("#dvQualification").addClass("grayed");
+            
         }
         else {
             $("#dvDocument").removeClass("grayed");
+            $("#dvQualification").removeClass("grayed");
         }
 
         document.getElementById("FileUpload").addEventListener('change', handleFileSelect, false);
@@ -484,6 +496,79 @@
         $('#btnDocAdd').on("click", function () {
             AddDocToDB();
         });
+         $('#btnQualification').on("click", function () {
+            AddQualification();
+        });
+
+        function AddQualification() {
+
+            if ($('#txtQualification').val() == "") {
+                toastr.error('Please enter Qualification');
+                $('#txtQualification').focus();
+                return false;
+            }
+            if ($('#txtAwardingBody').val() == "") {
+                toastr.error('Please enter Awarding Body');
+                $('#txtAwardingBody').focus();
+                return false;
+            }
+            if ($('#dtQualificationAwarded').val() == "") {
+                toastr.error('Please enter Date Awarded');
+                $('#dtQualificationAwarded').focus();
+                return false;
+            }
+            if ($('#txtQualificationCountry').val() == "") {
+                toastr.error('Please enter Country');
+                $('#txtQualificationCountry').focus();
+                return false;
+            }
+
+            var data = [];
+            item = {}
+            item["ClientId"] = $("#ObjCRMUser_Id").val();
+            item["Qualification"] = $('#txtQualification').val();
+            item["AwardingBody"] = $("#txtAwardingBody").val();
+            item["QualificationAwarded"] = $("#dtQualificationAwarded").val();
+            item["QualificationCountry"] = $("#txtQualificationCountry").val();
+            item["IsExempt"] = $("#chkExempt").is(":checked");
+
+            data.push(item);
+            $("#divLoader").hide();
+
+            $.ajax({
+                type: "POST",
+                url: "/CRMUsers/addqualification",
+                data: '{jsonData: ' + JSON.stringify(JSON.stringify(data)) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#divLoader").hide();
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                    console.log(response.responseText)
+                    if (response.responseText == "True") {
+                        toastr.success("Qualification Added Successfully");
+                        $('#txtQualification').val("");
+                        $("#txtAwardingBody").val("");
+                        $("#dtQualificationAwarded").val("");
+                        $("#txtQualificationCountry").val("");
+                        $("#chkExempt").prop("checked", false);
+                        $("#divLoader").hide();
+                    }
+                    else {
+                        toastr.error('error occured while saving Qualification');
+                        $("#divLoader").hide();
+                    }
+
+                }
+            });
+
+
+
+
+        }
 
         function AddDocToDB() {
             var clientId = $("#ObjCRMUser_Id").val();
@@ -662,6 +747,10 @@
         $('#filenotesarea').summernote();
         $('#pccnotesarea').summernote();
         $('#medicalnotesarea').summernote();
+        $('#immigrationlogin').summernote();
+        $('#qualificationassessment').summernote();
+
+
         $('#dtDOB').datepicker({
             format: 'dd/mm/yyyy',
             showWeek: true
@@ -735,6 +824,10 @@
             showWeek: true
         });
         $('#dtNZQADocumentsReturnedDate').datepicker({
+            format: 'dd/mm/yyyy',
+            showWeek: true
+        });
+        $('#dtQualificationAwarded').datepicker({
             format: 'dd/mm/yyyy',
             showWeek: true
         });
