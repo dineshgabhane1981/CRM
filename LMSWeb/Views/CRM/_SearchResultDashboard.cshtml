@@ -13,6 +13,7 @@
                 <table class="table" style="border-bottom:0px !important;" id="searchTable">
                     <thead>
                         <tr>
+                            <th scope="col">ID</th>
                             <th scope="col">Client Name</th>
                             <th scope="col">Email</th>
                             <th scope="col">Contact No</th>
@@ -34,6 +35,7 @@
                                         string userId = common.EncryptString(Convert.ToString(user.Id));
                                         string clientType = "Enquiry";
                                         <tr>
+                                            <td>@user.Id </td>
                                             <td>
                                                 @if (user.CurrentStage == 1)
                                                 {
@@ -75,21 +77,21 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="5" align="center">No data available</td>
+                                        <td colspan="6" align="center">No data available</td>
                                     </tr>
                                 }
                             }
                             else
                             {
                                 <tr>
-                                    <td colspan="5" align="center">No data available</td>
+                                    <td colspan="6" align="center">No data available</td>
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="5" align="center">No data available</td>
+                                <td colspan="6" align="center">No data available</td>
                             </tr>
                         }
 

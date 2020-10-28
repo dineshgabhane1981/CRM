@@ -19,7 +19,7 @@ namespace LMSBL.DBModels.CRMNew
         [StringLength(250)]
         public string AwardingBody { get; set; }
 
-        public DateTime? DateAwarded { get; set; }
+        public DateTime DateAwarded { get; set; }
 
         [StringLength(250)]
         public string Country { get; set; }

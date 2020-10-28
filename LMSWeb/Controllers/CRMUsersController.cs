@@ -313,5 +313,18 @@ namespace LMSWeb.Controllers
             return View("_ClientList", objCRMClientViewModel);
         }
 
+        public bool DeleteQualification(string Id)
+        {
+            bool result = false;
+            result = crmUsersRepository.DeleteQualification(Convert.ToInt32(Id));
+            return result;
+        }
+
+        public ActionResult GetAllQualification(string ClientId)
+        {
+            CRMUserViewModel objModel = new CRMUserViewModel();
+            objModel.ObjCRMUserQualificationList = crmUsersRepository.GetCRMUserQualification(Convert.ToInt32(ClientId));
+            return View("_QualificationList", objModel);
+        }
     }
 }

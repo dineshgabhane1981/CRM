@@ -812,5 +812,19 @@ namespace LMSBL.Repository
 
             return result;
         }
+
+        public bool DeleteQualification(int Id)
+        {
+            bool result = false;
+            using (var context = new CRMContext())
+            {
+                var item = context.tblCRMUsersQualifications.FirstOrDefault(x => x.QualificationId == Id);
+                context.tblCRMUsersQualifications.Remove(item);
+                context.SaveChanges();
+                result = true;
+            }
+
+            return result;
+        }
     }
 }
