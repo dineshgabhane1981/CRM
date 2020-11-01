@@ -56,5 +56,7 @@ namespace LMSBL.DBModels.CRMNew
 
         [StringLength(100)]
         public string InvoiceFileName { get; set; }
+
+        public int? CRMClientID { get; set; }
     }
 }

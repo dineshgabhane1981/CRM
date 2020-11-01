@@ -18,6 +18,7 @@ namespace LMSWeb.Controllers
         CRMNotesRepository crmNotesRepository = new CRMNotesRepository();
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
         CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();
+        CRMInvoiceRepository invoiceRepository = new CRMInvoiceRepository();
         public ActionResult Enquiry()
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
@@ -45,6 +46,10 @@ namespace LMSWeb.Controllers
                 tblCRMUser ObjCRMUser = new tblCRMUser();
                 ObjCRMUser.CurrentStage = 1;
                 objCRMUserViewModel.ObjCRMUser = ObjCRMUser;
+                CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
+                tblCRMInvoice ObjCRMInvoivce = new tblCRMInvoice();
+                CRMInvoiceModelView.ObjCRMInvoivce = ObjCRMInvoivce;
+                objCRMUserViewModel.CRMInvoiceModelView = CRMInvoiceModelView;
             }
 
             return View(objCRMUserViewModel);
@@ -229,6 +234,17 @@ namespace LMSWeb.Controllers
             objModel.ObjCRMUserQualificationList = crmUsersRepository.GetCRMUserQualification(userId);
             objModel.ObjLoginAndQualificationDetails = crmUsersRepository.GetCRMUserLoginQualificationDetail(userId);
 
+            CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
+            tblCRMInvoice ObjCRMInvoivce = new tblCRMInvoice();
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            var clientId = Convert.ToInt32(sessionUser.CRMClientId);
+
+            ObjCRMInvoivce.InvoiceNumber = invoiceRepository.GetInvoiceNumber(clientId);
+            CRMInvoiceModelView.ObjCRMInvoivce = ObjCRMInvoivce;
+            CRMInvoiceModelView.ObjCRMInvoivceLST= invoiceRepository.GetInvoices(userId);
+
+            objModel.CRMInvoiceModelView = CRMInvoiceModelView;
+
             return objModel;
 
         }
@@ -326,5 +342,50 @@ namespace LMSWeb.Controllers
             objModel.ObjCRMUserQualificationList = crmUsersRepository.GetCRMUserQualification(Convert.ToInt32(ClientId));
             return View("_QualificationList", objModel);
         }
+    
+        public bool addInvoice(string jsonData)
+        {
+            bool result = false;
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            json_serializer.MaxJsonLength = int.MaxValue;
+            object[] objInvoiceData = (object[])json_serializer.DeserializeObject(jsonData);
+
+            tblCRMInvoice objInvoice = new tblCRMInvoice();
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            objInvoice.CreatedBy = sessionUser.UserId;
+            objInvoice.CreatedOn = DateTime.Now;
+            objInvoice.UpdatedBy = sessionUser.UserId;
+            objInvoice.UpdatedOn = DateTime.Now;
+            objInvoice.CRMClientID = Convert.ToInt32(sessionUser.CRMClientId);
+            string filebase64 = string.Empty;
+
+            foreach (Dictionary<string, object> item in objInvoiceData)
+            {
+
+                objInvoice.ClientId = Convert.ToInt32(item["ClientID"]);
+                objInvoice.InvoiceNumber = Convert.ToString(item["InvoiceNumber"]);
+                objInvoice.Status = Convert.ToString(item["Status"]);
+                objInvoice.InvoiceType = Convert.ToString(item["InvoiceType"]);
+                if(Convert.ToString(item["InvoiceType"])== "Receipt")
+                {
+                    objInvoice.InvoiceNumber= Convert.ToString(item["InvoiceNo"]) + "_Receipt";
+                }
+                //objInvoice.ClientId = Convert.ToString(item["InvoiceNo"]);
+                objInvoice.InvoiceFileName = Convert.ToString(item["UploadedFileName"]);
+                filebase64 = Convert.ToString(item["filebase64"]);
+
+            }
+            result = invoiceRepository.UploadInvoice(objInvoice, filebase64);
+
+
+            return result;
+        }
+        public ActionResult GetInvoices(int clientId)
+        {
+            CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
+            CRMInvoiceModelView.ObjCRMInvoivceLST = invoiceRepository.GetInvoices(clientId);
+            return PartialView("~/Views/Invoice/_InvoiceList.cshtml", CRMInvoiceModelView);
+        }
+
     }
 }

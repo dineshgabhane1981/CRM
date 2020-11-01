@@ -59,6 +59,8 @@ namespace LMSWeb.ViewModel
         }
 
         public string Clone { get; set; }
+
+        public CRMInvoiceViewModel CRMInvoiceModelView { get; set; }
     }
 
 

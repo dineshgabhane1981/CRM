@@ -57,7 +57,9 @@ namespace LMSWeb.Controllers
             CRMInvoiceModelView.ObjCRMInvoivce.UpdatedBy = sessionUser.UserId;
             CRMInvoiceModelView.ObjCRMInvoivce.UpdatedOn = DateTime.Now;
             CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType = "Invoice";
-            
+            CRMInvoiceModelView.ObjCRMInvoivce.CRMClientID = Convert.ToInt32(sessionUser.CRMClientId);
+
+
 
             if (string.IsNullOrEmpty(CRMInvoiceModelView.filebase64))
             {
@@ -96,6 +98,9 @@ namespace LMSWeb.Controllers
         public string GetInvoiceNumber(int clientId)
         {
             string invoiceNo = string.Empty;
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            clientId = Convert.ToInt32(sessionUser.CRMClientId);
+
             invoiceNo = invoiceRepository.GetInvoiceNumber(Convert.ToInt32(clientId));
             return invoiceNo;
         }

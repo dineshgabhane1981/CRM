@@ -25,7 +25,7 @@
     {
         var movetotext = "Move To  ";
         var assigntext = "Assigned To  ";
-        <div style="float:right;">
+        <div style="float:right; color:white;">
             @if (Model.ObjCRMUser.CurrentStage == 3)
             {
                 @movetotext
@@ -379,24 +379,61 @@
                                     </div>
                                     <!--Invoice-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
-                                        <h5 class="multisteps-form__title">Billing Address</h5>
-                                        <div class="multisteps-form__content" style="display:flex;">
-                                            <div class="col-sm-6">
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.ContactPerson, new { @class = "input150", placeholder = "Contact Person", tabindex = 68 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Street, new { @class = "input150", placeholder = "Street", tabindex = 70 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.City, new { @class = "input150", placeholder = "City", tabindex = 72 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.PostalCode, new { @class = "input150", placeholder = "Postal Code", tabindex = 74 })
+                                        @using (Html.BeginForm("AddInvoice", "Invoice", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmaddInvoice", @class = "multisteps-form__form" }))
+                                        {
+                                            <h5 class="multisteps-form__title">Billing Address</h5>
+                                            <div class="multisteps-form__content" style="display:flex;">
+                                                <div class="col-sm-6">
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.ContactPerson, new { @class = "input150", placeholder = "Contact Person", tabindex = 68 })
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Street, new { @class = "input150", placeholder = "Street", tabindex = 70 })
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.City, new { @class = "input150", placeholder = "City", tabindex = 72 })
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.PostalCode, new { @class = "input150", placeholder = "Postal Code", tabindex = 74 })
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.House, new { @class = "input150", placeholder = "House", tabindex = 69 })
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Suburb, new { @class = "input150", placeholder = "Suburb", tabindex = 71 })
+                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Country, new { @class = "input150", placeholder = "Country", tabindex = 73 })
+                                                </div>
                                             </div>
-                                            <div class="col-sm-6">
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.House, new { @class = "input150", placeholder = "House", tabindex = 69 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Suburb, new { @class = "input150", placeholder = "Suburb", tabindex = 71 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Country, new { @class = "input150", placeholder = "Country", tabindex = 73 })
+                                            <hr />
+                                            <h5 class="multisteps-form__title">Invoice</h5>
+                                            <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                <div class="col-sm-6">
+                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.filebase64, new { @id = "filebase64Invoice" })
+                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.UploadedFileName, new { @id = "UploadedInvoiceFileName" })
+
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    Invoice No : <span id="invoiceNumberUpload">@Model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="button-row d-flex mt-4">
-                                            <button class="btn btn-primary js-btn-prev" type="button" title="Prev" tabindex="75">Prev</button>
-                                            @*<button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="83">Save</button>*@
-                                        </div>
+                                            <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;" id="uploadInvoiceDiv">
+                                                <div class="col-sm-4">
+                                                    @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType, new SelectList(Model.CRMInvoiceModelView.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100" })
+                                                    <input type="hidden" id="hdnInvoiceType" name="hdnInvoiceType" />
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div id="invoiceList" style="display:none;">
+                                                        @Html.DropDownListFor(model => model.CRMInvoiceModelView.uploadInvoiceNo, new SelectList("", "Value", "Text"), "Select Invoice", htmlAttributes: new { id = "ddlInvoicenolist", @class = "input50" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input type="file" name="FileUploadInvoice" id="FileUploadInvoice" style="width:75%;" />
+                                                    <button type="button" id="btnUpload" class="btn btn-primary"> <b>Upload</b></button>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div id="dvClientInvoice">
+                                                @if (Model.CRMInvoiceModelView!=null)
+                                                {
+                                                @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model.CRMInvoiceModelView)
+                                                }
+                                            </div>
+                                            <div class="button-row d-flex mt-4">
+                                                <button class="btn btn-primary js-btn-prev" type="button" title="Prev" tabindex="75">Prev</button>
+                                                @*<button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="83">Save</button>*@
+                                            </div>
+                                        }
                                     </div>
 
                                 </form>
@@ -406,7 +443,7 @@
                         <div class="row  justify-content-end">
                             <div class="button-row d-flex mt-4">
 
-                                <button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="76">Save</button>
+                                <button class="btn btn-primary ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="76"><b>Save</b></button>
                             </div>
                         </div>
                     }
@@ -423,6 +460,57 @@
 </div>
 
 <script type="text/javascript">
+
+    $('#ddlInvoiceTypelist').change(function () {
+        var clientid = $("#ObjCRMUser_Id").val();
+        console.log(111)
+        $("#divLoader").show();
+        var id = $('#ddlInvoiceTypelist').val();
+        $("#hdnInvoiceType").val(id);
+        console.log(id)
+        if (id != null && id != "") {
+            if (id == "Receipt") {
+                GetInvoicesList(clientid);
+                $('#invoiceList').show();
+            }
+            else {
+                $('#invoiceList').hide();
+            }
+        }
+        else {
+            $('#invoiceList').hide();
+        }
+        $("#divLoader").hide();
+    });
+
+    function GetInvoicesList(id) {
+         $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: "/Invoice/GetInvoicesList",
+            data: '{id: ' + JSON.stringify(id) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(111)
+                $('[id*=ddlInvoicenolist]').empty();
+                var listBox = $('[id*=ddlInvoicenolist]');
+                $.map(response, function (item) {
+                    var option = document.createElement('option');
+                    option.text = item.Text;
+                    option.value = item.Value;
+                    listBox[0].append(option);
+                });
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                console.log(222)
+            }
+        });
+    }
+
     function AddUser() {
         if ($("#txtFirstName").val() == "" || $("#txtFirstName").val() == null) {
             toastr.error('Please enter First Name');
@@ -463,13 +551,16 @@
         if (url.indexOf('?' + field + '=') == -1) {
             $("#dvDocument").addClass("grayed");
             $("#dvQualificationAdd").addClass("grayed");
+            $("#uploadInvoiceDiv").addClass("grayed");
+            
 
         }
         else {
             $("#dvDocument").removeClass("grayed");
             $("#dvQualificationAdd").removeClass("grayed");
+            $("#uploadInvoiceDiv").removeClass("grayed");
         }
-
+        document.getElementById("FileUploadInvoice").addEventListener('change', handleFileSelectInvoice, false);
         document.getElementById("FileUpload").addEventListener('change', handleFileSelect, false);
         var currentStage = $("#ObjCRMUser_CurrentStage").val();
         if (currentStage == 3) {
@@ -497,7 +588,9 @@
          $('#btnQualification').on("click", function () {
             AddQualification();
         });
-
+        $('#btnUpload').on("click", function () {
+            UploadInvoice();
+        });
         function AddQualification() {
 
             if ($('#txtQualification').val() == "") {
@@ -719,6 +812,27 @@
             reader.readAsBinaryString(f);
         }
 
+
+        function handleFileSelectInvoice(evt) {
+            var id = evt.currentTarget.id;
+            var qId = id.substring(4, id.length);
+            var f = evt.target.files[0]; // FileList object
+            var reader = new FileReader();
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    var binaryData = e.target.result;
+                    var base64String = window.btoa(binaryData);
+                    $("#filebase64Invoice").val(base64String);
+                    $("#UploadedInvoiceFileName").val($("#FileUploadInvoice")[0].files[0].name);
+                };
+            })(f);
+            // Read in the image file as a data URL.
+            reader.readAsBinaryString(f);
+        }
+
+
+
         $('#ddlclientlist').change(function () {
             $('#ddlclientlist option').each(function (index) {
                 if (($(this).is(':selected'))) {
@@ -879,16 +993,150 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (response) {
-                  
+
                 },
                 failure: function (response) {
                 },
                 error: function (response) {
                     console.log(response.responseText)
                     $("#dvQualification").html(response.responseText);
-                   
+
 
                 }
             });
     }
+
+    function UploadInvoice() {
+
+        var isValidate = ValidateUploadInvoice();
+
+        if (isValidate) {
+            var ItemObject = [];
+            invoiceItem = {}
+            invoiceItem["ClientID"] = $("#ObjCRMUser_Id").val();
+            invoiceItem["InvoiceNumber"] = $("#invoiceNumberUpload").text();
+            invoiceItem["Status"] = "Uploaded";
+            invoiceItem["InvoiceType"] = $("#hdnInvoiceType").val();
+            invoiceItem["InvoiceNo"] = $("#ddlInvoicenolist").val();
+            invoiceItem["filebase64"] = $("#filebase64Invoice").val();
+            invoiceItem["UploadedFileName"] = $("#UploadedInvoiceFileName").val();
+
+            ItemObject.push(invoiceItem)
+            var clientId = $("#ObjCRMUser_Id").val();
+            $("#divLoader").show();
+            var data =  JSON.stringify(ItemObject);
+            
+            //console.log(data);
+            $.ajax({
+                type: "POST",
+                url: "/CRMUsers/addInvoice",
+                data: '{jsonData: ' + JSON.stringify(data) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+               
+                success: function (result) {
+                    console.log(111)
+                },
+                error: function (result) {
+                    console.log(result.responseText)
+                        if (result.responseText == "True") {
+                        toastr.success("Invoice Uploaded");                        
+                            GetInvoices(clientId);
+                            GetInvoiceNumberForUpload(clientId);
+                        $("#divLoader").hide();
+                    }
+                    else {
+                        toastr.error('error occured while saving data');
+                        $("#divLoader").hide();
+                    }
+
+                    }
+            });
+        }
+    }
+    function ValidateUploadInvoice() {
+        var returnStatus = true;
+        if ($('#ddlInvoiceTypelist').val() == null || $('#ddlInvoiceTypelist').val() == "") {
+            toastr.error('Please select type');
+            $('#ddlInvoiceTypelist').focus();
+            returnStatus = false;
+            return false;
+        }
+        var selectedFile = $("#UploadedInvoiceFileName").val();
+        if (selectedFile == "") {
+            toastr.error('Please select file');
+            returnStatus = false;
+            return false;
+        }
+        return returnStatus;
+    }
+    function PreviewInvoice(invoiceId) {
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: "/Invoice/DownloadInvoice",
+            data: '{invoiceId: ' + JSON.stringify(invoiceId) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(111)
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                console.log(response.responseText)
+                if (response.responseText != "") {
+                   var docurl = "@baseURL/Temp/" + response.responseText;
+                       window.open(docurl);
+                    $("#divLoader").hide();
+                }
+                else {
+                    toastr.error('error occured while saving updating status of Invoice');
+                    $("#divLoader").hide();
+                }
+            }
+        });
+    }
+
+    function GetInvoices(id) {
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: "/CRMUsers/GetInvoices",
+            data: '{clientId: ' + JSON.stringify(id) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#dvClientInvoice').html(response);
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                $("#dvClientInvoice").html(response.responseText);
+                $("#divLoader").hide();
+            }
+        });
+    }
+    function GetInvoiceNumberForUpload(id) {
+        $.ajax({
+            type: "POST",
+            url: "/Invoice/GetInvoiceNumber",
+            data: '{clientId: ' + JSON.stringify(id) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $("#invoiceNumberUpload").val(response);
+               // $("#ObjCRMInvoivce_InvoiceNumber").val(response);
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                $("#invoiceNumberUpload").html(response.responseText);
+                //$("#ObjCRMInvoivce_InvoiceNumber").val(response.responseText);
+            }
+        });
+    }
+    
 </script>

@@ -61,7 +61,8 @@ body {
     line-height: 1.5;
     color: #212529;
     text-align: left;
-    background-color: #fff;
+    background-color: #2f4353 !important;
+    background-image: linear-gradient(315deg, #2f4353 0%, #d2ccc4 74%);
 }
 
 [tabindex="-1"]:focus {
@@ -11475,7 +11476,8 @@ h1, h2, h3, h4, h5,
 #sidebar {
     min-width: 270px;
     max-width: 270px;
-    background: #3445b4;
+    background: #000000;
+    background-image: linear-gradient(147deg, #000000 0%, #04619f 74%);
     color: #fff;
     -webkit-transition: all 0.3s;
     -o-transition: all 0.3s;
@@ -12820,9 +12822,14 @@ ol.progress[data-steps="9"] li {
 .list-box {
     border-radius: 15px;
     box-shadow: 3px 3px 3px 3px lightgray;
+    background-color:white;
 }
 
 .title-color {
     color: black;
+}
+
+.btn-primary a:hover {
+    color: white !important;
 }
 

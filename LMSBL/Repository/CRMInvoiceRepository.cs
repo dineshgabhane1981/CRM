@@ -32,7 +32,7 @@ namespace LMSBL.Repository
             string invoiceNo = string.Empty;
             using (var context = new CRMContext())
             {
-                var result = context.tblCRMInvoices.Where(x=>x.InvoiceType== "Invoice").OrderByDescending(y => y.InvoiceNumber).FirstOrDefault();
+                var result = context.tblCRMInvoices.Where(x => x.InvoiceType == "Invoice" && x.CRMClientID == ClientId).OrderByDescending(y => y.InvoiceId).FirstOrDefault();
                 if (result != null)
                 {
                     invoiceNo = result.InvoiceNumber;

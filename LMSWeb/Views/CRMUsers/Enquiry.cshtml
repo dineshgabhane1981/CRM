@@ -7,15 +7,15 @@
 <div class="row" style="float:right; margin-right:50px;">
     @if (ViewBag.StageForButton == 1)
     {
-        <button class="btn btn-primary js-btn-prev" type="button" title="Prev"><a href="@Url.Action("AddEnquiry", "CRMUsers")">Add Enquiry</a></button>
+        <button class="btn btn-primary js-btn-prev" type="button" title="Add Enquiry"><a href="@Url.Action("AddEnquiry", "CRMUsers")"><b>Add Enquiry</b></a></button>
     }
     else if (ViewBag.StageForButton == 2)
     {
-        <button class="btn btn-primary js-btn-prev" type="button" title="Prev"><a href="@Url.Action("AddPotentialClient", "CRMUsers")">Add Potential Client</a></button>
+        <button class="btn btn-primary js-btn-prev" type="button" title="Prev"><a href="@Url.Action("AddPotentialClient", "CRMUsers")"><b>Add Potential Client</b></a></button>
     }
     else if (ViewBag.StageForButton == 3)
     {
-        <button class="btn btn-primary js-btn-prev" type="button" title="Prev"><a href="@Url.Action("AddClient", "CRMUsers")">Add Client</a></button>
+        <button class="btn btn-primary js-btn-prev" type="button" title="Prev"><a href="@Url.Action("AddClient", "CRMUsers")"><b>Add Client</b></a></button>
     }
 </div>
 
