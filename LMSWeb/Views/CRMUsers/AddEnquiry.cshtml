@@ -174,6 +174,12 @@
                                                 @Html.TextBoxFor(model => model.ObjCRMUsersPassportDetail.SecondPassportExpiryDate, "{0:dd/MM/yyyy}", new { @class = "input150 datepicker", @id = "dtSecondPassportExpiryDate", @autocomplete = "off", placeholder = "Partner Passport Expiry Date (DD/MM/YYYY)", tabindex = 35 })
                                             </div>
                                         </div>
+                                        <div class="multisteps-form__content" style="margin-top:20px;">
+                                            <div class="col-sm-12">
+                                                Immigration Login Details
+                                                @Html.TextAreaFor(model => model.ObjLoginAndQualificationDetails.ImmigrationLoginDetails, new { @class = "input150", id = "immigrationlogin", tabindex = 44 })
+                                            </div>
+                                        </div>
                                         <br /><br />
 
 
@@ -253,13 +259,7 @@
                                                 @Html.Partial("~/Views/CRMUsers/_QualificationList.cshtml", Model)
 
                                             </div>
-                                        </div>
-                                        <div class="multisteps-form__content" style="margin-top:20px;">
-                                            <div class="col-sm-12">
-                                                Immigration Login Details
-                                                @Html.TextAreaFor(model => model.ObjLoginAndQualificationDetails.ImmigrationLoginDetails, new { @class = "input150", id = "immigrationlogin", tabindex = 44 })
-                                            </div>
-                                        </div>
+                                        </div>                                        
                                         <div class="multisteps-form__content" style="margin-top:20px;">
                                             <div class="col-sm-12">
                                                 Qualification Assessment Details
@@ -379,9 +379,7 @@
                                     </div>
                                     <!--Invoice-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
-                                        @using (Html.BeginForm("AddInvoice", "Invoice", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmaddInvoice", @class = "multisteps-form__form" }))
-                                        {
-                                            <h5 class="multisteps-form__title">Billing Address</h5>
+                                        <h5 class="multisteps-form__title">Billing Address</h5>
                                             <div class="multisteps-form__content" style="display:flex;">
                                                 <div class="col-sm-6">
                                                     @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.ContactPerson, new { @class = "input150", placeholder = "Contact Person", tabindex = 68 })
@@ -396,7 +394,7 @@
                                                 </div>
                                             </div>
                                             <hr />
-                                            <h5 class="multisteps-form__title">Invoice</h5>
+                                            <h5 class="multisteps-form__title">Upload Invoice</h5>
                                             <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
                                                 <div class="col-sm-6">
                                                     @Html.HiddenFor(model => model.CRMInvoiceModelView.filebase64, new { @id = "filebase64Invoice" })
@@ -419,21 +417,71 @@
                                                 </div>
                                                 <div class="col-sm-5">
                                                     <input type="file" name="FileUploadInvoice" id="FileUploadInvoice" style="width:75%;" />
-                                                    <button type="button" id="btnUpload" class="btn btn-primary"> <b>Upload</b></button>
+                                                    <button type="button" id="btnUpload" class="btn btn-primary" style="margin-top:10px;"> <b>Upload</b></button>
                                                 </div>
                                             </div>
                                             <hr />
+                                            
+                                            <h5 class="multisteps-form__title">Create Invoice</h5>
+                                            <div id="createInvoiceDiv">
+                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceId, new { @id="ObjCRMInvoivce_InvoiceId"})
+                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Status, new { @id="ObjCRMInvoivce_InvoiceId"})
+                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.JsonData)
+                                                    <div class="col-sm-6">
+                                                        @*@Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.ClientId, new SelectList(Model.CRMInvoiceModelView.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddlclientlist", @class = "input100" })*@
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber)
+                                                        Invoice No : <span id="invoiceNumber">@Model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                    <div class="col-sm-4">
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @autocomplete = "off", placeholder = "Invoice Date" })
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference", @id = "txtReference" })
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @autocomplete = "off", placeholder = "Invoice Due Date" })
+                                                        @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.CRMInvoiceModelView.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100" })
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number", @id = "txtGstNumber" })
+                                                        <button type="button" id="btnAddItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Item</b></button>
+                                                    </div>
+                                                </div>
+                                                <div id="dvInvoiceItems"></div>
+                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                    <div class="col-sm-4"> </div>
+                                                    <div class="col-sm-4" style="text-align:end;">@Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTRate, new { @class = "input50", @type = "number", @id = "txtgstno", placeholder = "GST Rate" })</div>
+                                                    <div class="col-sm-4">
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.SubTotal, new { @class = "input100", @id = "txtsubtotal", @readonly = "readonly", placeholder = "Sub Total" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                    <div class="col-sm-4"></div>
+                                                    <div class="col-sm-4"></div>
+                                                    <div class="col-sm-4">
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceTotal, new { @class = "input100", @id = "txttotal", @readonly = "readonly", placeholder = "Invoice Total" })
+                                                    </div>
+                                                </div>
+                                                <div class="button-row d-flex mt-2">
+                                                    <button type="button" id="btnSaveDraft" class="btn btn-primary ml-auto"> <b>Save as Draft</b></button>&nbsp;&nbsp;
+                                                    <button type="button" id="btnSave" class="btn btn-primary"> <b>Save</b></button>
+                                                </div>
+                                            </div>
                                             <div id="dvClientInvoice">
-                                                @if (Model.CRMInvoiceModelView!=null)
+                                                @if (Model.CRMInvoiceModelView != null)
                                                 {
-                                                @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model.CRMInvoiceModelView)
+                                                    @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model.CRMInvoiceModelView)
                                                 }
                                             </div>
                                             <div class="button-row d-flex mt-4">
                                                 <button class="btn btn-primary js-btn-prev" type="button" title="Prev" tabindex="75">Prev</button>
                                                 @*<button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="83">Save</button>*@
                                             </div>
-                                        }
+                                        
                                     </div>
 
                                 </form>
@@ -552,13 +600,14 @@
             $("#dvDocument").addClass("grayed");
             $("#dvQualificationAdd").addClass("grayed");
             $("#uploadInvoiceDiv").addClass("grayed");
-            
+            $("#createInvoiceDiv").addClass("grayed");
 
         }
         else {
             $("#dvDocument").removeClass("grayed");
             $("#dvQualificationAdd").removeClass("grayed");
             $("#uploadInvoiceDiv").removeClass("grayed");
+            $("#createInvoiceDiv").removeClass("grayed");
         }
         document.getElementById("FileUploadInvoice").addEventListener('change', handleFileSelectInvoice, false);
         document.getElementById("FileUpload").addEventListener('change', handleFileSelect, false);
@@ -590,6 +639,13 @@
         });
         $('#btnUpload').on("click", function () {
             UploadInvoice();
+        });
+
+        $('#btnAddItem').on("click", function () {
+            AddInvoiceItem();
+        });
+        $('#txtgstno').on("focusout", function () {
+            CalculateSubTotal();
         });
         function AddQualification() {
 
@@ -811,8 +867,7 @@
             // Read in the image file as a data URL.
             reader.readAsBinaryString(f);
         }
-
-
+        
         function handleFileSelectInvoice(evt) {
             var id = evt.currentTarget.id;
             var qId = id.substring(4, id.length);
@@ -830,9 +885,7 @@
             // Read in the image file as a data URL.
             reader.readAsBinaryString(f);
         }
-
-
-
+               
         $('#ddlclientlist').change(function () {
             $('#ddlclientlist option').each(function (index) {
                 if (($(this).is(':selected'))) {
@@ -851,15 +904,13 @@
                 }
             })
         });
-
-
+        
         $('#filenotesarea').summernote();
         $('#pccnotesarea').summernote();
         $('#medicalnotesarea').summernote();
         $('#immigrationlogin').summernote();
         $('#qualificationassessment').summernote();
-
-
+        
         $('#dtDOB').datepicker({
             format: 'dd/mm/yyyy',
             showWeek: true
@@ -940,6 +991,22 @@
             format: 'dd/mm/yyyy',
             showWeek: true
         });
+        $('#dtInvoiceDate').datepicker({
+            format: 'dd/mm/yyyy',
+            showWeek: true
+        });
+
+         $('#dtInvoiceDueDate').datepicker({
+            format: 'dd/mm/yyyy',
+            showWeek: true
+         });
+        $('#btnSaveDraft').on("click", function () {
+            SaveDraftInvoice();
+        });
+        $('#btnSave').on("click", function () {
+            SaveInvoice();
+        });
+        
     });
     function DeleteQualification(id) {
         var ClientID = $("#ObjCRMUser_Id").val();
@@ -1007,9 +1074,7 @@
     }
 
     function UploadInvoice() {
-
         var isValidate = ValidateUploadInvoice();
-
         if (isValidate) {
             var ItemObject = [];
             invoiceItem = {}
@@ -1024,16 +1089,14 @@
             ItemObject.push(invoiceItem)
             var clientId = $("#ObjCRMUser_Id").val();
             $("#divLoader").show();
-            var data =  JSON.stringify(ItemObject);
-            
-            //console.log(data);
+            var data =  JSON.stringify(ItemObject);            
+           
             $.ajax({
                 type: "POST",
-                url: "/CRMUsers/addInvoice",
+                url: "/CRMUsers/UploadInvoice",
                 data: '{jsonData: ' + JSON.stringify(data) + '}',
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",
-               
+                dataType: "json",               
                 success: function (result) {
                     console.log(111)
                 },
@@ -1043,6 +1106,7 @@
                         toastr.success("Invoice Uploaded");                        
                             GetInvoices(clientId);
                             GetInvoiceNumberForUpload(clientId);
+                            ClearAllFields();
                         $("#divLoader").hide();
                     }
                     else {
@@ -1128,15 +1192,324 @@
             dataType: "json",
             success: function (response) {
                 $("#invoiceNumberUpload").val(response);
+                $("#invoiceNumber").html(response);
                // $("#ObjCRMInvoivce_InvoiceNumber").val(response);
             },
             failure: function (response) {
             },
             error: function (response) {
                 $("#invoiceNumberUpload").html(response.responseText);
+                $("#invoiceNumber").html(response.responseText);
+                
                 //$("#ObjCRMInvoivce_InvoiceNumber").val(response.responseText);
             }
         });
     }
-    
+    var count = 1;
+    function AddInvoiceItem() {
+        var itemHTML = "<div class=\"row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto\" id=dvItem" + count + " style=\"display:flex;\">";
+        itemHTML += "<input type=\"hidden\" id=hdnInvoiceItemId" + count + "></input>";
+        itemHTML += "<div class=\"col-sm-4\">";
+        itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + count + "></input>";
+        itemHTML += "</div>";
+
+        itemHTML += "<div class=\"col-sm-3\">";
+        itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Price\" id=txtItemPrice" + count + "></input>";
+        itemHTML += "</div>";
+
+        itemHTML += "<div class=\"col-sm-3\">";
+        itemHTML += "<input type=\"number\" class=input100 placeholder=\"Item Amount\" id=txtItemAmount" + count + " onfocusout=\"CalculateSubTotal(this)\"></input>";
+        itemHTML += "</div>";
+        itemHTML += "<div class=\"col-sm-2\" style=text-align:end;>";
+        itemHTML += "<button onclick=\"removeItem(" + count + ")\" id=btn" + count + " type=\"button\" class=\"question-btn-for-option btn text-center btn-primary  \" style=\"margin-left: 5px;\"> - </button>";
+        itemHTML += "</div>";
+
+        itemHTML += "</div>";
+
+        $("#dvInvoiceItems").append(itemHTML);
+        count++;
+    }
+    function removeItem(id) {
+        $("#dvItem" + id).remove();
+        CalculateSubTotal();
+    }
+    function CalculateSubTotal(sentId) {
+        var IDs = $("#dvInvoiceItems div[id^='dvItem']");
+        var subTotal = 0;
+        $.each(IDs, function (index, value) {
+            var id = value.id.substring(6, value.id.length);
+            if ($("#txtItemAmount" + id).val() != null && $("#txtItemAmount" + id).val() != "")
+                subTotal = +subTotal + +$("#txtItemAmount" + id).val();
+        });
+
+        $("#txtsubtotal").val(subTotal);
+
+        if ($("#txtgstno").val() == null || $("#txtgstno").val() == "") {
+            $("#txttotal").val(subTotal);
+        }
+        else {
+            var gstrate = $("#txtgstno").val();
+            var total = +subTotal + (+subTotal * +gstrate / 100);
+            $("#txttotal").val(total)
+        }
+
+    }
+
+     function SaveDraftInvoice() {
+        var isValidate = ValidateInvoice();
+        if (isValidate) {
+            SaveToDB("Draft");
+        }
+    }
+
+    function SaveInvoice() {
+        var isValidate = ValidateInvoice();
+        if (isValidate) {
+            SaveToDB("Saved");
+        }
+    }
+
+    function ValidateInvoice() {
+        var returnStatus = true;
+        
+        if ($('#dtInvoiceDate').val() == null || $('#dtInvoiceDate').val() == "") {
+            toastr.error('Please select Invoice Date');
+            $('#dtInvoiceDate').focus();
+            returnStatus = false;
+            return false;
+        }
+        if ($('#dtInvoiceDueDate').val() == null || $('#dtInvoiceDueDate').val() == "") {
+            toastr.error('Please select Invoice due Date');
+            $('#dtInvoiceDueDate').focus();
+            returnStatus = false;
+            return false;
+        }
+        if ($('#ddlcurrencylist').val() == null || $('#ddlcurrencylist').val() == "") {
+            toastr.error('Please select Currency');
+            $('#ddlcurrencylist').focus();
+            returnStatus = false;
+            return false;
+        }
+
+        var IDs = $("#dvInvoiceItems div[id^='dvItem']");
+        if (IDs.length == 0) {
+            toastr.error('Please add items in Invoice');
+            returnStatus = false;
+            return false;
+        }
+        $.each(IDs, function (index, value) {
+            var id = value.id.substring(6, value.id.length);
+
+            if ($("#txtItemDesc" + id).val() == null || $("#txtItemDesc" + id).val() == "") {
+                $("#txtItemDesc" + id).focus();
+                toastr.error('Please enter item description');
+                returnStatus = false;
+                return false;
+            }
+            if ($("#txtItemPrice" + id).val() == null || $("#txtItemPrice" + id).val() == "") {
+                $("#txtItemPrice" + id).focus();
+                toastr.error('Please enter item price');
+                returnStatus = false;
+                return false;
+            }
+            if ($("#txtItemAmount" + id).val() == null || $("#txtItemAmount" + id).val() == "") {
+                $("#txtItemAmount" + id).focus();
+                toastr.error('Please enter item amount');
+                returnStatus = false;
+                return false;
+            }
+
+        });
+
+        return returnStatus;
+    }
+    function SaveToDB(status) {
+        $("#divLoader").show();
+        var InvoiceObject = [];
+        item = {}
+        item["InvoiceId"] = $("#ObjCRMInvoivce_InvoiceId").val();
+        item["ClientID"] = $("#ObjCRMUser_Id").val();
+        item["InvoiceNumber"] = $("#invoiceNumber").text();
+        item["InvoiceDate"] = $("#dtInvoiceDate").val();
+        item["DueDate"] = $("#dtInvoiceDueDate").val();
+        item["GSTNo"] = $("#txtGstNumber").val();
+        item["Reference"] = $("#txtReference").val();
+        item["Currency"] = $("#ddlcurrencylist").val();
+        item["GSTRate"] = $("#txtgstno").val();
+        item["SubTotal"] = $("#txtsubtotal").val();
+        item["Total"] = $("#txttotal").val();
+        item["filebase64"] = "";
+        item["Status"] = status;
+        
+        $("#filebase64").val("");
+        var clientId = $("#ObjCRMUser_Id").val();
+
+        var IDs = $("#dvInvoiceItems div[id^='dvItem']");
+        var ItemObject = [];
+        $.each(IDs, function (index, value) {
+            var id = value.id.substring(6, value.id.length);
+            invoiceItem = {}
+            invoiceItem["InvoiceItemId"] = $("#hdnInvoiceItemId" + id).val();
+            invoiceItem["ItemDesc"] = $("#txtItemDesc" + id).val();
+            invoiceItem["ItemPrice"] = $("#txtItemPrice" + id).val();
+            invoiceItem["ItemAmount"] = $("#txtItemAmount" + id).val();
+            ItemObject.push(invoiceItem)
+        });
+        item["ItemJson"] = ItemObject;
+        InvoiceObject.push(item);
+
+        var data =  JSON.stringify(InvoiceObject);        
+        console.log(data);
+
+         $.ajax({
+                type: "POST",
+                url: "/CRMUsers/AddInvoice",
+                data: '{jsonData: ' + JSON.stringify(data) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",               
+                success: function (result) {
+                    console.log(111)
+                },
+                error: function (result) {
+                    console.log(result.responseText)
+                        if (result.responseText == "True") {
+                        toastr.success("Invoice Uploaded");                        
+                            GetInvoices(clientId);
+                            GetInvoiceNumberForUpload(clientId);
+                            ClearAllFields();
+                        $("#divLoader").hide();
+                    }
+                    else {
+                        toastr.error('error occured while saving data');
+                        $("#divLoader").hide();
+                    }
+
+                 }
+            });
+    }
+    function EditInvoice(invoiceId) {
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: "/Invoice/GetInvoiceForEdit",
+            data: '{InvoiceId: ' + JSON.stringify(invoiceId) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                LoadInvoiceDetails(response);
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+
+    function LoadInvoiceDetails(response) {
+        $("#ObjCRMInvoivce_InvoiceId").val(response.ObjCRMInvoivce.InvoiceId);
+        $("#ObjCRMInvoivce_Status").val(response.ObjCRMInvoivce.Status);
+        //$('#ddlclientlist').val(response.ObjCRMInvoivce.ClientId);
+        //$("#ObjCRMInvoivce_InvoiceNumber").val(response.ObjCRMInvoivce.InvoiceNumber);
+        $("#invoiceNumber").html(response.ObjCRMInvoivce.InvoiceNumber);
+        $("#txtGstNumber").val(response.ObjCRMInvoivce.GSTNumber);
+
+        var invoiceDate = new Date(parseInt(response.ObjCRMInvoivce.InvoiceDate.substr(6)));
+        $("#dtInvoiceDate").val(invoiceDate.format("dd/mm/yyyy"));
+        $("#dtInvoiceDate").datepicker("setDate", invoiceDate.format("dd/mm/yyyy"));
+
+        var invoiceDueDate = new Date(parseInt(response.ObjCRMInvoivce.InvoiceDueDate.substr(6)));
+        $("#dtInvoiceDueDate").val(invoiceDueDate.format("dd/mm/yyyy"));
+        $("#dtInvoiceDueDate").datepicker("setDate", invoiceDueDate.format("dd/mm/yyyy"));
+
+        $("#txtReference").val(response.ObjCRMInvoivce.Reference);
+        $('#ddlcurrencylist').val(response.ObjCRMInvoivce.InvoiceCurrency);
+
+        $("#txtsubtotal").val(response.ObjCRMInvoivce.SubTotal);
+        $("#txtgstno").val(response.ObjCRMInvoivce.GSTRate);
+        $("#txttotal").val(response.ObjCRMInvoivce.InvoiceTotal);
+
+        LoadInvoiceItemsForEdit(response);
+
+    }
+
+    function LoadInvoiceItemsForEdit(response) {
+        $("#dvInvoiceItems").html("");
+        $.each(response.ObjCRMInvoiceItemLST, function (index, value) {
+            console.log(value);
+
+            var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + value.ItemId + " style=\"display:flex;\">";
+            itemHTML += "<input type=\"hidden\" id=hdnInvoiceItemId" + value.ItemId + "></input>";
+            itemHTML += "<div class=\"col-sm-4\">";
+            itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + value.ItemId + "></input>";
+            itemHTML += "</div>";
+
+            itemHTML += "<div class=\"col-sm-3\">";
+            itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Price\" id=txtItemPrice" + value.ItemId + "></input>";
+            itemHTML += "</div>";
+
+            itemHTML += "<div class=\"col-sm-3\">";
+            itemHTML += "<input type=\"number\" class=input100 placeholder=\"Item Amount\" id=txtItemAmount" + value.ItemId + " onfocusout=\"CalculateSubTotal(this)\"></input>";
+            itemHTML += "</div>";
+            itemHTML += "<div class=\"col-sm-2\" style=text-align:end;>";
+            itemHTML += "<button onclick=\"removeItem(" + value.ItemId + ")\" id=btn" + value.ItemId + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
+            itemHTML += "</div>";
+
+            itemHTML += "</div>";
+
+            $("#dvInvoiceItems").append(itemHTML);
+            $("#hdnInvoiceItemId" + value.ItemId).val(value.ItemId);
+            $("#txtItemDesc" + value.ItemId).val(value.ItemDescription);
+            $("#txtItemPrice" + value.ItemId).val(value.Price);
+            $("#txtItemAmount" + value.ItemId).val(value.Amount);
+        });
+    }
+
+    function MarkPaidInvoice(invoiceId) {
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: "/Invoice/MarkPaidInvoice",
+            data: '{invoiceId: ' + JSON.stringify(invoiceId) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                if (response.responseText == "True") {
+                    toastr.success("Invoice marked as Paid Successfully");
+                    var id = $("#ObjCRMUser_Id").val();
+                    if (id != null && id != "") {
+                        GetInvoices(id);
+                        $("#divLoader").hide();
+                    }
+                }
+                else {
+                    toastr.error('error occured while saving updating status of Invoice');
+                }
+            }
+        });
+    }
+
+    function ClearAllFields() {
+        $("#dvInvoiceItems").html("");
+        $("#ObjCRMInvoivce_InvoiceId").val("");
+        $("#ObjCRMInvoivce_Status").val("");        
+        $('#ddlInvoiceTypelist>option:eq(0)').attr('selected', true);        
+        $("#invoiceNumber").html("");
+        $("#invoiceNumberUpload").html("");
+        $("#txtGstNumber").val("");        
+        $("#dtInvoiceDate").val("");        
+        $("#dtInvoiceDueDate").val("");  
+        $("#txtReference").val("");
+        $('#ddlcurrencylist').val("");
+        $('#invoiceList').hide();
+        $("#txtsubtotal").val("");
+        $("#txtgstno").val("");
+        $("#txttotal").val("");
+        $("#FileUploadInvoice").val("");
+    }
 </script>

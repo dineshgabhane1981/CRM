@@ -178,12 +178,12 @@ namespace LMSWeb.Controllers
             string invoiceDate = "";
             if (!string.IsNullOrEmpty(Convert.ToString(CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate)))
             {
-                invoiceDate = Convert.ToDateTime(CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate).ToString("MMM-dd-yyyy");
+                invoiceDate = Convert.ToDateTime(CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate).ToString("dd/MM/yyyy");
             }
             string invoiceDueDate = "";
             if (!string.IsNullOrEmpty(Convert.ToString(CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate)))
             {
-                invoiceDueDate = Convert.ToDateTime(CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate).ToString("MMM-dd-yyyy");
+                invoiceDueDate = Convert.ToDateTime(CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate).ToString("dd/MM/yyyy");
             }
             string invoiceHeading = "";
             if (CRMInvoiceModelView.ObjCRMInvoivce.Status == "Draft")
@@ -227,7 +227,7 @@ namespace LMSWeb.Controllers
 
                                         <tr>  
                                         <td><b>To: </b></td>  
-                                        <td>" + CRMInvoiceModelView.ObjCRMUser.FirstName + " " + CRMInvoiceModelView.ObjCRMUser.LastName +
+                                        <td>" + CRMInvoiceModelView.ObjCRMUser.FirstName + " " + CRMInvoiceModelView.ObjCRMUser.LastName + "<p>"+ CRMInvoiceModelView.ObjCRMUser.Address+ "</p>" +
                                         @" </td> 
                                         <td><b>From: </b></td> 
                                         <td>" + CRMInvoiceModelView.ObjCRMClient.ClientName + " " + CRMInvoiceModelView.ObjCRMClient.Address +
@@ -235,23 +235,20 @@ namespace LMSWeb.Controllers
                                     <tr>  
                                         <td><b>Invoice Number:</b> </td>  
                                         <td>" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber +
-                                        @"</td> <td></td> <td></td>             
+                                        @"</td> <td><b>Issued Date: </b></td> <td>" + invoiceDate +
+                                        @"</td>             
                                     </tr>
                                     <tr>  
                                         <td><b>GST Number:</b> </td>  
                                         <td>" + CRMInvoiceModelView.ObjCRMInvoivce.GSTNumber +
-                                        @"</td> <td></td> <td></td>             
+                                        @"</td> <td><b>Due Date: </b></td> <td>" + invoiceDueDate +
+                                        @"</td>             
                                     </tr>
                                     <tr>  
-                                        <td><b>Issued Date: </b></td>  
-                                        <td>" + invoiceDate +
+                                        <td><b>Reference / Bank Details : </b></td>  
+                                        <td>" + CRMInvoiceModelView.ObjCRMInvoivce.Reference +
                                         @"</td> <td></td> <td></td>             
-                                    </tr>
-                                    <tr>  
-                                        <td><b>Due Date: </b></td>  
-                                        <td>" + invoiceDueDate +
-                                        @"</td> <td></td> <td></td>             
-                                    </tr>
+                                    </tr>                                    
                                     <tr>  
                                         <td colspan='4'>_____________________________________________________________________________</td>             
                                     </tr></table>";

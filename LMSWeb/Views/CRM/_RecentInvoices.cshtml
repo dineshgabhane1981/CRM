@@ -11,7 +11,7 @@
         </div>
         <div class="row mt-3" id="dvpotentialClientData">
             <div class="table-responsive">
-                <table class="table" style="border-bottom:0px !important;" id="potentialClientTable">
+                <table class="table" style="border-bottom:0px !important;" id="invoiceTable">
                     <thead>
                         <tr>
                             <th scope="col">Client Name</th>
@@ -86,7 +86,7 @@
 
     $(document).ready(function () {
 
-        $('#potentialClientTable').DataTable({
+        $('#invoiceTable').DataTable({
             "aaSorting": [[1, "desc"]],
             "paging": false,
             "ordering": false,
@@ -102,6 +102,6 @@
             ]
         });
 
-        $('#potentialClientTable_filter').hide();
+        $('#invoiceTable_filter').hide();
     });
 </script>

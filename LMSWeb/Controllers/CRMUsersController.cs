@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using LMSBL.DBModels;
 using System.Web.Script.Serialization;
 using LMSWeb.App_Start;
+using LMSBL.Common;
 
 namespace LMSWeb.Controllers
 {
@@ -19,6 +20,7 @@ namespace LMSWeb.Controllers
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
         CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();
         CRMInvoiceRepository invoiceRepository = new CRMInvoiceRepository();
+        Exceptions newException = new Exceptions();
         public ActionResult Enquiry()
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
@@ -49,6 +51,7 @@ namespace LMSWeb.Controllers
                 CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
                 tblCRMInvoice ObjCRMInvoivce = new tblCRMInvoice();
                 CRMInvoiceModelView.ObjCRMInvoivce = ObjCRMInvoivce;
+                CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
                 objCRMUserViewModel.CRMInvoiceModelView = CRMInvoiceModelView;
             }
 
@@ -81,6 +84,11 @@ namespace LMSWeb.Controllers
                 tblCRMUser ObjCRMUser = new tblCRMUser();
                 ObjCRMUser.CurrentStage = 2;
                 objCRMUserViewModel.ObjCRMUser = ObjCRMUser;
+                CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
+                tblCRMInvoice ObjCRMInvoivce = new tblCRMInvoice();
+                CRMInvoiceModelView.ObjCRMInvoivce = ObjCRMInvoivce;
+                CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
+                objCRMUserViewModel.CRMInvoiceModelView = CRMInvoiceModelView;
             }
 
             return View("AddEnquiry", objCRMUserViewModel);
@@ -118,6 +126,11 @@ namespace LMSWeb.Controllers
                 tblCRMUser ObjCRMUser = new tblCRMUser();
                 ObjCRMUser.CurrentStage = 3;
                 objCRMUserViewModel.ObjCRMUser = ObjCRMUser;
+                CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
+                tblCRMInvoice ObjCRMInvoivce = new tblCRMInvoice();
+                CRMInvoiceModelView.ObjCRMInvoivce = ObjCRMInvoivce;
+                CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
+                objCRMUserViewModel.CRMInvoiceModelView = CRMInvoiceModelView;
             }
 
             return View("AddEnquiry", objCRMUserViewModel);
@@ -241,8 +254,8 @@ namespace LMSWeb.Controllers
 
             ObjCRMInvoivce.InvoiceNumber = invoiceRepository.GetInvoiceNumber(clientId);
             CRMInvoiceModelView.ObjCRMInvoivce = ObjCRMInvoivce;
-            CRMInvoiceModelView.ObjCRMInvoivceLST= invoiceRepository.GetInvoices(userId);
-
+            CRMInvoiceModelView.ObjCRMInvoivceLST = invoiceRepository.GetInvoices(userId);
+            CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
             objModel.CRMInvoiceModelView = CRMInvoiceModelView;
 
             return objModel;
@@ -303,9 +316,9 @@ namespace LMSWeb.Controllers
             object[] objQualificationData = (object[])json_serializer.DeserializeObject(jsonData);
             foreach (Dictionary<string, object> item in objQualificationData)
             {
-                objQualification.QualificationId = 0;                
+                objQualification.QualificationId = 0;
                 objQualification.ClientId = Convert.ToInt32(item["ClientId"]);
-                objQualification.Qualification= Convert.ToString(item["Qualification"]);
+                objQualification.Qualification = Convert.ToString(item["Qualification"]);
                 objQualification.AwardingBody = Convert.ToString(item["AwardingBody"]);
                 objQualification.DateAwarded = Convert.ToDateTime(item["QualificationAwarded"]);
                 objQualification.Country = Convert.ToString(item["QualificationCountry"]);
@@ -342,8 +355,9 @@ namespace LMSWeb.Controllers
             objModel.ObjCRMUserQualificationList = crmUsersRepository.GetCRMUserQualification(Convert.ToInt32(ClientId));
             return View("_QualificationList", objModel);
         }
-    
-        public bool addInvoice(string jsonData)
+
+        [HttpPost]
+        public bool UploadInvoice(string jsonData)
         {
             bool result = false;
             JavaScriptSerializer json_serializer = new JavaScriptSerializer();
@@ -366,9 +380,9 @@ namespace LMSWeb.Controllers
                 objInvoice.InvoiceNumber = Convert.ToString(item["InvoiceNumber"]);
                 objInvoice.Status = Convert.ToString(item["Status"]);
                 objInvoice.InvoiceType = Convert.ToString(item["InvoiceType"]);
-                if(Convert.ToString(item["InvoiceType"])== "Receipt")
+                if (Convert.ToString(item["InvoiceType"]) == "Receipt")
                 {
-                    objInvoice.InvoiceNumber= Convert.ToString(item["InvoiceNo"]) + "_Receipt";
+                    objInvoice.InvoiceNumber = Convert.ToString(item["InvoiceNo"]) + "_Receipt";
                 }
                 //objInvoice.ClientId = Convert.ToString(item["InvoiceNo"]);
                 objInvoice.InvoiceFileName = Convert.ToString(item["UploadedFileName"]);
@@ -377,6 +391,75 @@ namespace LMSWeb.Controllers
             }
             result = invoiceRepository.UploadInvoice(objInvoice, filebase64);
 
+
+            return result;
+        }
+
+        [HttpPost]
+        public bool AddInvoice(string jsonData)
+        {
+            bool result = false;
+            try
+            {
+                JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+                json_serializer.MaxJsonLength = int.MaxValue;
+                object[] objInvoiceData = (object[])json_serializer.DeserializeObject(jsonData);
+
+                tblCRMInvoice objInvoice = new tblCRMInvoice();
+                TblUser sessionUser = (TblUser)Session["UserSession"];
+                objInvoice.CreatedBy = sessionUser.UserId;
+                objInvoice.CreatedOn = DateTime.Now;
+                objInvoice.UpdatedBy = sessionUser.UserId;
+                objInvoice.UpdatedOn = DateTime.Now;
+                objInvoice.CRMClientID = Convert.ToInt32(sessionUser.CRMClientId);
+                string filebase64 = string.Empty;
+
+                foreach (Dictionary<string, object> item in objInvoiceData)
+                {
+                    if (!string.IsNullOrEmpty(Convert.ToString(item["InvoiceId"])))
+                    {
+                        objInvoice.InvoiceId = Convert.ToInt32(item["InvoiceId"]);
+                    }
+                    objInvoice.ClientId = Convert.ToInt32(item["ClientID"]);
+                    objInvoice.InvoiceNumber = Convert.ToString(item["InvoiceNumber"]);
+                    objInvoice.Status = Convert.ToString(item["Status"]);
+                    objInvoice.InvoiceType = "Invoice";
+                    objInvoice.InvoiceDate = Convert.ToDateTime(item["InvoiceDate"]);
+                    objInvoice.InvoiceDueDate = Convert.ToDateTime(item["DueDate"]);
+                    objInvoice.GSTNumber = Convert.ToString(item["GSTNo"]);
+                    objInvoice.Reference = Convert.ToString(item["Reference"]);
+                    objInvoice.InvoiceCurrency = Convert.ToString(item["Currency"]);
+                    objInvoice.GSTRate = Convert.ToDecimal(item["GSTRate"]);
+                    objInvoice.SubTotal = Convert.ToDecimal(item["SubTotal"]);
+                    objInvoice.InvoiceTotal = Convert.ToDecimal(item["Total"]);
+
+                    List<tblCRMInvoiceItem> lstInvoiceItems = new List<tblCRMInvoiceItem>();
+                    foreach (Dictionary<string, object> itemInvoice in (object[])item["ItemJson"])
+                    {
+                        tblCRMInvoiceItem InvoiveItem = new tblCRMInvoiceItem();
+
+                        if (!string.IsNullOrEmpty(Convert.ToString(item["InvoiceId"])))
+                        {
+                            InvoiveItem.InvoiceId = Convert.ToInt32(item["InvoiceId"]);
+                        }
+
+                        if (!string.IsNullOrEmpty(Convert.ToString(itemInvoice["InvoiceItemId"])))
+                        {
+                            InvoiveItem.ItemId = Convert.ToInt32(itemInvoice["InvoiceItemId"]);
+                        }
+                        InvoiveItem.ItemDescription = Convert.ToString(itemInvoice["ItemDesc"]);
+                        InvoiveItem.Price = Convert.ToDecimal(itemInvoice["ItemPrice"]);
+                        InvoiveItem.Amount = Convert.ToDecimal(itemInvoice["ItemAmount"]);
+                        lstInvoiceItems.Add(InvoiveItem);
+                    }
+                    result = invoiceRepository.SaveInvoice(objInvoice, lstInvoiceItems);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                newException.AddException(ex);
+            }
 
             return result;
         }

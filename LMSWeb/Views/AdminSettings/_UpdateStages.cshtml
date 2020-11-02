@@ -137,6 +137,28 @@
                     error: function (response) {
                         if (response.responseText == "True") {
                             toastr.success("Stages Updated");
+
+                             $.ajax({
+                            type: "POST",
+                            url: "/AdminSettings/GetClientStages",
+                            data: '',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                                 success: function (response) {
+                                     console.log(response[2].StageName);
+                                     $("#lblEnquiry").text(response[0].StageName);
+                                     $("#lblPotentialClients").text(response[1].StageName);
+                                     $("#lblClient").text(response[2].StageName);
+                                $("#divLoader").hide();
+                            },
+                            failure: function (response) {
+                            },
+                            error: function (response) {
+                                
+                                //$("#divLoader").hide();
+
+                            }
+                        });
                         }
                         else {
                             toastr.error('error occured while updateing data');

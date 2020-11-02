@@ -110,20 +110,20 @@
                 </button>
             </div>
             <div class="p-4">
-                <img width="80%" src="@clientModel[0].ClientLogo" />
+                <img id="imgClientLogo" width="80%" src="@clientModel[0].ClientLogo" />
                 <h3>Welcome <h5><span>@fullname</span></h5></h3>
                 <ul class="list-unstyled components mb-5">
                     <li class="@Html.IsSelected(controller: "CRM", action: "Index")">
                         <a href="@Url.Action("Index", "CRM")"><span class="fa fa-home mr-3" style="color:white;"></span> Dashboard</a>
                     </li>
                     <li class="@Html.IsSelected(controller: "CRMUsers", action: "Clients,AddClient")">
-                        <a href="@Url.Action("Clients", "CRMUsers")"><span class="fa fa-suitcase mr-3" style="color:white;"></span> @stageModel[2].StageName</a>
+                        <a href="@Url.Action("Clients", "CRMUsers")"><span class="fa fa-suitcase mr-3" style="color:white;"></span><label id="lblClient" style="cursor:pointer; margin-bottom:0px !important;"> @stageModel[2].StageName</label></a>
                     </li>
                     <li class="@Html.IsSelected(controller: "CRMUsers", action: "Enquiry,AddEnquiry")">
-                        <a href="@Url.Action("Enquiry", "CRMUsers")"><span class="fa fa-user mr-3" style="color:white;"></span>  @stageModel[0].StageName</a>
+                        <a href="@Url.Action("Enquiry", "CRMUsers")"><span class="fa fa-user mr-3" style="color:white;"></span><label id="lblEnquiry" style="cursor:pointer; margin-bottom:0px !important;">  @stageModel[0].StageName</label></a>
                     </li>
                     <li class="@Html.IsSelected(controller: "CRMUsers", action: "PotentialClients,AddPotentialClient")">
-                        <a href="@Url.Action("PotentialClients", "CRMUsers")"><span class="fa fa-briefcase mr-3" style="color:white;"></span> @stageModel[1].StageName</a>
+                        <a href="@Url.Action("PotentialClients", "CRMUsers")"><span class="fa fa-briefcase mr-3" style="color:white;"></span><label id="lblPotentialClients" style="cursor:pointer; margin-bottom:0px !important;"> @stageModel[1].StageName</label></a>
                     </li>
                     <li class="@Html.IsSelected(controller: "FileNotes", action: "Index")">
                         <a href="@Url.Action("Index", "FileNotes")"><span class="fa fa-sticky-note mr-3" style="color:white;"></span> File Notes</a>

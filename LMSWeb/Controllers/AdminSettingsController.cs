@@ -201,7 +201,6 @@ namespace LMSWeb.Controllers
             return result;
         }
 
-
         public ActionResult GetAllAdminUsers()
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
@@ -219,7 +218,24 @@ namespace LMSWeb.Controllers
             return PartialView("_AddAdminUser", objuserviewmodel);
         }
 
+        public string GetClientLogo()
+        {
+            string logoPath = string.Empty;
+            TblUser model = (TblUser)Session["UserSession"];
+            LMSBL.Repository.CRMRepository CRMRepo = new LMSBL.Repository.CRMRepository();
+            var clientModel = CRMRepo.GetClientById(Convert.ToInt32(model.CRMClientId));
+            logoPath = clientModel[0].ClientLogo;
+            return logoPath;
+        }
 
+        [HttpPost]
+        public ActionResult GetClientStages()
+        {
+            TblUser model = (TblUser)Session["UserSession"];
+            LMSBL.Repository.CRMRepository CRMRepo = new LMSBL.Repository.CRMRepository();
+            var stageModel = CRMRepo.GetCRMStagesList(Convert.ToInt32(model.CRMClientId));
+            return Json(stageModel, JsonRequestBehavior.AllowGet);
+        }
 
 
     }

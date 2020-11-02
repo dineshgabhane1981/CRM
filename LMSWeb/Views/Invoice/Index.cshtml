@@ -96,11 +96,11 @@
     $(document).ready(function () {
         document.getElementById("FileUpload").addEventListener('change', handleFileSelect, false);
         $('#dtInvoiceDate').datepicker({
-            format: 'mm/dd/yyyy',
+            format: 'dd/mm/yyyy',
             showWeek: true
         });
         $('#dtInvoiceDueDate').datepicker({
-            format: 'mm/dd/yyyy',
+            format: 'dd/mm/yyyy',
             showWeek: true
         });
         $('#btnAddItem').on("click", function () {
@@ -168,19 +168,20 @@
         if (isValidate) {
             $("#divLoader").show();
             var data = $('#frmaddInvoice').serialize();
-            console.log(data);
+           
             $.ajax({
                 url: $('#frmaddInvoice').attr('action'),
                 type: 'post',
                 dataType: "html",
                 data: data,
                 success: function (data) {
-                    console.log(data)
+                    
                     if (data == "True") {
                         toastr.success("Invoice Uploaded");
-                        var id = $('#ddlclientlist').val();
+                        var id = $('#ddluploadclientlist').val();
                         if (id != null && id != "") {
                             GetInvoices(id);
+                            ClearAllFields();
                             $('#dvClientInvoice').show();
                         }
                         $("#divLoader").hide();
@@ -321,20 +322,21 @@
         
 
         var data = $('#frmaddInvoice').serialize();
-        console.log(data);
+       
         $.ajax({
             url: $('#frmaddInvoice').attr('action'),
             type: 'post',
             dataType: "html",
             data: data,
             success: function (data) {
-                console.log(data)
+                
                 if (data == "True") {
                     toastr.success("Invoice Saved");
                     var id = $('#ddlclientlist').val();
                     if (id != null && id != "") {
                         GetInvoices(id);
                         $('#dvClientInvoice').show();
+                        ClearAllFields();
                     }
                     $("#divLoader").hide();
                 }
@@ -374,10 +376,10 @@
     });
 
     $('#ddlInvoiceTypelist').change(function () {
-        console.log(111)
+       
         $("#divLoader").show();
         var id = $('#ddlInvoiceTypelist').val();
-        console.log(id)
+        
         if (id != null && id != "") {
             if (id == "Receipt") {
                 var clientid = $('#ddluploadclientlist').val();
@@ -403,7 +405,7 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                console.log(111)
+                
                 $('[id*=ddlInvoicenolist]').empty();
                 var listBox = $('[id*=ddlInvoicenolist]');
                 $.map(response, function (item) {
@@ -417,7 +419,7 @@
             failure: function (response) {
             },
             error: function (response) {
-                console.log(222)
+                
             }
         });
     }
@@ -514,12 +516,12 @@
         $("#ObjCRMInvoivce_GSTNumber").val(response.ObjCRMInvoivce.GSTNumber);
 
         var invoiceDate = new Date(parseInt(response.ObjCRMInvoivce.InvoiceDate.substr(6)));
-        $("#dtInvoiceDate").val(invoiceDate.format("mm/dd/yyyy"));
-        $("#dtInvoiceDate").datepicker("setDate", invoiceDate.format("mm/dd/yyyy"));
+        $("#dtInvoiceDate").val(invoiceDate.format("dd/mm/yyyy"));
+        $("#dtInvoiceDate").datepicker("setDate", invoiceDate.format("dd/mm/yyyy"));
 
         var invoiceDueDate = new Date(parseInt(response.ObjCRMInvoivce.InvoiceDueDate.substr(6)));
-        $("#dtInvoiceDueDate").val(invoiceDueDate.format("mm/dd/yyyy"));
-        $("#dtInvoiceDueDate").datepicker("setDate", invoiceDueDate.format("mm/dd/yyyy"));
+        $("#dtInvoiceDueDate").val(invoiceDueDate.format("dd/mm/yyyy"));
+        $("#dtInvoiceDueDate").datepicker("setDate", invoiceDueDate.format("dd/mm/yyyy"));
 
         $("#ObjCRMInvoivce_Reference").val(response.ObjCRMInvoivce.Reference);
         $('#ddlcurrencylist').val(response.ObjCRMInvoivce.InvoiceCurrency);
@@ -535,8 +537,7 @@
     function LoadInvoiceItemsForEdit(response) {
         $("#dvInvoiceItems").html("");
         $.each(response.ObjCRMInvoiceItemLST, function (index, value) {
-            console.log(value);
-
+            
             var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + value.ItemId + " style=\"display:flex;\">";
 
             itemHTML += "<div class=\"col-sm-4\">";
@@ -602,13 +603,13 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                console.log(111)
+                
                 $("#divLoader").hide();
             },
             failure: function (response) {
             },
             error: function (response) {
-                console.log(response.responseText)
+                
                 if (response.responseText != "") {
                    var docurl = "@baseURL/Temp/" + response.responseText;
                        window.open(docurl);
@@ -640,4 +641,28 @@
         reader.readAsBinaryString(f);
     }
 
+    function ClearAllFields() {
+        $("#dvInvoiceItems").html("");
+        $("#ObjCRMInvoivce_InvoiceId").val("");
+        $("#ObjCRMInvoivce_Status").val("");
+        $('#ddlclientlist>option:eq(0)').attr('selected', true);
+        //$('#ddlclientlist').val("Select Client");
+        $('#ddluploadclientlist>option:eq(0)').attr('selected', true);
+        //$('#ddluploadclientlist').val("Select Client");
+        //$('#ddlInvoiceTypelist').val("Select Type");
+        $('#ddlInvoiceTypelist>option:eq(0)').attr('selected', true);
+        $("#ObjCRMInvoivce_InvoiceNumber").val("");
+        $("#invoiceNumber").html("");
+        $("#invoiceNumberUpload").html("");
+        $("#ObjCRMInvoivce_GSTNumber").val("");        
+        $("#dtInvoiceDate").val("");        
+        $("#dtInvoiceDueDate").val("");  
+        $("#ObjCRMInvoivce_Reference").val("");
+        $('#ddlcurrencylist').val("");
+        $('#invoiceList').hide();
+        $("#txtsubtotal").val("");
+        $("#txtgstno").val("");
+        $("#txttotal").val("");
+        $("#FileUpload").val("");
+    }
 </script>

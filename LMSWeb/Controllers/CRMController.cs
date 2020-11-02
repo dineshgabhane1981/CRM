@@ -12,6 +12,7 @@ namespace LMSWeb.Controllers
     public class CRMController : Controller
     {
         CRMDashboardRepository dashboardRepo = new CRMDashboardRepository();
+        CRMRepository CRMRepo = new CRMRepository();
         // GET: CRM
         public ActionResult Index()
         {
@@ -21,7 +22,8 @@ namespace LMSWeb.Controllers
             
             objDashboardViewModel.objCRMClientList = dashboardRepo.GetCRMDashboardClientList(sessionUser, 3);
             objDashboardViewModel.objCRMInvoiceList = dashboardRepo.GetCRMDashboardInvoiceList(sessionUser);
-           
+            objDashboardViewModel.objStageList = CRMRepo.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
+
 
             return View(objDashboardViewModel);
         }

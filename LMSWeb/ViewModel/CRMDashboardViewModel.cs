@@ -14,6 +14,7 @@ namespace LMSWeb.ViewModel
         public List<CRMDashboardClients> objCRMClientList { get; set; }        
         public List<CRMDashboardInvoices> objCRMInvoiceList { get; set; }
         public List<tblCRMUser> objSearchList { get; set; }
+        public List<tblCRMClientStage> objStageList { get; set; }
     }
 
     
