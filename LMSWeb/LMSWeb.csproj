@@ -948,6 +948,7 @@
     <Content Include="Views\AdminSettings\_AddAdminUser.cshtml" />
     <Content Include="Views\CRM\_SearchResultDashboard.cshtml" />
     <Content Include="Views\CRMUsers\_QualificationList.cshtml" />
+    <Content Include="Views\Invoice\_AllInvoices.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

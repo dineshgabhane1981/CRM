@@ -13,10 +13,12 @@ namespace LMSWeb.ViewModel
         public tblCRMUser ObjCRMUser { get; set; }
         public tblCRMClient ObjCRMClient { get; set; }
         public List<tblCRMInvoice> ObjCRMInvoivceLST { get; set; }
+        public List<tblCRMInvoice> ObjCRMAllInvoivceLST { get; set; }
         public List<tblCRMInvoiceItem> ObjCRMInvoiceItemLST { get; set; }
         public List<SelectListItem> lstCRMclient { get; set; }
         public List<SelectListItem> lstCRMCurriencies { get; set; }
         public List<SelectListItem> lstCRMInvoices { get; set; }
+        public List<CRMDashboardInvoices> lstAllInvoices { get; set; }
         public string uploadInvoiceNo { get; set; }
         public string JsonData { get; set; }
         public string filebase64 { get; set; }

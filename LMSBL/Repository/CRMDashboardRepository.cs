@@ -124,6 +124,8 @@ namespace LMSBL.Repository
             return lstInvoices;
         }
 
+        
+
         public List<tblCRMUser> GetSearchDashboardList(TblUser objUser, string searchText)
         {
             List<tblCRMUser> objResult = new List<tblCRMUser>();

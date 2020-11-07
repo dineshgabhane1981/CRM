@@ -14,6 +14,7 @@ using Amazon.S3.Transfer;
 using Amazon;
 using Amazon.S3.IO;
 using System.IO;
+using LMSBL.DBModels;
 
 namespace LMSBL.Repository
 {
@@ -131,7 +132,7 @@ namespace LMSBL.Repository
             }
             return status;
         }
-        
+
         public bool UploadInvoice(tblCRMInvoice ObjCRMInvoivce, string fileBase64)
         {
             bool status = false;
@@ -145,14 +146,14 @@ namespace LMSBL.Repository
                         context.SaveChanges();
 
                         //Upload File
-                        
+
                         IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
                         TransferUtility utility = new TransferUtility(client);
                         TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
 
                         var clientName = GetUserFolderName(ObjCRMInvoivce.ClientId);
                         string path = @"clients/" + clientName + "/Invoice";
-                       
+
                         S3DirectoryInfo di = new S3DirectoryInfo(client, AWSBucketName, path);
                         if (!di.Exists)
                         {
@@ -181,8 +182,8 @@ namespace LMSBL.Repository
             }
             return status;
         }
-        
-        
+
+
         public List<tblCRMInvoice> GetInvoices(int ClientId)
         {
             List<tblCRMInvoice> ObjCRMInvoices = new List<tblCRMInvoice>();
@@ -191,6 +192,56 @@ namespace LMSBL.Repository
                 ObjCRMInvoices = context.tblCRMInvoices.Where(x => x.ClientId == ClientId).ToList();
             }
             return ObjCRMInvoices;
+        }
+
+        public List<CRMDashboardInvoices> GetCRMAllInvoiceList(TblUser objUser)
+        {
+            List<CRMDashboardInvoices> lstInvoices = new List<CRMDashboardInvoices>();
+            using (var context = new CRMContext())
+            {
+                //lstInvoices = context.tblCRMInvoices.Where(x => x.ClientId == clientID).OrderByDescending(p => p.UpdatedOn).Take(5).ToList();
+                int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+                if (objUser.RoleId == 2)
+                {
+                    lstInvoices = (from a in context.tblCRMInvoices
+                                   join b in context.tblCRMUsers on a.ClientId equals b.Id
+                                   where b.ClientId == CRMClientId
+                                   select new CRMDashboardInvoices
+                                   {
+                                       InvoiceId = a.InvoiceId,
+                                       InvoiceNumber = a.InvoiceNumber,
+                                       InvoiceDueDate = a.InvoiceDueDate,
+                                       ClientId = a.ClientId,
+                                       FullName = b.FirstName + " " + b.LastName,
+                                       Amount = a.InvoiceTotal,
+                                       Currency = a.InvoiceCurrency,
+                                       InvoiceStatus=a.Status,
+                                       InvoiceType=a.InvoiceType,
+                                       UpdatedOn = a.UpdatedOn
+                                   }).OrderByDescending(p => p.UpdatedOn).ToList();
+                }
+                else
+                {
+                    lstInvoices = (from a in context.tblCRMInvoices
+                                   join b in context.tblCRMUsers on a.ClientId equals b.Id
+                                   where b.ClientId == CRMClientId && a.InvoiceType == "Invoice" && a.Status != "Uploaded" && b.AssignedTo == objUser.UserId
+                                   select new CRMDashboardInvoices
+                                   {
+                                       InvoiceId = a.InvoiceId,
+                                       InvoiceNumber = a.InvoiceNumber,
+                                       InvoiceDueDate = a.InvoiceDueDate,
+                                       ClientId = a.ClientId,
+                                       FullName = b.FirstName + " " + b.LastName,
+                                       Amount = a.InvoiceTotal,
+                                       Currency = a.InvoiceCurrency,
+                                       UpdatedOn = a.UpdatedOn
+
+                                   }).OrderByDescending(p => p.UpdatedOn).ToList();
+                }
+
+            }
+
+            return lstInvoices;
         }
 
         public tblCRMInvoice GetInvoiceForEdit(int Id)
@@ -241,7 +292,7 @@ namespace LMSBL.Repository
             return status;
         }
 
-        public string DownloadFileFromS3(int id,int clientId)
+        public string DownloadFileFromS3(int id, int clientId)
         {
             string returnLocation = string.Empty;
             try
@@ -249,7 +300,7 @@ namespace LMSBL.Repository
                 using (var context = new CRMContext())
                 {
                     var objInvoice = context.tblCRMInvoices.FirstOrDefault(x => x.InvoiceId == id);
-                    var filelink = clientId+"/"+ objInvoice.ClientId+ "/Invoice/" + objInvoice.InvoiceFileName;
+                    var filelink = clientId + "/" + objInvoice.ClientId + "/Invoice/" + objInvoice.InvoiceFileName;
                     string _FilePath = ConfigurationManager.AppSettings["SharedLocation"];
                     string FileLocation = _FilePath + "/" + objInvoice.InvoiceFileName; ;
                     FileStream fs = File.Create(FileLocation);

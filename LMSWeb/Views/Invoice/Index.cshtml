@@ -4,91 +4,185 @@
     Layout = "~/Views/Shared/_LayoutCRM.cshtml";
     var baseURL = System.Configuration.ConfigurationManager.AppSettings["BaseURL"];
 }
+<style>
+
+    body {
+        background: #CDDC39;
+        font-family: 'Arimo', sans-serif;
+    }
+
+    h2 {
+        color: #000;
+        text-align: center;
+        font-size: 2em;
+    }
+
+    .warpper {
+        display: grid;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tab {
+        cursor: pointer;
+        padding: 10px 20px;
+        margin: 0px 2px;
+        background-color: #2f4353 !important;
+        display: inline-block;
+        color: #fff;
+        border-radius: 3px 3px 0px 0px;
+        box-shadow: 0 0.5rem 0.8rem #00000080;
+    }
+
+    .tabs {
+        padding-left: 25px;
+    }
+
+    .panels {
+        background: #ffffff;
+        box-shadow: 0 2rem 2rem #00000080;
+        width: 100%;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .panel {
+        display: none;
+        animation: fadein .8s;
+    }
+
+    .panel-title {
+        font-size: 1.5em;
+        font-weight: bold
+    }
+
+    .radio {
+        display: none;
+    }
+
+    #one:checked ~ .panels #one-panel,
+    #two:checked ~ .panels #two-panel,
+    #three:checked ~ .panels #three-panel {
+        display: block
+    }
+
+    #one:checked ~ .tabs #one-tab,
+    #two:checked ~ .tabs #two-tab,
+    #three:checked ~ .tabs #three-tab {
+        background: #fff !important;
+        color: #000;
+        border-top: 3px solid #fff;
+        border-left: 3px solid #fff;
+        border-right: 3px solid #fff;
+        font-weight: bold;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+    }
+</style>
+
+
+
 
 
 @using (Html.BeginForm("AddInvoice", "Invoice", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmaddInvoice", @class = "multisteps-form__form" }))
 {
-
-    <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white" data-animation="scaleIn">
-        <h5 class="multisteps-form__title">Upload Invoice</h5>
-        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-            <div class="col-sm-6">
-                @Html.HiddenFor(model => model.filebase64)
-                @Html.HiddenFor(model => model.UploadedFileName)
-                @Html.DropDownListFor(model => model.Client, new SelectList(Model.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddluploadclientlist", @class = "input100" })
-            </div>
-            <div class="col-sm-6">
-
-                Invoice No : <span id="invoiceNumberUpload">@Model.ObjCRMInvoivce.InvoiceNumber</span>
-            </div>
+    <div class="warpper">
+        <input class="radio" id="one" name="group" type="radio" checked>
+        <input class="radio" id="two" name="group" type="radio">
+        <div class="tabs">
+            <label class="tab" id="one-tab" for="one">All Invoices</label>
+            <label class="tab" id="two-tab" for="two">Create Invoice</label>
         </div>
-        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-            <div class="col-sm-4">
-                @Html.DropDownListFor(model => model.ObjCRMInvoivce.InvoiceType, new SelectList(Model.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100" })
+        <div class="panels">
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="one-panel">
+                @Html.Partial("~/Views/Invoice/_AllInvoices.cshtml", Model)
             </div>
-            <div class="col-sm-3">
-                <div id="invoiceList" style="display:none;">
-                    @Html.DropDownListFor(model => model.uploadInvoiceNo, new SelectList("", "Value", "Text"), "Select Invoice", htmlAttributes: new { id = "ddlInvoicenolist", @class = "input50" })
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" id="two-panel">
+
+                <h5 class="multisteps-form__title">Upload Invoice</h5>
+                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                    <div class="col-sm-6">
+                        @Html.HiddenFor(model => model.filebase64)
+                        @Html.HiddenFor(model => model.UploadedFileName)
+                        @Html.DropDownListFor(model => model.Client, new SelectList(Model.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddluploadclientlist", @class = "input100" })
+                    </div>
+                    <div class="col-sm-6">
+
+                        Invoice No : <span id="invoiceNumberUpload">@Model.ObjCRMInvoivce.InvoiceNumber</span>
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-5">
-                <input type="file" name="FileUpload" id="FileUpload" style="width:75%;" />
-                <button type="button" id="btnUpload" class="btn btn-primary"> <b>Upload</b></button>
-            </div>
-        </div>
-        <hr />
-        <h5 class="multisteps-form__title">Create Invoice</h5>
-        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-            @Html.HiddenFor(model => model.ObjCRMInvoivce.InvoiceId)
-            @Html.HiddenFor(model => model.ObjCRMInvoivce.Status)
-            @Html.HiddenFor(model => model.JsonData)
-            <div class="col-sm-6">
-                @Html.DropDownListFor(model => model.ObjCRMInvoivce.ClientId, new SelectList(Model.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddlclientlist", @class = "input100" })
-            </div>
-            <div class="col-sm-6">
-                @Html.HiddenFor(model => model.ObjCRMInvoivce.InvoiceNumber)
-                Invoice No : <span id="invoiceNumber">@Model.ObjCRMInvoivce.InvoiceNumber</span>
-            </div>
-        </div>
-        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-            <div class="col-sm-4">
-                @Html.TextBoxFor(model => model.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @readonly = "readonly", @autocomplete = "off", placeholder = "Invoice Date" })
-                @Html.TextBoxFor(model => model.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference" })
-            </div>
-            <div class="col-sm-4">
-                @Html.TextBoxFor(model => model.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @readonly = "readonly", @autocomplete = "off", placeholder = "Invoice Due Date" })
-                @Html.DropDownListFor(model => model.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100" })
-            </div>
-            <div class="col-sm-4">
-                @Html.TextBoxFor(model => model.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number" })
-                <button type="button" id="btnAddItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Item</b></button>
-            </div>
-        </div>
-        <div id="dvInvoiceItems"></div>
-        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-            <div class="col-sm-4"> </div>
-            <div class="col-sm-4" style="text-align:end;">@Html.TextBoxFor(model => model.ObjCRMInvoivce.GSTRate, new { @class = "input50", @type = "number", @id = "txtgstno", placeholder = "GST Rate" })</div>
-            <div class="col-sm-4">
-                @Html.TextBoxFor(model => model.ObjCRMInvoivce.SubTotal, new { @class = "input100", @id = "txtsubtotal", @readonly = "readonly", placeholder = "Sub Total" })
+                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                    <div class="col-sm-4">
+                        @Html.DropDownListFor(model => model.ObjCRMInvoivce.InvoiceType, new SelectList(Model.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100" })
+                    </div>
+                    <div class="col-sm-3">
+                        <div id="invoiceList" style="display:none;">
+                            @Html.DropDownListFor(model => model.uploadInvoiceNo, new SelectList("", "Value", "Text"), "Select Invoice", htmlAttributes: new { id = "ddlInvoicenolist", @class = "input50" })
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="file" name="FileUpload" id="FileUpload" style="width:75%;" />
+                        <button type="button" id="btnUpload" class="btn btn-primary"> <b>Upload</b></button>
+                    </div>
+                </div>
+                <hr />
+                <h5 class="multisteps-form__title">Create Invoice</h5>
+                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                    @Html.HiddenFor(model => model.ObjCRMInvoivce.InvoiceId)
+                    @Html.HiddenFor(model => model.ObjCRMInvoivce.Status)
+                    @Html.HiddenFor(model => model.JsonData)
+                    <div class="col-sm-6">
+                        @Html.DropDownListFor(model => model.ObjCRMInvoivce.ClientId, new SelectList(Model.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddlclientlist", @class = "input100" })
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.HiddenFor(model => model.ObjCRMInvoivce.InvoiceNumber)
+                        Invoice No : <span id="invoiceNumber">@Model.ObjCRMInvoivce.InvoiceNumber</span>
+                    </div>
+                </div>
+                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @readonly = "readonly", @autocomplete = "off", placeholder = "Invoice Date" })
+                        @Html.TextBoxFor(model => model.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference" })
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @readonly = "readonly", @autocomplete = "off", placeholder = "Invoice Due Date" })
+                        @Html.DropDownListFor(model => model.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100" })
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number" })
+                        <button type="button" id="btnAddItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Item</b></button>
+                    </div>
+                </div>
+                <div id="dvInvoiceItems"></div>
+                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                    <div class="col-sm-4"> </div>
+                    <div class="col-sm-4" style="text-align:end;">@Html.TextBoxFor(model => model.ObjCRMInvoivce.GSTRate, new { @class = "input50", @type = "number", @id = "txtgstno", placeholder = "GST Rate" })</div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.ObjCRMInvoivce.SubTotal, new { @class = "input100", @id = "txtsubtotal", @readonly = "readonly", placeholder = "Sub Total" })
+
+                    </div>
+                </div>
+                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.ObjCRMInvoivce.InvoiceTotal, new { @class = "input100", @id = "txttotal", @readonly = "readonly", placeholder = "Invoice Total" })
+                    </div>
+                </div>
+                <div class="button-row d-flex mt-2">
+                    <button type="button" id="btnSaveDraft" class="btn btn-primary ml-auto"> <b>Save as Draft</b></button>&nbsp;&nbsp;
+                    <button type="button" id="btnSave" class="btn btn-primary"> <b>Save</b></button>
+                </div>
+
+                <br />
+
+                <div id="dvClientInvoice">
+                    @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model)
+                </div>
 
             </div>
-        </div>
-        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-            <div class="col-sm-4"></div>
-            <div class="col-sm-4"></div>
-            <div class="col-sm-4">
-                @Html.TextBoxFor(model => model.ObjCRMInvoivce.InvoiceTotal, new { @class = "input100", @id = "txttotal", @readonly = "readonly", placeholder = "Invoice Total" })
-            </div>
-        </div>
-        <div class="button-row d-flex mt-2">
-            <button type="button" id="btnSaveDraft" class="btn btn-primary ml-auto"> <b>Save as Draft</b></button>&nbsp;&nbsp;
-            <button type="button" id="btnSave" class="btn btn-primary"> <b>Save</b></button>
-        </div>
-    </div>
-    <br />
 
-    <div id="dvClientInvoice">
-        @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model)
+        </div>
     </div>
 }
 
@@ -119,23 +213,25 @@
             UploadInvoice();
         });
     });
-    var count = 1;
+    var count = 0;
     function AddInvoiceItem() {
-        var itemHTML = "<div class=\"row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto\" id=dvItem" + count + " style=\"display:flex;\">";
+        count++;
+        var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + count + " style=\"display:flex;\">";
 
         itemHTML += "<div class=\"col-sm-4\">";
         itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + count + "></input>";
         itemHTML += "</div>";
 
-        itemHTML += "<div class=\"col-sm-3\">";
-        itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Price\" id=txtItemPrice" + count + "></input>";
+        itemHTML += "<div class=\"col-sm-4\" style=display:flex;>";
+        itemHTML += "<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemPrice" + count + "></input>";
+        itemHTML += "&nbsp;<input type=\"number\" class=input25 placeholder=\"Item Qty\" id=txtItemQty" + count + "></input>";
         itemHTML += "</div>";
 
-        itemHTML += "<div class=\"col-sm-3\">";
-        itemHTML += "<input type=\"number\" class=input100 placeholder=\"Item Amount\" id=txtItemAmount" + count + " onfocusout=\"CalculateSubTotal(this)\"></input>";
+        itemHTML += "<div class=\"col-sm-2\" style=align:end;>";
+        itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Amount\" id=txtItemAmount" + count + " onfocusout=\"CalculateSubTotal(this)\"></input>";
         itemHTML += "</div>";
         itemHTML += "<div class=\"col-sm-2\" style=text-align:end;>";
-        itemHTML += "<button onclick=\"removeItem(" + count + ")\" id=btn" + count + " type=\"button\" class=\"question-btn-for-option btn text-center btn-primary  \" style=\"margin-left: 5px;\"> - </button>";
+        itemHTML += "<button onclick=\"removeItem(" + count + ")\" id=btn" + count + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
         itemHTML += "</div>";
 
         itemHTML += "</div>";
@@ -146,6 +242,7 @@
 
     function removeItem(id) {
         $("#dvItem" + id).remove();
+        CalculateSubTotal();
     }
 
     function SaveDraftInvoice() {
@@ -163,19 +260,19 @@
     }
 
     function UploadInvoice() {
-        
+
         var isValidate = ValidateUploadInvoice();
         if (isValidate) {
             $("#divLoader").show();
             var data = $('#frmaddInvoice').serialize();
-           
+
             $.ajax({
                 url: $('#frmaddInvoice').attr('action'),
                 type: 'post',
                 dataType: "html",
                 data: data,
                 success: function (data) {
-                    
+
                     if (data == "True") {
                         toastr.success("Invoice Uploaded");
                         var id = $('#ddluploadclientlist').val();
@@ -313,23 +410,19 @@
             invoiceItem = {}
             invoiceItem["ItemDesc"] = $("#txtItemDesc" + id).val();
             invoiceItem["ItemPrice"] = $("#txtItemPrice" + id).val();
+            invoiceItem["ItemQty"] = $("#txtItemQty" + id).val();
             invoiceItem["ItemAmount"] = $("#txtItemAmount" + id).val();
             ItemObject.push(invoiceItem)
         });
-
-
-        $("#JsonData").val(JSON.stringify(ItemObject));
         
-
+        $("#JsonData").val(JSON.stringify(ItemObject));
         var data = $('#frmaddInvoice').serialize();
-       
         $.ajax({
             url: $('#frmaddInvoice').attr('action'),
             type: 'post',
             dataType: "html",
             data: data,
             success: function (data) {
-                
                 if (data == "True") {
                     toastr.success("Invoice Saved");
                     var id = $('#ddlclientlist').val();
@@ -348,49 +441,49 @@
         });
     }
 
-    $('#ddlclientlist').change(function () {        
+    $('#ddlclientlist').change(function () {
         var id = $('#ddlclientlist').val();
         if (id != null && id != "") {
             GetInvoiceNumber(id);
             GetInvoices(id);
-            $('#dvClientInvoice').show();           
+            $('#dvClientInvoice').show();
         }
         else {
-            $('#dvClientInvoice').hide();              
+            $('#dvClientInvoice').hide();
         }
        ;
     });
 
-    $('#ddluploadclientlist').change(function () {         
+    $('#ddluploadclientlist').change(function () {
         var id = $('#ddluploadclientlist').val();
-        if (id != null && id != "") {           
+        if (id != null && id != "") {
             GetInvoiceNumberForUpload(id);
             GetInvoices(id);
             $('#dvClientInvoice').show();
         }
         else {
             $('#dvClientInvoice').hide();
-           
+
         }
-        
+
     });
 
     $('#ddlInvoiceTypelist').change(function () {
-       
+
         $("#divLoader").show();
         var id = $('#ddlInvoiceTypelist').val();
-        
+
         if (id != null && id != "") {
             if (id == "Receipt") {
                 var clientid = $('#ddluploadclientlist').val();
-                GetInvoicesList(clientid);                
+                GetInvoicesList(clientid);
                 $('#invoiceList').show();
             }
-            else {                
+            else {
                 $('#invoiceList').hide();
             }
         }
-        else {            
+        else {
             $('#invoiceList').hide();
         }
         $("#divLoader").hide();
@@ -405,7 +498,7 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                
+
                 $('[id*=ddlInvoicenolist]').empty();
                 var listBox = $('[id*=ddlInvoicenolist]');
                 $.map(response, function (item) {
@@ -419,13 +512,13 @@
             failure: function (response) {
             },
             error: function (response) {
-                
+
             }
         });
     }
 
     function GetInvoiceNumber(id) {
-        
+
         $.ajax({
             type: "POST",
             url: "/Invoice/GetInvoiceNumber",
@@ -435,14 +528,14 @@
             success: function (response) {
                 $("#invoiceNumber").val(response);
                 $("#ObjCRMInvoivce_InvoiceNumber").val(response);
-                
+
             },
             failure: function (response) {
             },
             error: function (response) {
                 $("#invoiceNumber").html(response.responseText);
                 $("#ObjCRMInvoivce_InvoiceNumber").val(response.responseText);
-                
+
             }
         });
     }
@@ -537,19 +630,20 @@
     function LoadInvoiceItemsForEdit(response) {
         $("#dvInvoiceItems").html("");
         $.each(response.ObjCRMInvoiceItemLST, function (index, value) {
-            
+
             var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + value.ItemId + " style=\"display:flex;\">";
 
             itemHTML += "<div class=\"col-sm-4\">";
             itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + value.ItemId + "></input>";
             itemHTML += "</div>";
 
-            itemHTML += "<div class=\"col-sm-3\">";
-            itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Price\" id=txtItemPrice" + value.ItemId + "></input>";
+            itemHTML += "<div class=\"col-sm-4\" style=display:flex;>";
+            itemHTML += "<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemPrice" + value.ItemId + "></input>";
+            itemHTML += "&nbsp;<input type=\"number\" class=input25 placeholder=\"Item Qty\" id=txtItemQty" + value.ItemId + "></input>";
             itemHTML += "</div>";
 
-            itemHTML += "<div class=\"col-sm-3\">";
-            itemHTML += "<input type=\"number\" class=input100 placeholder=\"Item Amount\" id=txtItemAmount" + value.ItemId + " onfocusout=\"CalculateSubTotal(this)\"></input>";
+            itemHTML += "<div class=\"col-sm-2\">";
+            itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Amount\" id=txtItemAmount" + value.ItemId + " onfocusout=\"CalculateSubTotal(this)\"></input>";
             itemHTML += "</div>";
             itemHTML += "<div class=\"col-sm-2\" style=text-align:end;>";
             itemHTML += "<button onclick=\"removeItem(" + value.ItemId + ")\" id=btn" + value.ItemId + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
@@ -562,6 +656,8 @@
             $("#txtItemDesc" + value.ItemId).val(value.ItemDescription);
             $("#txtItemPrice" + value.ItemId).val(value.Price);
             $("#txtItemAmount" + value.ItemId).val(value.Amount);
+            $("#txtItemQty" + value.ItemId).val(value.ItemQty);
+            count = value.ItemId;
         });
     }
 
@@ -603,13 +699,13 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                
+
                 $("#divLoader").hide();
             },
             failure: function (response) {
             },
             error: function (response) {
-                
+
                 if (response.responseText != "") {
                    var docurl = "@baseURL/Temp/" + response.responseText;
                        window.open(docurl);
@@ -634,7 +730,7 @@
                 var binaryData = e.target.result;
                 var base64String = window.btoa(binaryData);
                 $("#filebase64").val(base64String);
-                $("#UploadedFileName").val($("#FileUpload")[0].files[0].name);                
+                $("#UploadedFileName").val($("#FileUpload")[0].files[0].name);
             };
         })(f);
         // Read in the image file as a data URL.
@@ -654,9 +750,9 @@
         $("#ObjCRMInvoivce_InvoiceNumber").val("");
         $("#invoiceNumber").html("");
         $("#invoiceNumberUpload").html("");
-        $("#ObjCRMInvoivce_GSTNumber").val("");        
-        $("#dtInvoiceDate").val("");        
-        $("#dtInvoiceDueDate").val("");  
+        $("#ObjCRMInvoivce_GSTNumber").val("");
+        $("#dtInvoiceDate").val("");
+        $("#dtInvoiceDueDate").val("");
         $("#ObjCRMInvoivce_Reference").val("");
         $('#ddlcurrencylist').val("");
         $('#invoiceList').hide();

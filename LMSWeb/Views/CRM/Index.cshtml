@@ -30,7 +30,13 @@
     $(document).ready(function () {
         
         $('#btnSearchAll').on("click", function () {
-            SearchClients();
+            if ($("#txtSearch").val() != "") {
+                SearchClients();
+            }
+            else {
+                toastr.error('Please enter text to search');
+                $("#txtSearch").focus();
+            }
         });
     });
 

@@ -16,5 +16,7 @@ namespace LMSBL.DBModels.CRMNew
         public decimal? Amount { get; set; }
         public string Currency { get; set; }
         public DateTime? UpdatedOn { get; set; }
+        public string InvoiceType { get; set; }
+        public string InvoiceStatus { get; set; }
     }
 }

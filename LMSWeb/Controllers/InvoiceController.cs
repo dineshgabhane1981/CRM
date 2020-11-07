@@ -32,6 +32,7 @@ namespace LMSWeb.Controllers
         CRMNotesRepository crmnr = new CRMNotesRepository();
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
         CRMInvoiceRepository invoiceRepository = new CRMInvoiceRepository();
+        Exceptions newException = new Exceptions();
         // GET: Invoice
         public ActionResult Index()
         {
@@ -42,8 +43,9 @@ namespace LMSWeb.Controllers
             CRMInvoiceModelView.ObjCRMInvoivce = objNewInvoice;
 
             CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
-            
+
             CRMInvoiceModelView.lstCRMclient = crmnr.GetClient(sessionUser);
+            CRMInvoiceModelView.lstAllInvoices = invoiceRepository.GetCRMAllInvoiceList(sessionUser);
             return View(CRMInvoiceModelView);
         }
 
@@ -74,6 +76,10 @@ namespace LMSWeb.Controllers
                     InvoiveItem.ItemDescription = Convert.ToString(item["ItemDesc"]);
                     InvoiveItem.Price = Convert.ToDecimal(item["ItemPrice"]);
                     InvoiveItem.Amount = Convert.ToDecimal(item["ItemAmount"]);
+                    if (!string.IsNullOrEmpty(Convert.ToString(item["ItemQty"])))
+                    {
+                        InvoiveItem.ItemQty = Convert.ToInt32(item["ItemQty"]);
+                    }
                     lstInvoiceItems.Add(InvoiveItem);
                 }
 
@@ -84,7 +90,7 @@ namespace LMSWeb.Controllers
                 CRMInvoiceModelView.ObjCRMInvoivce.Status = "Uploaded";
                 CRMInvoiceModelView.ObjCRMInvoivce.InvoiceFileName = CRMInvoiceModelView.UploadedFileName;
                 CRMInvoiceModelView.ObjCRMInvoivce.ClientId = CRMInvoiceModelView.Client;
-                if (CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType== "Receipt")
+                if (CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType == "Receipt")
                 {
                     CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber = CRMInvoiceModelView.uploadInvoiceNo + "_Receipt";
                 }
@@ -137,31 +143,38 @@ namespace LMSWeb.Controllers
         public string DownloadInvoice(int InvoiceId)
         {
             string fileName = string.Empty;
-            CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
-            CRMInvoiceModelView.ObjCRMInvoivce = invoiceRepository.GetInvoiceForEdit(InvoiceId);
-            CRMInvoiceModelView.ObjCRMUser = crmUsersRepository.GetCRMUserById(CRMInvoiceModelView.ObjCRMInvoivce.ClientId);
-            string _FilePath = ConfigurationManager.AppSettings["SharedLocation"];
-            if (CRMInvoiceModelView.ObjCRMInvoivce.Status != "Uploaded")
+            try
             {
-                fileName = CRMInvoiceModelView.ObjCRMUser.FirstName + "_" + CRMInvoiceModelView.ObjCRMUser.LastName + "_" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber + ".pdf";
+                CRMInvoiceViewModel CRMInvoiceModelView = new CRMInvoiceViewModel();
+                CRMInvoiceModelView.ObjCRMInvoivce = invoiceRepository.GetInvoiceForEdit(InvoiceId);
+                CRMInvoiceModelView.ObjCRMUser = crmUsersRepository.GetCRMUserById(CRMInvoiceModelView.ObjCRMInvoivce.ClientId);
+                string _FilePath = ConfigurationManager.AppSettings["SharedLocation"];
+                if (CRMInvoiceModelView.ObjCRMInvoivce.Status != "Uploaded")
+                {
+                    fileName = CRMInvoiceModelView.ObjCRMUser.FirstName + "_" + CRMInvoiceModelView.ObjCRMUser.LastName + "_" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber + ".pdf";
 
-                _FilePath = _FilePath + "/" + fileName;
-                Document pdfDoc = new Document();
-                FileStream stream = new FileStream(_FilePath, FileMode.Create);
-                PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
-                pdfDoc.Open();
-                string strHTML = GetInvoiceHTML(InvoiceId);
-                HTMLWorker htmlWorker = new HTMLWorker(pdfDoc);
-                htmlWorker.Parse(new StringReader(strHTML));
-                pdfWriter.CloseStream = false;
-                pdfDoc.Close();
-                stream.Close();               
-                
+                    _FilePath = _FilePath + "/" + fileName;
+                    Document pdfDoc = new Document();
+                    FileStream stream = new FileStream(_FilePath, FileMode.Create);
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, stream);
+                    pdfDoc.Open();
+                    string strHTML = GetInvoiceHTML(InvoiceId);
+                    HTMLWorker htmlWorker = new HTMLWorker(pdfDoc);
+                    htmlWorker.Parse(new StringReader(strHTML));
+                    pdfWriter.CloseStream = false;
+                    pdfDoc.Close();
+                    stream.Close();
+
+                }
+                else
+                {
+                    TblUser sessionUser = (TblUser)Session["UserSession"];
+                    fileName = invoiceRepository.DownloadFileFromS3(InvoiceId, Convert.ToInt32(sessionUser.CRMClientId));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TblUser sessionUser = (TblUser)Session["UserSession"];
-                fileName = invoiceRepository.DownloadFileFromS3(InvoiceId, Convert.ToInt32(sessionUser.CRMClientId));
+                newException.AddException(ex);
             }
 
             return fileName;
@@ -218,7 +231,7 @@ namespace LMSWeb.Controllers
                                     <tr>
                                         <td></td> <td></td> <td></td> 
                                         <td>";
-            if(!string.IsNullOrEmpty(imageUrl))
+            if (!string.IsNullOrEmpty(imageUrl))
             {
                 htmlString += "<img width = '100%' src = '" + imageUrl + @"' />";
             }
@@ -227,7 +240,7 @@ namespace LMSWeb.Controllers
 
                                         <tr>  
                                         <td><b>To: </b></td>  
-                                        <td>" + CRMInvoiceModelView.ObjCRMUser.FirstName + " " + CRMInvoiceModelView.ObjCRMUser.LastName + "<p>"+ CRMInvoiceModelView.ObjCRMUser.Address+ "</p>" +
+                                        <td>" + CRMInvoiceModelView.ObjCRMUser.FirstName + " " + CRMInvoiceModelView.ObjCRMUser.LastName + "<p>" + CRMInvoiceModelView.ObjCRMUser.Address + "</p>" +
                                         @" </td> 
                                         <td><b>From: </b></td> 
                                         <td>" + CRMInvoiceModelView.ObjCRMClient.ClientName + " " + CRMInvoiceModelView.ObjCRMClient.Address +
@@ -255,16 +268,16 @@ namespace LMSWeb.Controllers
 
             htmlString += "<table border = '0'  width = '100%' height = '100%'>";
 
-            htmlString += "<tr><th colspan='2'><b>Description</b></th><th><b>Price</b></th><th><b>Amount</b></th></tr>";
+            htmlString += "<tr><th colspan='2'><b>Description</b></th><th><b>Price</b></th><th><b>Qty</b></th><th><b>Amount</b></th></tr>";
             foreach (var item in CRMInvoiceModelView.ObjCRMInvoiceItemLST)
             {
-                htmlString += "<tr><td colspan='2'>" + item.ItemDescription + "</td><td>" + item.Price + "</td><td>" + item.Amount + "</td></tr>";
+                htmlString += "<tr><td colspan='2'>" + item.ItemDescription + "</td><td>" + item.Price + "</td><td>" + item.ItemQty + "</td><td>" + item.Amount + "</td></tr>";
             }
-            htmlString += "<tr><td colspan='4'>_____________________________________________________________________________</td></tr>";
-            htmlString += "<tr><td colspan='2'></td><td><b>Sub total</b></td><td>" + CRMInvoiceModelView.ObjCRMInvoivce.SubTotal + "  " + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency + "</td></tr>";
-            htmlString += "<tr><td colspan='2'></td><td><b>GST Rate</b></td><td>" + CRMInvoiceModelView.ObjCRMInvoivce.GSTRate + "%</td></tr>";
-            htmlString += "<tr><td colspan='2'></td><td><b>Total</b></td><td><b>" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceTotal + "  " + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency + "</b></td></tr>";
-            htmlString += "<tr><td colspan='4'>_____________________________________________________________________________</td></tr>";
+            htmlString += "<tr><td colspan='5'>_____________________________________________________________________________</td></tr>";
+            htmlString += "<tr><td colspan='3'></td><td><b>Sub total</b></td><td>" + CRMInvoiceModelView.ObjCRMInvoivce.SubTotal + "  " + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency + "</td></tr>";
+            htmlString += "<tr><td colspan='3'></td><td><b>GST Rate</b></td><td>" + CRMInvoiceModelView.ObjCRMInvoivce.GSTRate + "%</td></tr>";
+            htmlString += "<tr><td colspan='3'></td><td><b>Total</b></td><td><b>" + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceTotal + "  " + CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency + "</b></td></tr>";
+            htmlString += "<tr><td colspan='5'>_____________________________________________________________________________</td></tr>";
             htmlString += @"</table></body></html>";
 
             return htmlString;

@@ -226,8 +226,6 @@ namespace LMSWeb.Controllers
 
             return jsonData;
         }
-
-
         public CRMUserViewModel LoadModel(int userId)
         {
             CRMUserViewModel objModel = new CRMUserViewModel();
@@ -446,6 +444,10 @@ namespace LMSWeb.Controllers
                         if (!string.IsNullOrEmpty(Convert.ToString(itemInvoice["InvoiceItemId"])))
                         {
                             InvoiveItem.ItemId = Convert.ToInt32(itemInvoice["InvoiceItemId"]);
+                        }
+                        if (!string.IsNullOrEmpty(Convert.ToString(itemInvoice["ItemQty"])))
+                        {
+                            InvoiveItem.ItemQty = Convert.ToInt32(itemInvoice["ItemQty"]);
                         }
                         InvoiveItem.ItemDescription = Convert.ToString(itemInvoice["ItemDesc"]);
                         InvoiveItem.Price = Convert.ToDecimal(itemInvoice["ItemPrice"]);

@@ -249,8 +249,8 @@
                                                 @Html.TextBoxFor(model => model.ObjCRMUserQualification.Qualification, new { @class = "input100", @id = "txtQualification", placeholder = "Qualification", tabindex = 56 })
                                                 @Html.TextBoxFor(model => model.ObjCRMUserQualification.AwardingBody, new { @class = "input100", @id = "txtAwardingBody", placeholder = "Awarding Body", tabindex = 57 })
                                                 @Html.CheckBoxFor(model => model.ObjCRMUserQualification.Exempt, new { @id = "chkExempt", @style = "margin-top:10px;margin-left:50px;width:20px;height:20px;", tabindex = 58 }) Is Exempt
-                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.DateAwarded, "{0:dd/MM/yyyy}", new { @class = "input100", @id = "dtQualificationAwarded", placeholder = "Date Awarded (DD/MM/YYYY)", tabindex = 58 })
-                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.Country, new { @class = "input100", @id = "txtQualificationCountry", placeholder = "Country", tabindex = 58 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.DateAwarded, "{0:dd/MM/yyyy}", new { @class = "input100", @id = "dtQualificationAwarded", placeholder = "Date Awarded (DD/MM/YYYY)", tabindex = 59 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUserQualification.Country, new { @class = "input100", @id = "txtQualificationCountry", placeholder = "Country", tabindex = 60 })
                                                 <button class="btn btn-primary" style="margin-left:50px;" type="button" id="btnQualification" title="Add Qualification" tabindex="62">Add</button>
                                             </div>
                                         </div>
@@ -407,7 +407,7 @@
                                             </div>
                                             <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;" id="uploadInvoiceDiv">
                                                 <div class="col-sm-4">
-                                                    @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType, new SelectList(Model.CRMInvoiceModelView.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100" })
+                                                    @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType, new SelectList(Model.CRMInvoiceModelView.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100", tabindex = 74 })
                                                     <input type="hidden" id="hdnInvoiceType" name="hdnInvoiceType" />
                                                 </div>
                                                 <div class="col-sm-3">
@@ -438,15 +438,15 @@
                                                 </div>
                                                 <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
                                                     <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @autocomplete = "off", placeholder = "Invoice Date" })
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference", @id = "txtReference" })
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @autocomplete = "off", placeholder = "Invoice Date", tabindex = 75 })
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference", @id = "txtReference", tabindex = 78 })
                                                     </div>
                                                     <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @autocomplete = "off", placeholder = "Invoice Due Date" })
-                                                        @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.CRMInvoiceModelView.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100" })
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @autocomplete = "off", placeholder = "Invoice Due Date", tabindex = 76 })
+                                                        @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.CRMInvoiceModelView.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100", tabindex = 79 })
                                                     </div>
                                                     <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number", @id = "txtGstNumber" })
+                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number", @id = "txtGstNumber", tabindex = 77 })
                                                         <button type="button" id="btnAddItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Item</b></button>
                                                     </div>
                                                 </div>
@@ -1205,23 +1205,25 @@
             }
         });
     }
-    var count = 1;
+    var count = 0;
     function AddInvoiceItem() {
-        var itemHTML = "<div class=\"row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto\" id=dvItem" + count + " style=\"display:flex;\">";
+        count++;
+        var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + count + " style=\"display:flex;\">";
         itemHTML += "<input type=\"hidden\" id=hdnInvoiceItemId" + count + "></input>";
         itemHTML += "<div class=\"col-sm-4\">";
         itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + count + "></input>";
         itemHTML += "</div>";
 
-        itemHTML += "<div class=\"col-sm-3\">";
-        itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Price\" id=txtItemPrice" + count + "></input>";
+        itemHTML += "<div class=\"col-sm-4\" style=display:flex;>";
+        itemHTML += "<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemPrice" + count + "></input>";
+        itemHTML += "&nbsp;<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemQty" + count + "></input>";
         itemHTML += "</div>";
 
-        itemHTML += "<div class=\"col-sm-3\">";
-        itemHTML += "<input type=\"number\" class=input100 placeholder=\"Item Amount\" id=txtItemAmount" + count + " onfocusout=\"CalculateSubTotal(this)\"></input>";
+        itemHTML += "<div class=\"col-sm-2\">";
+        itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Amount\" id=txtItemAmount" + count + " onfocusout=\"CalculateSubTotal(this)\"></input>";
         itemHTML += "</div>";
         itemHTML += "<div class=\"col-sm-2\" style=text-align:end;>";
-        itemHTML += "<button onclick=\"removeItem(" + count + ")\" id=btn" + count + " type=\"button\" class=\"question-btn-for-option btn text-center btn-primary  \" style=\"margin-left: 5px;\"> - </button>";
+        itemHTML += "<button onclick=\"removeItem(" + count + ")\" id=btn" + count + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
         itemHTML += "</div>";
 
         itemHTML += "</div>";
@@ -1352,6 +1354,7 @@
             invoiceItem["InvoiceItemId"] = $("#hdnInvoiceItemId" + id).val();
             invoiceItem["ItemDesc"] = $("#txtItemDesc" + id).val();
             invoiceItem["ItemPrice"] = $("#txtItemPrice" + id).val();
+            invoiceItem["ItemQty"] = $("#txtItemQty" + id).val();
             invoiceItem["ItemAmount"] = $("#txtItemAmount" + id).val();
             ItemObject.push(invoiceItem)
         });
@@ -1443,13 +1446,14 @@
             itemHTML += "<div class=\"col-sm-4\">";
             itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + value.ItemId + "></input>";
             itemHTML += "</div>";
-
-            itemHTML += "<div class=\"col-sm-3\">";
-            itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Price\" id=txtItemPrice" + value.ItemId + "></input>";
+            
+            itemHTML += "<div class=\"col-sm-4\" style=display:flex;>";
+            itemHTML += "<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemPrice" + value.ItemId + "></input>";
+            itemHTML += "&nbsp;<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemQty" + value.ItemId + "></input>";
             itemHTML += "</div>";
 
-            itemHTML += "<div class=\"col-sm-3\">";
-            itemHTML += "<input type=\"number\" class=input100 placeholder=\"Item Amount\" id=txtItemAmount" + value.ItemId + " onfocusout=\"CalculateSubTotal(this)\"></input>";
+            itemHTML += "<div class=\"col-sm-2\">";
+            itemHTML += "<input type=\"number\" class=input50 placeholder=\"Item Amount\" id=txtItemAmount" + value.ItemId + " onfocusout=\"CalculateSubTotal(this)\"></input>";
             itemHTML += "</div>";
             itemHTML += "<div class=\"col-sm-2\" style=text-align:end;>";
             itemHTML += "<button onclick=\"removeItem(" + value.ItemId + ")\" id=btn" + value.ItemId + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
@@ -1462,6 +1466,8 @@
             $("#txtItemDesc" + value.ItemId).val(value.ItemDescription);
             $("#txtItemPrice" + value.ItemId).val(value.Price);
             $("#txtItemAmount" + value.ItemId).val(value.Amount);
+            $("#txtItemQty" + value.ItemId).val(value.ItemQty);
+            count = value.ItemId;
         });
     }
 

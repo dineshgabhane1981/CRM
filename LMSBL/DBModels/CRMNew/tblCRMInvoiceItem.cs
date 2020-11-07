@@ -25,5 +25,7 @@ namespace LMSBL.DBModels.CRMNew
 
         [Column(TypeName = "numeric")]
         public decimal? Amount { get; set; }
+
+        public int? ItemQty { get; set; }
     }
 }

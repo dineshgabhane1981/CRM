@@ -1,0 +1,113 @@
+﻿@model LMSWeb.ViewModel.CRMInvoiceViewModel
+
+
+<div class="container-fluid mt-4 mb-4 pl-4 pr-4">
+    
+
+        <div class="row">
+            <div class="col search-container" style="max-width:40%;">
+                <i class="fas fa-search"></i>
+                <input class="search-box" type="text" id="txtAllInvoiceSearch" placeholder="Search Client by name..." />
+            </div>
+        </div>
+        <div class="row mt-3" id="dvAllInvoiceTableData">
+            <div class="table-responsive">
+                <table class="table" id="allInvoiceTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Client Name</th>
+                            <th scope="col">Invoice No</th>
+                            <th scope="col">Invoice Amount</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Date and time</th>
+                            <th scope="col" style="text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            if (Model.lstAllInvoices != null)
+                            {
+                                if (Model.lstAllInvoices.Count > 0)
+                                {
+                                    foreach (var invoice in Model.lstAllInvoices)
+                                    {
+                                        <tr>
+                                            <td>@invoice.FullName</td>
+                                            <td>@invoice.InvoiceNumber</td>
+                                            <td>@invoice.Amount @invoice.Currency</td>
+                                            <td>@invoice.InvoiceType</td>
+                                            <td>@invoice.InvoiceStatus</td>
+                                            <td>@invoice.UpdatedOn</td>
+                                            <td style="text-align:end; padding-right:25px;">
+                                                <a href="#" onclick="PreviewInvoice(@invoice.InvoiceId);" class="login" title="Download Invoice"><img src="~/assets/images/eye.png" /></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" align="center">No Invoice Available</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" align="center">No Invoice Available</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" align="center">No Invoice Available</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#allInvoiceTable').DataTable({
+            "aaSorting": [[0, "asc"]],
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "bFilter": true,
+            "pageLength": 10,
+            "pagingType": "simple_numbers",
+            aoColumnDefs: [
+                {
+                    bSortable: false,
+                    aTargets: [-1, -2]
+                }
+            ]
+        });
+
+        $('#allInvoiceTable_filter').hide();
+
+        $('#txtAllInvoiceSearch').on('keyup', function () {
+
+            $.fn.dataTable.ext.search.push(function (settings, searchData) {
+                var term = $('#txtAllInvoiceSearch').val().toLowerCase()
+                for (var i = 0; i < searchData.length; i++) {
+                    if (searchData[i].toLowerCase().indexOf(term) == 0) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            var table = $('#allInvoiceTable').DataTable();
+            table.draw();
+        });
+    });
+
+</script>
