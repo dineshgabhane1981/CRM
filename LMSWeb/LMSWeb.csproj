@@ -814,15 +814,6 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\slimscroll\jquery.slimscroll.js" />
     <None Include="Scripts\_references.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -949,6 +940,8 @@
     <Content Include="Views\CRM\_SearchResultDashboard.cshtml" />
     <Content Include="Views\CRMUsers\_QualificationList.cshtml" />
     <Content Include="Views\Invoice\_AllInvoices.cshtml" />
+    <Content Include="Views\AdminSettings\_CreateCheckList.cshtml" />
+    <Content Include="Views\AdminSettings\_CheckList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
