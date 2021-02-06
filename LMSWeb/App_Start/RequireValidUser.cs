@@ -12,6 +12,8 @@ using LMSWeb.ViewModel;
 using System.Linq;
 using System.Web.Script.Serialization;
 using System.Web.Security;
+using System.Web.SessionState;
+using System.Web.Routing;
 
 namespace LMSWeb
 {
@@ -21,7 +23,7 @@ namespace LMSWeb
         {
             var sessionUser = (TblUser)filterContext.HttpContext.Session["UserSession"];
             var routeValues = filterContext.RequestContext.RouteData.Values["controller"].ToString();
-            if (sessionUser==null && !routeValues.Equals("Login"))
+            if (sessionUser==null && !routeValues.Equals("Login") && !routeValues.Equals("Enquiry"))
             {
                 if (filterContext.HttpContext.Request.IsAjaxRequest())
                 {
@@ -42,7 +44,16 @@ namespace LMSWeb
                 else
                 {
                     // filterContext.RouteData.Values.Add("LogoutMessage", "Session Expired");
-                    filterContext.Result = new RedirectResult("~/Login/Index");
+                    //System.Web.Mvc.TempDataDictionary TempData = new TempDataDictionary();                    
+                    //filterContext.Result = new RedirectResult("~/Login/Index");
+
+                    var values = new RouteValueDictionary(new
+                    {
+                        action = "Index",
+                        controller = "Login",
+                        logout = "foo bar baz"
+                    });
+                    filterContext.Result = new RedirectToRouteResult(values);
 
                 }
 

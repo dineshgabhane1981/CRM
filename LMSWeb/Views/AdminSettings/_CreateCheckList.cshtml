@@ -1,0 +1,21 @@
+﻿@model LMSWeb.ViewModel.TblUserViewModel
+
+<div class="pt-3 pl-3 pr-3 course-list-container list-box" id="dvAddChecklist" style="display:none;">
+    <div class="row pt-3 pl-4">
+        <div class="col-sm-12">
+            @Html.HiddenFor(model => model.objChecklist.Id, new { @id = "txtCheckListId" })
+            @Html.TextBoxFor(model => model.objChecklist.CheckListName, new { @class = "input100", placeholder = "Checklist Name", @id = "txtChecklistName" })
+            <button type="button" id="btnAddCheckListItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Checklist Item</b></button>
+
+        </div>
+    </div>
+    <div class="row pt-3 pl-4">
+        <div id="dvCheckListItem"></div>
+    </div>
+    <div class="row col-12 justify-content-end p-2">
+        <button type="button" id="btnCheckListAdd" onclick="AddCheckListToDB()" class="btn btn-primary profle-submit-btn mr-4"><img src="~/assets/images/check-img.png" /> Save Changes</button>
+        <button type="button" id="btnUserCancel" onclick="CloseAddCheckListSection()" class="btn btn-primary profle-submit-btn mr-4"> Cancel</button>
+    </div>
+</div>
+
+

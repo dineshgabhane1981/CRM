@@ -57,6 +57,7 @@ namespace LMSBL.Repository
                 lstClientDetails = (from a in objCRMEnquiryList
                                     join b in context.tblCRMUsersVisaDetails on a.Id equals b.CRMUserId
                                     join c in context.tblCRMClientSubStages on a.CurrentSubStage equals c.SubStageId
+                                    where c.ClientId == CRMClientId
 
                                     select new CRMDashboardClients
                                     {
@@ -124,14 +125,14 @@ namespace LMSBL.Repository
             return lstInvoices;
         }
 
-        
+
 
         public List<tblCRMUser> GetSearchDashboardList(TblUser objUser, string searchText)
         {
             List<tblCRMUser> objResult = new List<tblCRMUser>();
             using (var context = new CRMContext())
             {
-                objResult = context.tblCRMUsers.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText)).OrderByDescending(a=>a.UpdatedOn).ToList();
+                objResult = context.tblCRMUsers.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText)).OrderByDescending(a => a.UpdatedOn).ToList();
 
             }
 

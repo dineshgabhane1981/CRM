@@ -31,9 +31,7 @@ namespace LMSBL.DBModels.CRMNew
 
         [StringLength(100)]
         public string PoliceCertificateCountry3 { get; set; }
-
         [AllowHtml]
-        [StringLength(250)]
         public string PCCNotes { get; set; }
     }
 }

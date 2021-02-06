@@ -80,6 +80,8 @@
     <Compile Include="DBModels\CRMNew\CRMDashboardInvoices.cs" />
     <Compile Include="DBModels\CRMNew\EnquiryListing.cs" />
     <Compile Include="DBModels\CRMNew\FileNotesDetails.cs" />
+    <Compile Include="DBModels\CRMNew\tblCRMCheckList.cs" />
+    <Compile Include="DBModels\CRMNew\tblCRMCheckListItem.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMClient.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMClientStage.cs" />
     <Compile Include="DBModels\CRMNew\tblCRMClientSubStage.cs" />

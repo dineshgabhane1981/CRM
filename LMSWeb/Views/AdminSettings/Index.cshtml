@@ -61,13 +61,17 @@
 
     #one:checked ~ .panels #one-panel,
     #two:checked ~ .panels #two-panel,
-    #three:checked ~ .panels #three-panel {
+    #three:checked ~ .panels #three-panel,
+    #four:checked ~ .panels #four-panel,
+    #five:checked ~ .panels #five-panel {
         display: block
     }
 
     #one:checked ~ .tabs #one-tab,
     #two:checked ~ .tabs #two-tab,
-    #three:checked ~ .tabs #three-tab {
+    #three:checked ~ .tabs #three-tab,
+    #four:checked ~ .tabs #four-tab,
+    #five:checked ~ .tabs #five-tab {
         background: #fff !important;
         color: #000;
         border-top: 3px solid #fff;
@@ -83,42 +87,54 @@
     @Html.HiddenFor(model => model.imageJson)
     @Html.HiddenFor(model => model.imageName)
     @Html.HiddenFor(model => model.objtbluser.CRMClientId, new { @id = "hdnCRMClientId" })
-    <div class="warpper">
-        <input class="radio" id="one" name="group" type="radio" checked>
-        <input class="radio" id="two" name="group" type="radio">
-        <input class="radio" id="three" name="group" type="radio">
-        <div class="tabs">
-            <label class="tab" id="one-tab" for="one">Profile</label>
-            @if (Model.objtbluser.RoleId == 2)
-            {
-                <label class="tab" id="two-tab" for="two">Manage Users</label>
-                <label class="tab" id="three-tab" for="three">Update Stages</label>
-            }
+<div class="warpper">
+    <input class="radio" id="one" name="group" type="radio" checked>
+    <input class="radio" id="two" name="group" type="radio">
+    <input class="radio" id="three" name="group" type="radio">
+    <input class="radio" id="four" name="group" type="radio">
+    <input class="radio" id="five" name="group" type="radio">
+    <div class="tabs">
+        <label class="tab" id="one-tab" for="one">Profile</label>
+        @if (Model.objtbluser.RoleId == 2)
+        {
+            <label class="tab" id="two-tab" for="two">Manage Users</label>
+            <label class="tab" id="three-tab" for="three">Update Stages</label>
+        }
+        <label class="tab" id="four-tab" for="four">Checklists</label>
+        <label class="tab" id="five-tab" for="five">Agreements</label>
+    </div>
+    <div class="panels">
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" id="one-panel">
+            @Html.Partial("~/Views/AdminSettings/_UserProfile.cshtml", Model)
+
         </div>
-        <div class="panels">
-            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" id="one-panel">
-                @Html.Partial("~/Views/AdminSettings/_UserProfile.cshtml", Model)
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="two-panel">
 
+            <div class="row pt-4 pl-3" style="display:flex;">
+                <h5 class="mb-2">Manage Users</h5>
             </div>
-            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="two-panel">
-                
-                    <div class="row pt-4 pl-3" style="display:flex;">
-                        <h5 class="mb-2">Manage Users</h5>
-                    </div>
-                    <div class="container-fluid mt-4 mb-4 pl-4 pr-4" id="dvAddEditUser" style="display:none;">
-                        @Html.Partial("~/Views/AdminSettings/_AddAdminUser.cshtml", Model)
-                    </div>
-                    <div class="row" id="dvUserList">
-                        @Html.Partial("~/Views/AdminSettings/_ManageUser.cshtml", Model)
-                    </div>
-                
+            <div class="container-fluid mt-4 mb-4 pl-4 pr-4" id="dvAddEditUser" style="display:none;">
+                @Html.Partial("~/Views/AdminSettings/_AddAdminUser.cshtml", Model)
+            </div>
+            <div class="row" id="dvUserList">
+                @Html.Partial("~/Views/AdminSettings/_ManageUser.cshtml", Model)
             </div>
 
-            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="three-panel">
-                @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml", Model)
-            </div>
+        </div>
+
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="three-panel">
+            @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml", Model)
+        </div>
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="four-panel">
+            <div>@Html.Partial("~/Views/AdminSettings/_CreateCheckList.cshtml", Model)</div>
+            
+            <div>@Html.Partial("~/Views/AdminSettings/_CheckList.cshtml", Model)</div>
+        </div>
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="five-panel">
+            
         </div>
     </div>
+</div>
 }
 <script>
     $(document).ready(function () {
@@ -138,8 +154,42 @@
         $('#btnProfilePic').on("click", function () {
             $('#file').click();
         });
+        $('#btnChecklistAdd').on("click", function () {
+            OpenAddCheckList();
+        });
 
+        $('#btnAddCheckListItem').on("click", function () {
+            AddCheckListItem();
+        });
     });
+    var itemCount = 0;
+    function AddCheckListItem() {
+        itemCount++;
+        var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + itemCount + " style=\"display:flex;\">";
+
+        itemHTML += "<div class=\"col-sm-6\">";
+        itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + itemCount + "></input>";
+        itemHTML += "</div>";
+              
+        itemHTML += "<div class=\"col-sm-6\" style=text-align:end;>";
+        itemHTML += "<button onclick=\"removeChecklistItem(" + itemCount + ")\" id=btn" + itemCount + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
+        itemHTML += "</div>";
+
+        itemHTML += "</div>";
+
+        $("#dvCheckListItem").append(itemHTML);
+    }
+     function removeChecklistItem(id) {
+        $("#dvItem" + id).remove();
+        
+    }
+     function OpenAddCheckList() {
+        $("#txtChecklistName").val("");        
+        $("#dvAddChecklist").show(1000);
+    }
+    function CloseAddCheckListSection() {
+        $("#dvAddChecklist").hide(1000);
+    }
     function UpdateToDB() {
         if ($("#txtFirstName").val() == "" || $("#txtFirstName").val() == null) {
             toastr.error('Please enter First Name');
@@ -234,9 +284,7 @@
         //  Add the specific color to the button used to open the tab content
         elmnt.style.backgroundColor = color;
     }
-
-    document.getElementById("defaultOpen").click();
-
+       
     function CloseAddSection() {
         $("#dvAddEditUser").hide(1000);
     }
@@ -369,6 +417,72 @@
         }
         return true;
     }
+    function AddCheckListToDB() {
+        if ($("#txtChecklistName").val() == "") {
+            toastr.error('Please enter Checklist name');
+            $("#txtChecklistName").focus();
+            return false;
+        }
+        var IDs = $("#dvCheckListItem div[id^='dvItem']");
+        if (IDs.length == 0) {
+            toastr.error('Please add items in Invoice');
+            returnStatus = false;
+            return false;
+        }
+        $.each(IDs, function (index, value) {
+            var id = value.id.substring(6, value.id.length);
+
+            if ($("#txtItemDesc" + id).val() == null || $("#txtItemDesc" + id).val() == "") {
+                $("#txtItemDesc" + id).focus();
+                toastr.error('Please checklist item');
+                returnStatus = false;
+                return false;
+            }
+        });
+        var ItemObject = [];
+        $.each(IDs, function (index, value) {
+            var id = value.id.substring(6, value.id.length);
+            checklistItem = {}
+            checklistItem["ItemDesc"] = $("#txtItemDesc" + id).val();            
+            ItemObject.push(checklistItem);
+        });
+        var DataObject = [];
+        item = {}
+        item["Id"] = $("#txtCheckListId").val();
+        item["CheckListName"] = $("#txtChecklistName").val();
+        item["Items"] = ItemObject;
+        DataObject.push(item);
+
+        var data = JSON.stringify(DataObject);
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: "/AdminSettings/AddCheckList",
+            data: '{jsonData: ' + JSON.stringify(data) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                if (response.responseText == "True") { 
+                    toastr.success('Checklist Added');
+                    $("#divLoader").hide();
+                }
+                else {
+                    toastr.error('error occured while saving data');
+                    $("#divLoader").hide();
+                }
+            }
+        });
+    }
+
+    function OpenEditCheckList(id) {
+
+    }
+
 
 </script>
 

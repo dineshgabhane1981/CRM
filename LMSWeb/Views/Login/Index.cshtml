@@ -38,6 +38,10 @@
                     <h1 class="main-h">LOGIN</h1>
                     <h1 class="main-h3">GET STARTED WITH US</h1>
                     <form>
+                        @if (!string.IsNullOrEmpty(Context.Request.QueryString["logout"]))
+                        {
+                            <div id="dvLogoutMessage" style="color:red; margin-bottom:10px;">Session Expired. Please login again...</div>
+                        }
                         <div id="dvMessage" style="color:red; margin-bottom:10px;">@TempData["Message"]</div>
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -73,13 +77,13 @@
 
     <script type="text/javascript">
         function CheckRequired() {
-            if ($("#EmailId").val() == "") {                
+            if ($("#EmailId").val() == "") {
                 Swal.fire('Please enter User Name');
                 return false;
             }
             if ($("#Password").val() == "") {
                 Swal.fire("Please enter Password");
-                
+
                 return false;
             }
             return true;

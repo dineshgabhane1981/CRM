@@ -16,6 +16,8 @@ namespace LMSWeb.ViewModel
         public tblCRMClient objtblCRMClient { get; set; }
 
         public List<tblUser> lstUsers { get; set; }
+        public tblCRMCheckList objChecklist { get; set; }
+        public List<tblCRMCheckList> objChecklistList { get; set; }
         public string imageJson { get; set; }
         public string imageName { get; set; }
 

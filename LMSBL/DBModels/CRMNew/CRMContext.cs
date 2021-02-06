@@ -41,6 +41,8 @@ namespace LMSBL.DBModels.CRMNew
         public virtual DbSet<tblUser> tblUsers { get; set; }
         public virtual DbSet<tblCRMUsersLoginQualificationDetail> tblCRMUsersLoginQualificationDetails { get; set; }
         public virtual DbSet<tblCRMUsersQualification> tblCRMUsersQualifications { get; set; }
+        public virtual DbSet<tblCRMCheckList> tblCRMCheckLists { get; set; }
+        public virtual DbSet<tblCRMCheckListItem> tblCRMCheckListItems { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

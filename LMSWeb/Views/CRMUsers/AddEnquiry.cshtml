@@ -5,6 +5,7 @@
     var baseURL = System.Configuration.ConfigurationManager.AppSettings["BaseURL"];
     LMSBL.DBModels.TblUser userModel = new LMSBL.DBModels.TblUser();
     userModel = (LMSBL.DBModels.TblUser)Session["UserSession"];
+    LMSWeb.App_Start.CommonFunctions common = new LMSWeb.App_Start.CommonFunctions();
 }
 
 <link href="~/assets/CRM/styleSteps.css" rel="stylesheet" />
@@ -16,6 +17,9 @@
     .grayed {
         pointer-events: none;
         opacity: 0.3;
+    }
+    .fileNotes{
+        height:500px;
     }
 </style>
 @*<h5 class="">Add/Edit Client Details</h5>*@
@@ -285,7 +289,7 @@
                                             @Html.RadioButtonFor(model => model.ObjCRMNote.CommunicationSource, "Email") Email
                                             <br />
                                             File Notes
-                                            @Html.TextAreaFor(model => model.ObjCRMNote.Notes, new { @class = "input150", id = "filenotesarea" })
+                                            @Html.TextAreaFor(model => model.ObjCRMNote.Notes, new { @class= "fileNotes", id = "filenotesarea" })
 
                                         </div>
                                         <div class="col-sm-12">
@@ -572,7 +576,7 @@
         }
         $("#divLoader").show();
         var data = $('#frmadduser').serialize();
-        console.log(data);
+        //console.log(data);
         $.ajax({
             url: $('#frmadduser').attr('action'),
             type: 'post',
@@ -580,10 +584,25 @@
             data: data,
             success: function (data) {
                 console.log(data)
+
                 if (data != "") {
                     toastr.success("User Saved");
                     $("#divLoader").hide();
-                    window.location.href = "@baseURL/" + data;
+
+                    var actualString = data.substring(1, data.length - 1);
+                    console.log(actualString);
+
+                    var returnSTR = actualString.split(",");
+                    console.log(returnSTR);
+                    var str1 = returnSTR[0].substring(1, returnSTR[0].length - 1);
+                    var str2 = returnSTR[1].substring(1, returnSTR[1].length - 1);
+                    console.log(str1);
+                    console.log(str2);
+                    var newUrl = "@baseURL/" + str2 + str1;
+                    console.log(newUrl);
+
+
+                    window.location.href = newUrl;
                 }
                 else {
                     toastr.success("User Saved");
@@ -867,7 +886,7 @@
             // Read in the image file as a data URL.
             reader.readAsBinaryString(f);
         }
-        
+
         function handleFileSelectInvoice(evt) {
             var id = evt.currentTarget.id;
             var qId = id.substring(4, id.length);
@@ -885,7 +904,7 @@
             // Read in the image file as a data URL.
             reader.readAsBinaryString(f);
         }
-               
+
         $('#ddlclientlist').change(function () {
             $('#ddlclientlist option').each(function (index) {
                 if (($(this).is(':selected'))) {
@@ -904,13 +923,14 @@
                 }
             })
         });
-        
-        $('#filenotesarea').summernote();
-        $('#pccnotesarea').summernote();
-        $('#medicalnotesarea').summernote();
-        $('#immigrationlogin').summernote();
-        $('#qualificationassessment').summernote();
-        
+
+        $('#filenotesarea').summernote(
+            { height: 200 });
+        $('#pccnotesarea').summernote({ height: 200 });
+        $('#medicalnotesarea').summernote({ height: 200 });
+        $('#immigrationlogin').summernote({ height: 200 });
+        $('#qualificationassessment').summernote({ height: 200 });
+
         $('#dtDOB').datepicker({
             format: 'dd/mm/yyyy',
             showWeek: true
@@ -1006,7 +1026,7 @@
         $('#btnSave').on("click", function () {
             SaveInvoice();
         });
-        
+
     });
     function DeleteQualification(id) {
         var ClientID = $("#ObjCRMUser_Id").val();
@@ -1089,21 +1109,21 @@
             ItemObject.push(invoiceItem)
             var clientId = $("#ObjCRMUser_Id").val();
             $("#divLoader").show();
-            var data =  JSON.stringify(ItemObject);            
-           
+            var data =  JSON.stringify(ItemObject);
+
             $.ajax({
                 type: "POST",
                 url: "/CRMUsers/UploadInvoice",
                 data: '{jsonData: ' + JSON.stringify(data) + '}',
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",               
+                dataType: "json",
                 success: function (result) {
                     console.log(111)
                 },
                 error: function (result) {
                     console.log(result.responseText)
                         if (result.responseText == "True") {
-                        toastr.success("Invoice Uploaded");                        
+                        toastr.success("Invoice Uploaded");
                             GetInvoices(clientId);
                             GetInvoiceNumberForUpload(clientId);
                             ClearAllFields();
@@ -1200,7 +1220,7 @@
             error: function (response) {
                 $("#invoiceNumberUpload").html(response.responseText);
                 $("#invoiceNumber").html(response.responseText);
-                
+
                 //$("#ObjCRMInvoivce_InvoiceNumber").val(response.responseText);
             }
         });
@@ -1273,7 +1293,7 @@
 
     function ValidateInvoice() {
         var returnStatus = true;
-        
+
         if ($('#dtInvoiceDate').val() == null || $('#dtInvoiceDate').val() == "") {
             toastr.error('Please select Invoice Date');
             $('#dtInvoiceDate').focus();
@@ -1342,7 +1362,7 @@
         item["Total"] = $("#txttotal").val();
         item["filebase64"] = "";
         item["Status"] = status;
-        
+
         $("#filebase64").val("");
         var clientId = $("#ObjCRMUser_Id").val();
 
@@ -1361,7 +1381,7 @@
         item["ItemJson"] = ItemObject;
         InvoiceObject.push(item);
 
-        var data =  JSON.stringify(InvoiceObject);        
+        var data =  JSON.stringify(InvoiceObject);
         console.log(data);
 
          $.ajax({
@@ -1369,14 +1389,14 @@
                 url: "/CRMUsers/AddInvoice",
                 data: '{jsonData: ' + JSON.stringify(data) + '}',
                 contentType: "application/json; charset=utf-8",
-                dataType: "json",               
+                dataType: "json",
                 success: function (result) {
                     console.log(111)
                 },
                 error: function (result) {
                     console.log(result.responseText)
                         if (result.responseText == "True") {
-                        toastr.success("Invoice Uploaded");                        
+                        toastr.success("Invoice Uploaded");
                             GetInvoices(clientId);
                             GetInvoiceNumberForUpload(clientId);
                             ClearAllFields();
@@ -1446,7 +1466,7 @@
             itemHTML += "<div class=\"col-sm-4\">";
             itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + value.ItemId + "></input>";
             itemHTML += "</div>";
-            
+
             itemHTML += "<div class=\"col-sm-4\" style=display:flex;>";
             itemHTML += "<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemPrice" + value.ItemId + "></input>";
             itemHTML += "&nbsp;<input type=\"number\" class=input25 placeholder=\"Item Price\" id=txtItemQty" + value.ItemId + "></input>";
@@ -1503,13 +1523,13 @@
     function ClearAllFields() {
         $("#dvInvoiceItems").html("");
         $("#ObjCRMInvoivce_InvoiceId").val("");
-        $("#ObjCRMInvoivce_Status").val("");        
-        $('#ddlInvoiceTypelist>option:eq(0)').attr('selected', true);        
+        $("#ObjCRMInvoivce_Status").val("");
+        $('#ddlInvoiceTypelist>option:eq(0)').attr('selected', true);
         $("#invoiceNumber").html("");
         $("#invoiceNumberUpload").html("");
-        $("#txtGstNumber").val("");        
-        $("#dtInvoiceDate").val("");        
-        $("#dtInvoiceDueDate").val("");  
+        $("#txtGstNumber").val("");
+        $("#dtInvoiceDate").val("");
+        $("#dtInvoiceDueDate").val("");
         $("#txtReference").val("");
         $('#ddlcurrencylist').val("");
         $('#invoiceList').hide();

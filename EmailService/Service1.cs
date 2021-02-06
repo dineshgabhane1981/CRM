@@ -109,7 +109,7 @@ namespace EmailService
                 {
                     sw.WriteLine("Email Service Started");
                 }
-                string connectionString = "Data Source=EC2AMAZ-4H52G4U\\SQLEXPRESS;Initial Catalog=LMSDBV2;User ID=sa;Password=Dinesh1981;Persist Security Info=True;";
+                string connectionString = "Data Source=EC2AMAZ-EO27D6P\\SQLEXPRESS;Initial Catalog=LMSDB;User ID=sa;Password=P@ssw0rd;Persist Security Info=True;";
                 //string connectionString = "Data Source=DESKTOP-JOLRHRS\\SQLEXPRESS;Initial Catalog=LMSDB;Integrated Security=True";
                 //string connectionString = "Data Source = EC2AMAZ-4H52G4U\\SQLEXPRESS; Initial Catalog = LMSDBV2; Integrated Security = True";
                 SqlConnection con = new SqlConnection(connectionString);
@@ -134,6 +134,7 @@ namespace EmailService
                                 smtp.Host = Host;
                                 smtp.Port = 587;
                                 smtp.EnableSsl = true;
+                                
                                 using (StreamWriter sw = File.AppendText(filepath))
                                 {
                                     sw.WriteLine(from);
@@ -146,6 +147,7 @@ namespace EmailService
                                 email.Subject = Convert.ToString(dr["EmailSubject"]);
                                 email.Body = Convert.ToString(dr["EmailBody"]);
                                 email.IsBodyHtml = true;
+                                email.BodyEncoding = System.Text.Encoding.UTF8;
                                 email.Priority = MailPriority.High;
                                 string updateQuery = string.Empty;
                                 try

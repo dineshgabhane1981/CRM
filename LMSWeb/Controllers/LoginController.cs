@@ -21,7 +21,7 @@ namespace LMSWeb.Controllers
         UserRepository ur = new UserRepository();
         Exceptions newException = new Exceptions();
         // GET: Login
-        public ActionResult Index(string code)
+        public ActionResult Index(string code, string logout)
         {
 
             TblUser user = new TblUser();
@@ -107,10 +107,9 @@ namespace LMSWeb.Controllers
 
                 CommonFunctions common = new CommonFunctions();
                 string decodepassword = loginUser.Password;
-                loginUser.Password = common.GetEncodePassword(loginUser.Password);
-
+                loginUser.Password = common.GetEncodePassword(loginUser.Password);                
                 TblUser tblUser = ur.IsValidUser(loginUser.EmailId, loginUser.Password, Request.Url.Host);
-
+                
                 if (tblUser.UserId > 0)
                 {
                     response.StatusCode = 1;
@@ -140,7 +139,7 @@ namespace LMSWeb.Controllers
                                 cookiepass.Expires = DateTime.Now.AddDays(2);
                             }
                             if(!string.IsNullOrEmpty(Convert.ToString(tblUser.CRMClientId)))
-                            {
+                            {                                
                                 return RedirectToAction("Index", "CRM");
                             }
                             return RedirectToAction("Index", "Home");

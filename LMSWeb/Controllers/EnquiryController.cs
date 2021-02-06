@@ -44,7 +44,9 @@ namespace LMSWeb.Controllers
                     objEmail.EmailTo = "sales@logicieltech.com";
                     objEmail.EmailSubject = emailSubject;
                     objEmail.EmailBody = emailBody;
+                    newException.AddDummyException("Before Enquiry");
                     var emailResult = userRepository.InsertEmail(objEmail);
+                    newException.AddDummyException("After Enquiry");
 
                     return "Sent Successfully";
                 }
@@ -52,7 +54,7 @@ namespace LMSWeb.Controllers
             catch(Exception ex)
             {
                 newException.AddDummyException(ex.ToString());
-                return "Failded";
+                return "Failed";
 
             }
             return "Failed";

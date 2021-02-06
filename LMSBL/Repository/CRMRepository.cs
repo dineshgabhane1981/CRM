@@ -186,13 +186,13 @@ namespace LMSBL.Repository
         }
         public tblUser GetUserForEdit(int userId)
         {
-            tblUser objUser = new tblUser();            
+            tblUser objUser = new tblUser();
             using (var context = new CRMContext())
             {
                 try
                 {
-                     objUser = context.tblUsers.Where(a => a.userId == userId).FirstOrDefault();
-                   
+                    objUser = context.tblUsers.Where(a => a.userId == userId).FirstOrDefault();
+
                 }
                 catch (Exception ex)
                 {
@@ -202,5 +202,48 @@ namespace LMSBL.Repository
             }
             return objUser;
         }
+        public List<tblCRMCheckList> GetCRMCheckList(int ClientId)
+        {
+            List<tblCRMCheckList> objCheckList = new List<tblCRMCheckList>();
+            using (var context = new CRMContext())
+            {
+                objCheckList = context.tblCRMCheckLists.Where(a => a.CRMClientID == ClientId).ToList();
+            }
+
+            return objCheckList;
+        }
+        public bool AddCheckList(tblCRMCheckList objCheckList, List<tblCRMCheckListItem> objCheckListItemList)
+        {
+            bool status = false;
+            using (var context = new CRMContext())
+            {
+                using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        context.tblCRMCheckLists.AddOrUpdate(objCheckList);
+                        context.SaveChanges();
+
+                        foreach(var item in objCheckListItemList)
+                        {
+                            item.CheckListId = objCheckList.Id;
+                            context.tblCRMCheckListItems.AddOrUpdate(item);
+                            context.SaveChanges();
+                        }
+                        transaction.Commit();
+                        status = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        newException.AddException(ex);
+                    }
+                }
+            }
+
+            return status;
+        }
+
+
     }
 }

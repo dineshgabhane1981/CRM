@@ -26,20 +26,30 @@ namespace LMSWeb.Controllers
         // GET: AdminSettings
         public ActionResult Index()
         {
-
-            TblUser sessionUser = (TblUser)Session["UserSession"];
             TblUserViewModel objuserviewmodel = new TblUserViewModel();
-            sessionUser.IsMyProfile = true;
+            try
+            {                
+                TblUser sessionUser = (TblUser)Session["UserSession"];                
+                sessionUser.IsMyProfile = true;
 
-            List<tblCRMClient> clientdetails = new List<tblCRMClient>();
-            clientdetails = cr.GetClientById(Convert.ToInt32(sessionUser.CRMClientId));
-            objuserviewmodel.objtblCRMClient = clientdetails[0];
-            objuserviewmodel.objtbluser = sessionUser;
+                List<tblCRMClient> clientdetails = new List<tblCRMClient>();
+                clientdetails = cr.GetClientById(Convert.ToInt32(sessionUser.CRMClientId));
+                objuserviewmodel.objtblCRMClient = clientdetails[0];
+                objuserviewmodel.objtbluser = sessionUser;
 
-            objuserviewmodel.lstClientStages = cr.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
-            objuserviewmodel.lstClientSubStages = cr.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
+                objuserviewmodel.lstClientStages = cr.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
+                objuserviewmodel.lstClientSubStages = cr.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
+                objuserviewmodel.lstUsers = cr.GetCRMAdminUsers(Convert.ToInt32(sessionUser.CRMClientId));
 
-            objuserviewmodel.lstUsers = cr.GetCRMAdminUsers(Convert.ToInt32(sessionUser.CRMClientId));
+                tblCRMCheckList objCRMCheckList = new tblCRMCheckList();
+                objuserviewmodel.objChecklist = objCRMCheckList;
+                objuserviewmodel.objChecklistList = cr.GetCRMCheckList(Convert.ToInt32(sessionUser.CRMClientId));
+                
+            }
+            catch (Exception ex)
+            {
+                newException.AddException(ex);                
+            }
             return View("Index", objuserviewmodel);
 
         }
@@ -236,7 +246,42 @@ namespace LMSWeb.Controllers
             var stageModel = CRMRepo.GetCRMStagesList(Convert.ToInt32(model.CRMClientId));
             return Json(stageModel, JsonRequestBehavior.AllowGet);
         }
+        
+        [HttpPost]
+        public bool AddCheckList(string jsonData)
+        {
+            bool status = false;
+            TblUser model = (TblUser)Session["UserSession"];
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            json_serializer.MaxJsonLength = int.MaxValue;
+            object[] objChecklistData = (object[])json_serializer.DeserializeObject(jsonData);
+            tblCRMCheckList objCheckList = new tblCRMCheckList();
+            List<tblCRMCheckListItem> objCheckListItemList = new List<tblCRMCheckListItem>();
+            foreach (Dictionary<string, object> item in objChecklistData)
+            {
+                objCheckList.CRMClientID = Convert.ToInt32(model.CRMClientId);
+                objCheckList.CreatedOn = DateTime.Now;
+                objCheckList.Id = Convert.ToInt32(item["Id"]);
+                objCheckList.CheckListName = Convert.ToString(item["CheckListName"]);
+                int count = 0;
+                foreach (Dictionary<string, object> itemChecklist in (object[])item["Items"])
+                {
+                    count++;
+                    tblCRMCheckListItem objtblCRMCheckListItem = new tblCRMCheckListItem();
+                    objtblCRMCheckListItem.ItemId = count;
+                    objtblCRMCheckListItem.ItemName = Convert.ToString(itemChecklist["ItemDesc"]);
+                    objtblCRMCheckListItem.CreatedDate = DateTime.Now;
+                    objCheckListItemList.Add(objtblCRMCheckListItem);
+                }
+            }
+            status = cr.AddCheckList(objCheckList, objCheckListItemList);
+            return status;
+        }
 
+        public ActionResult GetCheckListDetails(string id)
+        {
 
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
     }
 }

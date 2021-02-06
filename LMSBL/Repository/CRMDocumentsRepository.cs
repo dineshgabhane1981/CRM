@@ -36,7 +36,7 @@ namespace LMSBL.Repository
             bool result = false;
             try
             {
-                IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
+                IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.APSoutheast2);
                 TransferUtility utility = new TransferUtility(client);
                 TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
                 var clientName = GetUserFolderName(ClientId);
@@ -107,7 +107,7 @@ namespace LMSBL.Repository
             bool result = false;
             try
             {
-                IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
+                IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.APSoutheast2);
                 TransferUtility utility = new TransferUtility(client);
                 TransferUtilityUploadRequest request = new TransferUtilityUploadRequest();
                 var clientName = GetUserFolderName(objCRMDocument.ClientId);
@@ -167,7 +167,7 @@ namespace LMSBL.Repository
                     FileStream fs = File.Create(FileLocation);
                     fs.Close();
                     string path = @"clients/" + filelink;
-                    IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
+                    IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.APSoutheast2);
                     TransferUtility fileTransferUtility = new TransferUtility(client);
                     fileTransferUtility.Download(FileLocation, AWSBucketName, path);
                     fileTransferUtility.Dispose();
@@ -210,7 +210,7 @@ namespace LMSBL.Repository
                         FileStream fs = File.Create(FileLocation);
                         fs.Close();
                         string path = @"clients/" + filelink;
-                        IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.EUWest3);
+                        IAmazonS3 client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, RegionEndpoint.APSoutheast2);
                         TransferUtility fileTransferUtility = new TransferUtility(client);
                         fileTransferUtility.Download(FileLocation, AWSBucketName, path);
                         fileTransferUtility.Dispose();

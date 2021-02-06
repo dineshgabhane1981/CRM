@@ -57,6 +57,14 @@ namespace LMSWeb.Controllers
 
             return View(objCRMUserViewModel);
         }
+       
+        public ActionResult EditEnquiry(string id)
+        {
+            CommonFunctions common = new CommonFunctions();
+            string returnId = common.EncryptString(Convert.ToString(id));
+            return RedirectToAction("AddEnquiry", new { myid = returnId });
+        }
+
         public ActionResult PotentialClients()
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
@@ -94,15 +102,32 @@ namespace LMSWeb.Controllers
             return View("AddEnquiry", objCRMUserViewModel);
         }
 
+        public ActionResult EditPotentialClient(string id)
+        {
+            CommonFunctions common = new CommonFunctions();
+            string returnId = common.EncryptString(Convert.ToString(id));
+            return RedirectToAction("AddPotentialClient", new { myid = returnId });
+        }
         public ActionResult Clients()
         {
+            newException.AddDummyException("111");
             TblUser sessionUser = (TblUser)Session["UserSession"];
             CRMClientViewModel objCRMClientViewModel = new CRMClientViewModel();
-            objCRMClientViewModel.lstClientSubStages = crmUsersRepository.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
-            objCRMClientViewModel.objClientTicketLST = crmUsersRepository.GetCRMTicketsAll(sessionUser, 3);
-            //List<EnquiryListing> listingViewModel = new List<EnquiryListing>();
-            //listingViewModel = crmUsersRepository.GetCRMUsersAll(Convert.ToInt32(sessionUser.CRMClientId), 3);
-            ViewBag.StageForButton = 3;
+            try
+            {
+                objCRMClientViewModel.lstClientSubStages = crmUsersRepository.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
+                newException.AddDummyException("222 - " + objCRMClientViewModel.lstClientSubStages.Count);
+                objCRMClientViewModel.objClientTicketLST = crmUsersRepository.GetCRMTicketsAll(sessionUser, 3);
+                newException.AddDummyException("333 - " + objCRMClientViewModel.objClientTicketLST.Count);
+                //List<EnquiryListing> listingViewModel = new List<EnquiryListing>();
+                //listingViewModel = crmUsersRepository.GetCRMUsersAll(Convert.ToInt32(sessionUser.CRMClientId), 3);
+                ViewBag.StageForButton = 3;
+                newException.AddDummyException("444");
+            }
+            catch(Exception ex)
+            {
+                newException.AddException(ex);
+            }
             return View(objCRMClientViewModel);
         }
 
@@ -137,8 +162,14 @@ namespace LMSWeb.Controllers
 
         }
 
+        public ActionResult EditClient(string id)
+        {
+            CommonFunctions common = new CommonFunctions();
+            string returnId = common.EncryptString(Convert.ToString(id));
+            return RedirectToAction("AddClient", new { myid = returnId });
+        }
         [HttpPost]
-        public string AddCRMUser(CRMUserViewModel objCRMUserViewModel)
+        public ActionResult AddCRMUser(CRMUserViewModel objCRMUserViewModel)
         {
             int id = 0;
             int oldId = objCRMUserViewModel.ObjCRMUser.Id;
@@ -168,28 +199,32 @@ namespace LMSWeb.Controllers
                     objCRMUserViewModel.ObjCRMUsersNZQADetail, objCRMUserViewModel.ObjCRMNote, objCRMUserViewModel.ObjLoginAndQualificationDetails);
 
             }
-            if (oldId == 0)
-            {
-                if (id > 0)
-                {
-                    CommonFunctions common = new CommonFunctions();
-                    returnId = common.EncryptString(Convert.ToString(id));
-                }
+            //if (oldId == 0)
+            //{
+                //if (id > 0)
+                //{
+                //    CommonFunctions common = new CommonFunctions();
+                //    returnId = common.EncryptString(Convert.ToString(id));
+                //}
                 if (objCRMUserViewModel.ObjCRMUser.CurrentStage == 1)
                 {
-                    url = "CRMUsers/AddEnquiry?myid=" + returnId;
+                    url = "CRMUsers/EditEnquiry?id=";
                 }
                 if (objCRMUserViewModel.ObjCRMUser.CurrentStage == 2)
                 {
-                    url = "CRMUsers/AddPotentialClient?myid=" + returnId;
+                    url = "CRMUsers/EditPotentialClient?id=";
                 }
                 if (objCRMUserViewModel.ObjCRMUser.CurrentStage == 3)
                 {
-                    url = "CRMUsers/AddClient?myid=" + returnId;
+                    url = "CRMUsers/EditClient?id=";
                 }
-            }
+            //}
             // CRMUsers / AddEnquiry ? myid =
-            return url;
+            List<string> returnStr = new List<string>();
+            returnStr.Add(Convert.ToString(id));
+            returnStr.Add(url);
+            //return returnStr;
+            return Json(returnStr, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

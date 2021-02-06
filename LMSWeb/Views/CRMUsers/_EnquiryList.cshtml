@@ -34,14 +34,14 @@
                                     LMSWeb.App_Start.CommonFunctions common = new LMSWeb.App_Start.CommonFunctions();
                                     string userId = common.EncryptString(Convert.ToString(user.Id));
                                     <tr>
-                                        <td>@user.Name</td>
-                                        <td>@user.Email</td>
-                                        <td style="max-width:150px;">@user.Contact</td>
-                                        <td>@user.IntrestedVisa</td>
-                                        <td>@user.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                        <td style="min-width:150px;">@user.Name</td>
+                                        <td style="min-width:150px;">@user.Email</td>
+                                        <td style="min-width:150px;">@user.Contact</td>
+                                        <td style="min-width:150px;">@user.IntrestedVisa</td>
+                                        <td style="min-width:150px;">@user.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
                                         @*  <td>@user.CreatedDate</td>*@
 
-                                        <td style="text-align:center;">
+                                        <td style="text-align:center;min-width:70px;">
                                             @if (ViewBag.StageForButton == 1)
                                             {
                                                 <a href="@Url.Action("AddEnquiry", "CRMUsers", new { myid = userId })" class="login" title="Edit"><img src="~/assets/images/shape_editUser.png" /></a>
