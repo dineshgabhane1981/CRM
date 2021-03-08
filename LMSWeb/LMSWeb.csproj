@@ -952,17 +952,10 @@
     <Content Include="Views\Invoice\_AllInvoices.cshtml" />
     <Content Include="Views\AdminSettings\_CreateCheckList.cshtml" />
     <Content Include="Views\AdminSettings\_CheckList.cshtml" />
-    <Content Include="Web.config" />
     <Content Include="Views\AdminSettings\ShowCheckListItems.cshtml" />
     <Content Include="Views\AdminSettings\PrintCheckList.cshtml" />
     <Content Include="Views\AdminSettings\_AddAgreement.cshtml" />
     <Content Include="Views\AdminSettings\_AgreementList.cshtml" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
