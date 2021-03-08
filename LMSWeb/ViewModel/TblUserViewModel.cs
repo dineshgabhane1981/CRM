@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace LMSWeb.ViewModel
 {
@@ -22,6 +23,9 @@ namespace LMSWeb.ViewModel
         public string imageName { get; set; }
 
         public HttpPostedFileBase newfileToSave { get; set; }
+        public List<SelectListItem> lstVisaType { get; set; }
+        public tblCRMAgreement objCRMAgreement { get; set; }
+        public List<tblCRMAgreement> lstCRMAgreement { get; set; }
 
 
     }

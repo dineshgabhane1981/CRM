@@ -1,0 +1,38 @@
+﻿@model LMSWeb.ViewModel.CheckListViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PrintCheckList</title>
+</head>
+<body>
+    <div style="margin:50px;">
+        <span style="font-family: Verdana; font-size: 18px;"><b>Document List - </b>@Model.CheckListObject.CheckListName </span>
+        <span style="margin-left:100px;">
+            
+            @if (string.IsNullOrEmpty(Convert.ToString(ViewBag.Hide)))
+            {
+                var id = @Model.CheckListObject.Id;
+                <a href="/AdminSettings/PrintCheckList/@id" target="_blank">Print</a>
+            }
+        </span>
+        <ol>
+            @foreach (var item in Model.lstCheckListItem)
+            {
+                <li style="padding:10px;font-family:Verdana;font-size:16px;">@item.ItemName</li>
+            }
+        </ol>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        function HideLink() {
+            $("#lnkHide").hide();
+        }
+    </script>
+</body>
+</html>

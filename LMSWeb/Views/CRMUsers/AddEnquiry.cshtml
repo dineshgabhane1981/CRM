@@ -18,8 +18,9 @@
         pointer-events: none;
         opacity: 0.3;
     }
-    .fileNotes{
-        height:500px;
+
+    .fileNotes {
+        height: 500px;
     }
 </style>
 @*<h5 class="">Add/Edit Client Details</h5>*@
@@ -263,7 +264,7 @@
                                                 @Html.Partial("~/Views/CRMUsers/_QualificationList.cshtml", Model)
 
                                             </div>
-                                        </div>                                        
+                                        </div>
                                         <div class="multisteps-form__content" style="margin-top:20px;">
                                             <div class="col-sm-12">
                                                 Qualification Assessment Details
@@ -289,7 +290,7 @@
                                             @Html.RadioButtonFor(model => model.ObjCRMNote.CommunicationSource, "Email") Email
                                             <br />
                                             File Notes
-                                            @Html.TextAreaFor(model => model.ObjCRMNote.Notes, new { @class= "fileNotes", id = "filenotesarea" })
+                                            @Html.TextAreaFor(model => model.ObjCRMNote.Notes, new { @class = "fileNotes", id = "filenotesarea" })
 
                                         </div>
                                         <div class="col-sm-12">
@@ -384,108 +385,108 @@
                                     <!--Invoice-->
                                     <div class="multisteps-form__panel shadow p-4 list-box bg-white" data-animation="scaleIn">
                                         <h5 class="multisteps-form__title">Billing Address</h5>
-                                            <div class="multisteps-form__content" style="display:flex;">
-                                                <div class="col-sm-6">
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.ContactPerson, new { @class = "input150", placeholder = "Contact Person", tabindex = 68 })
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Street, new { @class = "input150", placeholder = "Street", tabindex = 70 })
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.City, new { @class = "input150", placeholder = "City", tabindex = 72 })
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.PostalCode, new { @class = "input150", placeholder = "Postal Code", tabindex = 74 })
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.House, new { @class = "input150", placeholder = "House", tabindex = 69 })
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Suburb, new { @class = "input150", placeholder = "Suburb", tabindex = 71 })
-                                                    @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Country, new { @class = "input150", placeholder = "Country", tabindex = 73 })
+                                        <div class="multisteps-form__content" style="display:flex;">
+                                            <div class="col-sm-6">
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.ContactPerson, new { @class = "input150", placeholder = "Contact Person", tabindex = 68 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Street, new { @class = "input150", placeholder = "Street", tabindex = 70 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.City, new { @class = "input150", placeholder = "City", tabindex = 72 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.PostalCode, new { @class = "input150", placeholder = "Postal Code", tabindex = 74 })
+                                            </div>
+                                            <div class="col-sm-6">
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.House, new { @class = "input150", placeholder = "House", tabindex = 69 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Suburb, new { @class = "input150", placeholder = "Suburb", tabindex = 71 })
+                                                @Html.TextBoxFor(model => model.ObjCRMUsersBillingAddress.Country, new { @class = "input150", placeholder = "Country", tabindex = 73 })
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <h5 class="multisteps-form__title">Upload Invoice</h5>
+                                        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                            <div class="col-sm-6">
+                                                @Html.HiddenFor(model => model.CRMInvoiceModelView.filebase64, new { @id = "filebase64Invoice" })
+                                                @Html.HiddenFor(model => model.CRMInvoiceModelView.UploadedFileName, new { @id = "UploadedInvoiceFileName" })
+
+                                            </div>
+                                            <div class="col-sm-6">
+                                                Invoice No : <span id="invoiceNumberUpload">@Model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber</span>
+                                            </div>
+                                        </div>
+                                        <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;" id="uploadInvoiceDiv">
+                                            <div class="col-sm-4">
+                                                @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType, new SelectList(Model.CRMInvoiceModelView.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100", tabindex = 74 })
+                                                <input type="hidden" id="hdnInvoiceType" name="hdnInvoiceType" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div id="invoiceList" style="display:none;">
+                                                    @Html.DropDownListFor(model => model.CRMInvoiceModelView.uploadInvoiceNo, new SelectList("", "Value", "Text"), "Select Invoice", htmlAttributes: new { id = "ddlInvoicenolist", @class = "input50" })
                                                 </div>
                                             </div>
-                                            <hr />
-                                            <h5 class="multisteps-form__title">Upload Invoice</h5>
+                                            <div class="col-sm-5">
+                                                <input type="file" name="FileUploadInvoice" id="FileUploadInvoice" style="width:75%;" />
+                                                <button type="button" id="btnUpload" class="btn btn-primary" style="margin-top:10px;"> <b>Upload</b></button>
+                                            </div>
+                                        </div>
+                                        <hr />
+
+                                        <h5 class="multisteps-form__title">Create Invoice</h5>
+                                        <div id="createInvoiceDiv">
                                             <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceId, new { @id = "ObjCRMInvoivce_InvoiceId" })
+                                                @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Status, new { @id = "ObjCRMInvoivce_InvoiceId" })
+                                                @Html.HiddenFor(model => model.CRMInvoiceModelView.JsonData)
                                                 <div class="col-sm-6">
-                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.filebase64, new { @id = "filebase64Invoice" })
-                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.UploadedFileName, new { @id = "UploadedInvoiceFileName" })
-
+                                                    @*@Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.ClientId, new SelectList(Model.CRMInvoiceModelView.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddlclientlist", @class = "input100" })*@
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    Invoice No : <span id="invoiceNumberUpload">@Model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber</span>
+                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber)
+                                                    Invoice No : <span id="invoiceNumber">@Model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber</span>
                                                 </div>
                                             </div>
-                                            <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;" id="uploadInvoiceDiv">
+                                            <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
                                                 <div class="col-sm-4">
-                                                    @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceType, new SelectList(Model.CRMInvoiceModelView.Type(), "Value", "Text"), "Select Type", htmlAttributes: new { id = "ddlInvoiceTypelist", @class = "input100", tabindex = 74 })
-                                                    <input type="hidden" id="hdnInvoiceType" name="hdnInvoiceType" />
+                                                    @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @autocomplete = "off", placeholder = "Invoice Date", tabindex = 75 })
+                                                    @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference", @id = "txtReference", tabindex = 78 })
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <div id="invoiceList" style="display:none;">
-                                                        @Html.DropDownListFor(model => model.CRMInvoiceModelView.uploadInvoiceNo, new SelectList("", "Value", "Text"), "Select Invoice", htmlAttributes: new { id = "ddlInvoicenolist", @class = "input50" })
-                                                    </div>
+                                                <div class="col-sm-4">
+                                                    @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @autocomplete = "off", placeholder = "Invoice Due Date", tabindex = 76 })
+                                                    @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.CRMInvoiceModelView.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100", tabindex = 79 })
                                                 </div>
-                                                <div class="col-sm-5">
-                                                    <input type="file" name="FileUploadInvoice" id="FileUploadInvoice" style="width:75%;" />
-                                                    <button type="button" id="btnUpload" class="btn btn-primary" style="margin-top:10px;"> <b>Upload</b></button>
+                                                <div class="col-sm-4">
+                                                    @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number", @id = "txtGstNumber", tabindex = 77 })
+                                                    <button type="button" id="btnAddItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Item</b></button>
                                                 </div>
                                             </div>
-                                            <hr />
-                                            
-                                            <h5 class="multisteps-form__title">Create Invoice</h5>
-                                            <div id="createInvoiceDiv">
-                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceId, new { @id="ObjCRMInvoivce_InvoiceId"})
-                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Status, new { @id="ObjCRMInvoivce_InvoiceId"})
-                                                    @Html.HiddenFor(model => model.CRMInvoiceModelView.JsonData)
-                                                    <div class="col-sm-6">
-                                                        @*@Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.ClientId, new SelectList(Model.CRMInvoiceModelView.lstCRMclient, "Value", "Text"), "Select Client", htmlAttributes: new { id = "ddlclientlist", @class = "input100" })*@
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        @Html.HiddenFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber)
-                                                        Invoice No : <span id="invoiceNumber">@Model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceNumber</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-                                                    <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDate", @autocomplete = "off", placeholder = "Invoice Date", tabindex = 75 })
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.Reference, new { @class = "input100", placeholder = "Bank Account/Reference", @id = "txtReference", tabindex = 78 })
-                                                    </div>
-                                                    <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceDueDate, "{0:MM/dd/yyyy}", new { @class = "input100 datepicker", @id = "dtInvoiceDueDate", @autocomplete = "off", placeholder = "Invoice Due Date", tabindex = 76 })
-                                                        @Html.DropDownListFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceCurrency, new SelectList(Model.CRMInvoiceModelView.lstCRMCurriencies, "Value", "Text"), "Select Currency", htmlAttributes: new { id = "ddlcurrencylist", @class = "input100", tabindex = 79 })
-                                                    </div>
-                                                    <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTNumber, new { @class = "input100", placeholder = "GST Number", @id = "txtGstNumber", tabindex = 77 })
-                                                        <button type="button" id="btnAddItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Item</b></button>
-                                                    </div>
-                                                </div>
-                                                <div id="dvInvoiceItems"></div>
-                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-                                                    <div class="col-sm-4"> </div>
-                                                    <div class="col-sm-4" style="text-align:end;">@Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTRate, new { @class = "input50", @type = "number", @id = "txtgstno", placeholder = "GST Rate" })</div>
-                                                    <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.SubTotal, new { @class = "input100", @id = "txtsubtotal", @readonly = "readonly", placeholder = "Sub Total" })
+                                            <div id="dvInvoiceItems"></div>
+                                            <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                <div class="col-sm-4"> </div>
+                                                <div class="col-sm-4" style="text-align:end;">@Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.GSTRate, new { @class = "input50", @type = "number", @id = "txtgstno", placeholder = "GST Rate" })</div>
+                                                <div class="col-sm-4">
+                                                    @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.SubTotal, new { @class = "input100", @id = "txtsubtotal", @readonly = "readonly", placeholder = "Sub Total" })
 
-                                                    </div>
-                                                </div>
-                                                <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
-                                                    <div class="col-sm-4"></div>
-                                                    <div class="col-sm-4"></div>
-                                                    <div class="col-sm-4">
-                                                        @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceTotal, new { @class = "input100", @id = "txttotal", @readonly = "readonly", placeholder = "Invoice Total" })
-                                                    </div>
-                                                </div>
-                                                <div class="button-row d-flex mt-2">
-                                                    <button type="button" id="btnSaveDraft" class="btn btn-primary ml-auto"> <b>Save as Draft</b></button>&nbsp;&nbsp;
-                                                    <button type="button" id="btnSave" class="btn btn-primary"> <b>Save</b></button>
                                                 </div>
                                             </div>
-                                            <div id="dvClientInvoice">
-                                                @if (Model.CRMInvoiceModelView != null)
-                                                {
-                                                    @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model.CRMInvoiceModelView)
-                                                }
+                                            <div class="row col-sm-12 col-md-12 col-xl-12 ml-auto mr-auto" style="display:flex;">
+                                                <div class="col-sm-4"></div>
+                                                <div class="col-sm-4"></div>
+                                                <div class="col-sm-4">
+                                                    @Html.TextBoxFor(model => model.CRMInvoiceModelView.ObjCRMInvoivce.InvoiceTotal, new { @class = "input100", @id = "txttotal", @readonly = "readonly", placeholder = "Invoice Total" })
+                                                </div>
                                             </div>
-                                            <div class="button-row d-flex mt-4">
-                                                <button class="btn btn-primary js-btn-prev" type="button" title="Prev" tabindex="75">Prev</button>
-                                                @*<button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="83">Save</button>*@
+                                            <div class="button-row d-flex mt-2">
+                                                <button type="button" id="btnSaveDraft" class="btn btn-primary ml-auto"> <b>Save as Draft</b></button>&nbsp;&nbsp;
+                                                <button type="button" id="btnSave" class="btn btn-primary"> <b>Save</b></button>
                                             </div>
-                                        
+                                        </div>
+                                        <div id="dvClientInvoice">
+                                            @if (Model.CRMInvoiceModelView != null)
+                                            {
+                                                @Html.Partial("~/Views/Invoice/_InvoiceList.cshtml", Model.CRMInvoiceModelView)
+                                            }
+                                        </div>
+                                        <div class="button-row d-flex mt-4">
+                                            <button class="btn btn-primary js-btn-prev" type="button" title="Prev" tabindex="75">Prev</button>
+                                            @*<button class="btn btn-success ml-auto" type="button" id="btnSubmitUser" title="Save" tabindex="83">Save</button>*@
+                                        </div>
+
                                     </div>
 
                                 </form>

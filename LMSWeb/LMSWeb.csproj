@@ -96,6 +96,9 @@
     <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
     </Reference>
+    <Reference Include="Rotativa, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rotativa.1.7.3\lib\net461\Rotativa.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -233,6 +236,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\ChangePasswordViewModel.cs" />
+    <Compile Include="ViewModel\CheckListViewModel.cs" />
     <Compile Include="ViewModel\CRMClientStagesViewModel.cs" />
     <Compile Include="ViewModel\CRMClientViewModel.cs" />
     <Compile Include="ViewModel\CRMDashboardViewModel.cs" />
@@ -340,6 +344,7 @@
     <Content Include="assets\images\shape_InactiveUser.png" />
     <Content Include="assets\images\shape_Learnings.png" />
     <Content Include="assets\images\shape_NotAssignedLegend.png" />
+    <Content Include="assets\images\shape_Print.png" />
     <Content Include="assets\images\shape_TotalUsers.png" />
     <Content Include="assets\images\slack.png" />
     <Content Include="assets\images\switch.png" />
@@ -735,6 +740,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
+    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
+    <Content Include="Rotativa\wkhtmltoimage.exe" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="CSS\fontawesome\webfonts\fa-brands-400.eot" />
@@ -790,6 +799,7 @@
     <Content Include="Download\UserUploadTemplate.xlsx" />
     <Content Include="Download\UserUploadTemplate.csv" />
     <Content Include="DBScript\LMSDB.bak" />
+    <Content Include="App_Browsers\qt.browser" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap\bootstrap.bundle.js" />
@@ -943,6 +953,10 @@
     <Content Include="Views\AdminSettings\_CreateCheckList.cshtml" />
     <Content Include="Views\AdminSettings\_CheckList.cshtml" />
     <Content Include="Web.config" />
+    <Content Include="Views\AdminSettings\ShowCheckListItems.cshtml" />
+    <Content Include="Views\AdminSettings\PrintCheckList.cshtml" />
+    <Content Include="Views\AdminSettings\_AddAgreement.cshtml" />
+    <Content Include="Views\AdminSettings\_AgreementList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

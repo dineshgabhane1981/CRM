@@ -16,5 +16,7 @@ namespace LMSBL.DBModels.CRMNew
         public string CheckListName { get; set; }
 
         public DateTime? CreatedOn { get; set; }
+
+        public int VisaType { get; set; }
     }
 }

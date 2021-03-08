@@ -10,7 +10,6 @@ namespace LMSWeb.ViewModel
     public class CRMUserViewModel
     {
         public tblCRMUser ObjCRMUser { get; set; }
-
         public tblCRMUsersBillingAddress ObjCRMUsersBillingAddress { get; set; }
         public tblCRMUsersPassportDetail ObjCRMUsersPassportDetail { get; set; }
         public tblCRMUsersVisaDetail ObjCRMUsersVisaDetail { get; set; }
@@ -27,10 +26,8 @@ namespace LMSWeb.ViewModel
         public tblCRMUsersQualification ObjCRMUserQualification { get; set; }
         public List<tblCRMUsersQualification> ObjCRMUserQualificationList { get; set; }
         public List<string> lstNotesSubStages { get; set; }
-
         public List<SelectListItem> VisaCountriesList { get; set; }
         public List<SelectListItem> CountriesCodes { get; set; }
-
         public List<SelectListItem> SalesPersonsList { get; set; }
         public List<SelectListItem> ClientSourceList { get; set; }
         public List<SelectListItem> JobSectorsList { get; set; }
@@ -57,10 +54,9 @@ namespace LMSWeb.ViewModel
         {
             return new SelectListItem[3] { new SelectListItem() { Text = "Acceptable" }, new SelectListItem() { Text = "Conditions" }, new SelectListItem() { Text = "Non Acceptable" } };
         }
-
         public string Clone { get; set; }
-
         public CRMInvoiceViewModel CRMInvoiceModelView { get; set; }
+        public List<tblCRMCheckListItem> lstCheckListItem { get; set; }
     }
 
 

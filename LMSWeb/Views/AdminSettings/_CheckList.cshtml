@@ -36,6 +36,7 @@
 
                                     <td style="text-align:center;">
                                         <a href="#" onclick="OpenEditCheckList(@list.Id)" class="login" title="Edit"><img src="~/assets/images/shape_editUser.png" /></a>
+                                        <a href="@Url.Action("ShowCheckListItems", "AdminSettings", new { id = list.Id })" target="_blank" class="login" title="Print"><img src="~/assets/images/shape_Print.png" /></a>
                                     </td>
 
                                 </tr>

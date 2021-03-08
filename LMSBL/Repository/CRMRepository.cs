@@ -212,6 +212,25 @@ namespace LMSBL.Repository
 
             return objCheckList;
         }
+        public tblCRMCheckList GetCRMCheckListByID(int ClientId, int Id)
+        {
+            tblCRMCheckList objCheckList = new tblCRMCheckList();
+            using (var context = new CRMContext())
+            {
+                objCheckList = context.tblCRMCheckLists.Where(a => a.CRMClientID == ClientId && a.Id == Id).FirstOrDefault();
+            }
+
+            return objCheckList;
+        }
+        public List<tblCRMCheckListItem> GetCRMCheckListItem(int CheckListId)
+        {
+            List<tblCRMCheckListItem> objCheckListItems = new List<tblCRMCheckListItem>();
+            using (var context = new CRMContext())
+            {
+                objCheckListItems = context.tblCRMCheckListItems.Where(a => a.CheckListId == CheckListId).ToList();
+            }
+            return objCheckListItems;
+        }
         public bool AddCheckList(tblCRMCheckList objCheckList, List<tblCRMCheckListItem> objCheckListItemList)
         {
             bool status = false;
@@ -224,7 +243,16 @@ namespace LMSBL.Repository
                         context.tblCRMCheckLists.AddOrUpdate(objCheckList);
                         context.SaveChanges();
 
-                        foreach(var item in objCheckListItemList)
+                        if (objCheckListItemList != null && objCheckListItemList.Count > 0)
+                        {
+                            var itemList = context.tblCRMCheckListItems.Where(x => x.CheckListId == objCheckList.Id).ToList();
+                            foreach (var item in itemList)
+                            {
+                                context.tblCRMCheckListItems.Remove(item);
+                                context.SaveChanges();
+                            }
+                        }
+                        foreach (var item in objCheckListItemList)
                         {
                             item.CheckListId = objCheckList.Id;
                             context.tblCRMCheckListItems.AddOrUpdate(item);
@@ -244,6 +272,41 @@ namespace LMSBL.Repository
             return status;
         }
 
+        public List<tblCRMAgreement> GetCRMAgreements(int ClientId)
+        {
+            List<tblCRMAgreement> objAgreements = new List<tblCRMAgreement>();
+            using (var context = new CRMContext())
+            {
+                objAgreements = context.tblCRMAgreements.Where(a => a.ClientId == ClientId).ToList();
+            }
+            return objAgreements;
+        }
+        public tblCRMAgreement GetCRMAgreementById(int AgreementId)
+        {
+            tblCRMAgreement objAgreement = new tblCRMAgreement();
+            using (var context = new CRMContext())
+            {
+                objAgreement = context.tblCRMAgreements.Where(a => a.AgreementId == AgreementId).FirstOrDefault();
+            }
+            return objAgreement;
+        }
+        public bool AddOrUpdateAgreement(tblCRMAgreement objCRMAgreement)
+        {
+            bool status = false;
+            using (var context = new CRMContext())
+            {
+                try
+                {
+                    context.tblCRMAgreements.AddOrUpdate(objCRMAgreement);
+                    status = true;
+                }
+                catch (Exception ex)
+                {
+                    newException.AddException(ex);
+                }
+            }
+            return status;
+        }
 
     }
 }

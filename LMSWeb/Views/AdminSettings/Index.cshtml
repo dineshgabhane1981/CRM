@@ -3,6 +3,7 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_LayoutCRM.cshtml";
 }
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote.min.css" rel="stylesheet">
 <style>
 
     body {
@@ -87,55 +88,62 @@
     @Html.HiddenFor(model => model.imageJson)
     @Html.HiddenFor(model => model.imageName)
     @Html.HiddenFor(model => model.objtbluser.CRMClientId, new { @id = "hdnCRMClientId" })
-<div class="warpper">
-    <input class="radio" id="one" name="group" type="radio" checked>
-    <input class="radio" id="two" name="group" type="radio">
-    <input class="radio" id="three" name="group" type="radio">
-    <input class="radio" id="four" name="group" type="radio">
-    <input class="radio" id="five" name="group" type="radio">
-    <div class="tabs">
-        <label class="tab" id="one-tab" for="one">Profile</label>
-        @if (Model.objtbluser.RoleId == 2)
-        {
-            <label class="tab" id="two-tab" for="two">Manage Users</label>
-            <label class="tab" id="three-tab" for="three">Update Stages</label>
-        }
-        <label class="tab" id="four-tab" for="four">Checklists</label>
-        <label class="tab" id="five-tab" for="five">Agreements</label>
+    <div class="warpper">
+        <input class="radio" id="one" name="group" type="radio" checked>
+        <input class="radio" id="two" name="group" type="radio">
+        <input class="radio" id="three" name="group" type="radio">
+        <input class="radio" id="four" name="group" type="radio">
+        <input class="radio" id="five" name="group" type="radio">
+        <div class="tabs">
+            <label class="tab" id="one-tab" for="one">Profile</label>
+            @if (Model.objtbluser.RoleId == 2)
+            {
+                <label class="tab" id="two-tab" for="two">Manage Users</label>
+                <label class="tab" id="three-tab" for="three">Update Stages</label>
+            }
+            <label class="tab" id="four-tab" for="four">Checklists</label>
+            <label class="tab" id="five-tab" for="five">Agreements</label>
+        </div>
+        <div class="panels">
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" id="one-panel">
+                @Html.Partial("~/Views/AdminSettings/_UserProfile.cshtml", Model)
+
+            </div>
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="two-panel">
+
+                <div class="row pt-4 pl-3" style="display:flex;">
+                    <h5 class="mb-2">Manage Users</h5>
+                </div>
+                <div class="container-fluid mt-4 mb-4 pl-4 pr-4" id="dvAddEditUser" style="display:none;">
+                    @Html.Partial("~/Views/AdminSettings/_AddAdminUser.cshtml", Model)
+                </div>
+                <div class="row" id="dvUserList">
+                    @Html.Partial("~/Views/AdminSettings/_ManageUser.cshtml", Model)
+                </div>
+
+            </div>
+
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="three-panel">
+                @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml", Model)
+            </div>
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="four-panel">
+                <div>@Html.Partial("~/Views/AdminSettings/_CreateCheckList.cshtml", Model)</div>
+
+                <div id="dvCheckList">@Html.Partial("~/Views/AdminSettings/_CheckList.cshtml", Model)</div>
+            </div>
+            <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="five-panel">
+                <div id="dvCreateAgreement">
+                    @Html.Partial("~/Views/AdminSettings/_AddAgreement.cshtml", Model)
+                </div>
+                <div id="dvAgreementList">
+                    @Html.Partial("~/Views/AdminSettings/_AgreementList.cshtml", Model)
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="panels">
-        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" id="one-panel">
-            @Html.Partial("~/Views/AdminSettings/_UserProfile.cshtml", Model)
-
-        </div>
-        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="two-panel">
-
-            <div class="row pt-4 pl-3" style="display:flex;">
-                <h5 class="mb-2">Manage Users</h5>
-            </div>
-            <div class="container-fluid mt-4 mb-4 pl-4 pr-4" id="dvAddEditUser" style="display:none;">
-                @Html.Partial("~/Views/AdminSettings/_AddAdminUser.cshtml", Model)
-            </div>
-            <div class="row" id="dvUserList">
-                @Html.Partial("~/Views/AdminSettings/_ManageUser.cshtml", Model)
-            </div>
-
-        </div>
-
-        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="three-panel">
-            @Html.Partial("~/Views/AdminSettings/_UpdateStages.cshtml", Model)
-        </div>
-        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="four-panel">
-            <div>@Html.Partial("~/Views/AdminSettings/_CreateCheckList.cshtml", Model)</div>
-            
-            <div>@Html.Partial("~/Views/AdminSettings/_CheckList.cshtml", Model)</div>
-        </div>
-        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="five-panel">
-            
-        </div>
-    </div>
-</div>
 }
+
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote.min.js"></script>
 <script>
     $(document).ready(function () {
         document.getElementById("fileNew").addEventListener('change', handleFileSelect, false);
@@ -159,8 +167,20 @@
         });
 
         $('#btnAddCheckListItem').on("click", function () {
+            if ($("#ddlChecklistVisaType")[0].selectedIndex <= 0) {
+                toastr.error('Please select VisaType');
+                $("#ddlChecklistVisaType").focus();
+                return false;
+            }
+            if ($("#txtChecklistName").val() == "") {
+                toastr.error('Please enter Checklist name');
+                $("#txtChecklistName").focus();
+                return false;
+            }
             AddCheckListItem();
         });
+        $("#agreementcontentarea").summernote();
+        $('#txtAgreementContent').summernote();
     });
     var itemCount = 0;
     function AddCheckListItem() {
@@ -170,7 +190,7 @@
         itemHTML += "<div class=\"col-sm-6\">";
         itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + itemCount + "></input>";
         itemHTML += "</div>";
-              
+
         itemHTML += "<div class=\"col-sm-6\" style=text-align:end;>";
         itemHTML += "<button onclick=\"removeChecklistItem(" + itemCount + ")\" id=btn" + itemCount + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
         itemHTML += "</div>";
@@ -179,17 +199,22 @@
 
         $("#dvCheckListItem").append(itemHTML);
     }
-     function removeChecklistItem(id) {
+
+    function removeChecklistItem(id) {
         $("#dvItem" + id).remove();
-        
+
     }
-     function OpenAddCheckList() {
-        $("#txtChecklistName").val("");        
+
+    function OpenAddCheckList() {
+        $("#txtChecklistName").val("");
+        $("#ddlChecklistVisaType").prop("selectedIndex", 0);
         $("#dvAddChecklist").show(1000);
     }
+
     function CloseAddCheckListSection() {
         $("#dvAddChecklist").hide(1000);
     }
+
     function UpdateToDB() {
         if ($("#txtFirstName").val() == "" || $("#txtFirstName").val() == null) {
             toastr.error('Please enter First Name');
@@ -245,6 +270,7 @@
             }
         });
     }
+
     function handleFileSelect(evt) {
 
         var f = evt.target.files[0]; // FileList object
@@ -263,6 +289,7 @@
         reader.readAsBinaryString(f);
 
     }
+
     function openPage(pageName, elmnt, color) {
         // Hide all elements with class="tabcontent" by default */
         var i, tabcontent, tablinks;
@@ -284,10 +311,11 @@
         //  Add the specific color to the button used to open the tab content
         elmnt.style.backgroundColor = color;
     }
-       
+
     function CloseAddSection() {
         $("#dvAddEditUser").hide(1000);
     }
+
     function OpenEditUser(id) {
         $("#divLoader").show();
         $("#txtAdminFirstName").val("");
@@ -317,6 +345,7 @@
         $("#dvAddEditUser").show(1000);
 
     }
+
     function OpenAddUser() {
         $("#txtAdminFirstName").val("");
         $("#txtAdminEmail").val("");
@@ -325,6 +354,7 @@
         $("#txtAdminPassword").val("");
         $("#dvAddEditUser").show(1000);
     }
+
     function AddUserToDB() {
 
         if (isValidate()) {
@@ -417,12 +447,19 @@
         }
         return true;
     }
+
     function AddCheckListToDB() {
+        if ($("#ddlChecklistVisaType")[0].selectedIndex <= 0) {
+            toastr.error('Please select VisaType');
+            $("#ddlChecklistVisaType").focus();
+            return false;
+        }
         if ($("#txtChecklistName").val() == "") {
             toastr.error('Please enter Checklist name');
             $("#txtChecklistName").focus();
             return false;
         }
+
         var IDs = $("#dvCheckListItem div[id^='dvItem']");
         if (IDs.length == 0) {
             toastr.error('Please add items in Invoice');
@@ -443,13 +480,14 @@
         $.each(IDs, function (index, value) {
             var id = value.id.substring(6, value.id.length);
             checklistItem = {}
-            checklistItem["ItemDesc"] = $("#txtItemDesc" + id).val();            
+            checklistItem["ItemDesc"] = $("#txtItemDesc" + id).val();
             ItemObject.push(checklistItem);
         });
         var DataObject = [];
         item = {}
         item["Id"] = $("#txtCheckListId").val();
         item["CheckListName"] = $("#txtChecklistName").val();
+        item["VisaType"] = $("#ddlChecklistVisaType").val();
         item["Items"] = ItemObject;
         DataObject.push(item);
 
@@ -467,8 +505,28 @@
             failure: function (response) {
             },
             error: function (response) {
-                if (response.responseText == "True") { 
-                    toastr.success('Checklist Added');
+                if (response.responseText == "True") {
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/AdminSettings/GetCheckListData",
+                        data: '',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $("#dvCheckList").html(response);
+                            $("#divLoader").hide();
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                            $("#dvCheckList").html(response.responseText);
+                            $("#divLoader").hide();
+
+                        }
+                    });
+                    CloseAddCheckListSection();
+                    toastr.success('Checklist Added/Updated Successfully!');
                     $("#divLoader").hide();
                 }
                 else {
@@ -481,6 +539,49 @@
 
     function OpenEditCheckList(id) {
 
+        $.ajax({
+            type: "POST",
+            url: "/AdminSettings/GetCheckListItems",
+            data: '{ChecklistId: ' + JSON.stringify(id) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                console.log(response.objCheckList);
+                $("#txtCheckListId").val(response.objCheckList.Id);
+                $("#txtChecklistName").val(response.objCheckList.CheckListName);
+                $("#ddlChecklistVisaType").val(response.objCheckList.VisaType);
+                $("#dvCheckListItem").html("");
+                $.each(response.lstCheckListItem, function (index, value) {
+                    var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + value.ItemId + " style=\"display:flex;\">";
+
+                    itemHTML += "<div class=\"col-sm-6\">";
+                    itemHTML += "<input type=\"text\" class=input100 placeholder=\"Item Description\" id=txtItemDesc" + value.ItemId + "></input>";
+                    itemHTML += "</div>";
+
+                    itemHTML += "<div class=\"col-sm-6\" style=text-align:end;>";
+                    itemHTML += "<button onclick=\"removeChecklistItem(" + value.ItemId + ")\" id=btn" + value.ItemId + " type=\"button\" class=\"col question-btn-for-option btn text-center btn-primary profle-submit-btn-for-option\" style=\"margin-left: 5px;\"> - </button>";
+                    itemHTML += "</div>";
+                    itemHTML += "</div>";
+
+                    $("#dvCheckListItem").append(itemHTML);
+                    $("#txtItemDesc" + value.ItemId).val(value.ItemName)
+                    itemCount = value.ItemId;
+
+                });
+                //$("#dvAddEditUser").html(response);
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                //console.log(response.responseText);
+                //$("#dvAddEditUser").html(response.responseText);
+                $("#divLoader").hide();
+
+            }
+        });
+        $("#dvAddChecklist").show(1000);
     }
 
 

@@ -826,5 +826,18 @@ namespace LMSBL.Repository
 
             return result;
         }
+
+        //public List<tblCRMCheckListItem> GetCRMCheckListItemByVisaType(int VisaType)
+        //{
+        //    List<tblCRMCheckListItem> objCheckListItems = new List<tblCRMCheckListItem>();
+        //    using (var context = new CRMContext())
+        //    {
+        //       var  objCheckList = context.tblCRMCheckLists.Where(a => a.VisaType == VisaType).FirstOrDefault();
+        //        objCheckListItems = context.tblCRMCheckListItems.Where(a => a.CheckListId == objCheckList.Id).ToList();
+        //    }
+        //    return objCheckListItems;
+        //}
+
+
     }
 }

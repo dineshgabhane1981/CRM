@@ -14,6 +14,7 @@ using LMSBL.DBModels.CRMNew;
 using System.IO;
 using System.Drawing;
 using System.Web.Script.Serialization;
+using Rotativa;
 
 namespace LMSWeb.Controllers
 {
@@ -23,6 +24,7 @@ namespace LMSWeb.Controllers
         UserRepository ur = new UserRepository();
         Exceptions newException = new Exceptions();
         CRMRepository cr = new CRMRepository();
+        CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
         // GET: AdminSettings
         public ActionResult Index()
         {
@@ -40,11 +42,16 @@ namespace LMSWeb.Controllers
                 objuserviewmodel.lstClientStages = cr.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
                 objuserviewmodel.lstClientSubStages = cr.GetCRMClientSubStages(Convert.ToInt32(sessionUser.CRMClientId));
                 objuserviewmodel.lstUsers = cr.GetCRMAdminUsers(Convert.ToInt32(sessionUser.CRMClientId));
+                objuserviewmodel.lstVisaType = crmUsersRepository.GetVisaType();
 
                 tblCRMCheckList objCRMCheckList = new tblCRMCheckList();
                 objuserviewmodel.objChecklist = objCRMCheckList;
                 objuserviewmodel.objChecklistList = cr.GetCRMCheckList(Convert.ToInt32(sessionUser.CRMClientId));
-                
+                tblCRMAgreement objCRMAgreement = new tblCRMAgreement();
+                objuserviewmodel.objCRMAgreement = objCRMAgreement;
+                objuserviewmodel.lstCRMAgreement = cr.GetCRMAgreements(Convert.ToInt32(sessionUser.CRMClientId));
+
+
             }
             catch (Exception ex)
             {
@@ -263,6 +270,7 @@ namespace LMSWeb.Controllers
                 objCheckList.CreatedOn = DateTime.Now;
                 objCheckList.Id = Convert.ToInt32(item["Id"]);
                 objCheckList.CheckListName = Convert.ToString(item["CheckListName"]);
+                objCheckList.VisaType = Convert.ToInt32(item["VisaType"]);
                 int count = 0;
                 foreach (Dictionary<string, object> itemChecklist in (object[])item["Items"])
                 {
@@ -278,10 +286,42 @@ namespace LMSWeb.Controllers
             return status;
         }
 
-        public ActionResult GetCheckListDetails(string id)
+        public ActionResult GetCheckListData()
         {
-
-            return Json("", JsonRequestBehavior.AllowGet);
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            TblUserViewModel objuserviewmodel = new TblUserViewModel();
+            objuserviewmodel.objChecklistList = cr.GetCRMCheckList(Convert.ToInt32(sessionUser.CRMClientId));
+            return PartialView("_CheckList", objuserviewmodel);
         }
+        public ActionResult GetCheckListItems(string ChecklistId)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            CheckListViewModel objChecklist = new CheckListViewModel();
+            objChecklist.CheckListObject = cr.GetCRMCheckListByID(Convert.ToInt32(sessionUser.CRMClientId), Convert.ToInt32(ChecklistId));
+            objChecklist.lstCheckListItem = cr.GetCRMCheckListItem(Convert.ToInt32(ChecklistId));
+            return Json(objChecklist, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult ShowCheckListItems(int id, string hide, string clientId)
+        {     
+            if(string.IsNullOrEmpty(clientId))
+            {
+                TblUser sessionUser = (TblUser)Session["UserSession"];
+                clientId = sessionUser.CRMClientId;
+            }
+            
+            CheckListViewModel objChecklist = new CheckListViewModel();
+            objChecklist.CheckListObject = cr.GetCRMCheckListByID(Convert.ToInt32(clientId), Convert.ToInt32(id));
+            objChecklist.lstCheckListItem = cr.GetCRMCheckListItem(Convert.ToInt32(id));
+            ViewBag.CheckListID = id;
+            ViewBag.Hide = hide;
+            return View(objChecklist);
+        }
+        public ActionResult PrintCheckList(string id)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            var report = new ActionAsPdf("ShowCheckListItems", new { id = Convert.ToInt32(id), hide=1, clientId=sessionUser.CRMClientId });
+            return report;
+        }      
+
     }
 }

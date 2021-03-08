@@ -4,6 +4,7 @@
     <div class="row pt-3 pl-4">
         <div class="col-sm-12">
             @Html.HiddenFor(model => model.objChecklist.Id, new { @id = "txtCheckListId" })
+            @Html.DropDownListFor(model => model.objChecklist.VisaType, new SelectList(Model.lstVisaType, "Value", "Text"), "Select Visa Type", htmlAttributes: new { @class = "input100", @id = "ddlChecklistVisaType" })
             @Html.TextBoxFor(model => model.objChecklist.CheckListName, new { @class = "input100", placeholder = "Checklist Name", @id = "txtChecklistName" })
             <button type="button" id="btnAddCheckListItem" class="btn btn-primary" style="margin-left:20px;"><b> Add Checklist Item</b></button>
 

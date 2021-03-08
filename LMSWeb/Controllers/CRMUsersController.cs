@@ -20,6 +20,7 @@ namespace LMSWeb.Controllers
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
         CRMDocumentsRepository crmDocRepo = new CRMDocumentsRepository();
         CRMInvoiceRepository invoiceRepository = new CRMInvoiceRepository();
+        CRMRepository cRMRepository = new CRMRepository();
         Exceptions newException = new Exceptions();
         public ActionResult Enquiry()
         {
@@ -57,7 +58,6 @@ namespace LMSWeb.Controllers
 
             return View(objCRMUserViewModel);
         }
-       
         public ActionResult EditEnquiry(string id)
         {
             CommonFunctions common = new CommonFunctions();
@@ -290,7 +290,10 @@ namespace LMSWeb.Controllers
             CRMInvoiceModelView.ObjCRMInvoivceLST = invoiceRepository.GetInvoices(userId);
             CRMInvoiceModelView.lstCRMCurriencies = invoiceRepository.GetCRMCurriencies();
             objModel.CRMInvoiceModelView = CRMInvoiceModelView;
-
+            if (objModel.ObjCRMUsersVisaDetail.IntrestedVisa != null)
+            {
+                //objModel.lstCheckListItem = crmUsersRepository.GetCRMCheckListItemByVisaType(Convert.ToInt32(objModel.ObjCRMUsersVisaDetail.IntrestedVisa));
+            }
             return objModel;
 
         }

@@ -23,7 +23,7 @@ namespace LMSWeb
         {
             var sessionUser = (TblUser)filterContext.HttpContext.Session["UserSession"];
             var routeValues = filterContext.RequestContext.RouteData.Values["controller"].ToString();
-            if (sessionUser==null && !routeValues.Equals("Login") && !routeValues.Equals("Enquiry"))
+            if (sessionUser==null && !routeValues.Equals("Login") && !routeValues.Equals("Enquiry") && !routeValues.Equals("AdminSettings"))
             {
                 if (filterContext.HttpContext.Request.IsAjaxRequest())
                 {
