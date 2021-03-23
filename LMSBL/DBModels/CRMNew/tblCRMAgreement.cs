@@ -5,6 +5,7 @@ namespace LMSBL.DBModels.CRMNew
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Web.Mvc;
 
     [Table("tblCRMAgreement")]
     public partial class tblCRMAgreement
@@ -14,6 +15,7 @@ namespace LMSBL.DBModels.CRMNew
         public int ClientId { get; set; }
         
         [Required]
+        [AllowHtml]
         [StringLength(250)]
         public string AgreementName { get; set; }
 

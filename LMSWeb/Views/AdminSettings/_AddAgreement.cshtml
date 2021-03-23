@@ -4,9 +4,9 @@
     <div class="row pt-3 pl-4">
         <div class="col-sm-12">
             @Html.HiddenFor(model => model.objCRMAgreement.AgreementId, new { @id = "txtCheckListId" })
-            @Html.TextBoxFor(model => model.objCRMAgreement.AgreementName, new { @class = "input100", placeholder = "Agreement Name", @id = "txtAgreementName" })
+            @Html.TextBoxFor(model => model.objCRMAgreement.AgreementName, new { @class = "input150", placeholder = "Agreement Name", @id = "txtAgreementName" })
             @Html.TextBoxFor(model => model.objCRMAgreement.AgreementContent, new { @class = "input100", @id = "txtAgreementContent" })
-            @Html.TextAreaFor(model => model.objCRMAgreement.AgreementContent, new { @class = "input100", id = "agreementcontentarea" })
+            @*@Html.TextAreaFor(model => model.objCRMAgreement.AgreementContent, new { @class = "input100", id = "agreementcontentarea" })*@
         </div>
     </div>
     <div class="row col-12 justify-content-end p-2">
@@ -15,4 +15,12 @@
     </div>
 </div>
 
+@*<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#agreementcontentarea").summernote();
+        $('#txtAgreementContent').summernote();
+    });
 
+</script>*@
