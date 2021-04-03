@@ -30,8 +30,8 @@ namespace LMSWeb.Controllers
         {
             TblUserViewModel objuserviewmodel = new TblUserViewModel();
             try
-            {                
-                TblUser sessionUser = (TblUser)Session["UserSession"];                
+            {
+                TblUser sessionUser = (TblUser)Session["UserSession"];
                 sessionUser.IsMyProfile = true;
 
                 List<tblCRMClient> clientdetails = new List<tblCRMClient>();
@@ -55,7 +55,7 @@ namespace LMSWeb.Controllers
             }
             catch (Exception ex)
             {
-                newException.AddException(ex);                
+                newException.AddException(ex);
             }
             return View("Index", objuserviewmodel);
 
@@ -253,7 +253,7 @@ namespace LMSWeb.Controllers
             var stageModel = CRMRepo.GetCRMStagesList(Convert.ToInt32(model.CRMClientId));
             return Json(stageModel, JsonRequestBehavior.AllowGet);
         }
-        
+
         [HttpPost]
         public bool AddCheckList(string jsonData)
         {
@@ -302,13 +302,13 @@ namespace LMSWeb.Controllers
             return Json(objChecklist, JsonRequestBehavior.AllowGet);
         }
         public ActionResult ShowCheckListItems(int id, string hide, string clientId)
-        {     
-            if(string.IsNullOrEmpty(clientId))
+        {
+            if (string.IsNullOrEmpty(clientId))
             {
                 TblUser sessionUser = (TblUser)Session["UserSession"];
                 clientId = sessionUser.CRMClientId;
             }
-            
+
             CheckListViewModel objChecklist = new CheckListViewModel();
             objChecklist.CheckListObject = cr.GetCRMCheckListByID(Convert.ToInt32(clientId), Convert.ToInt32(id));
             objChecklist.lstCheckListItem = cr.GetCRMCheckListItem(Convert.ToInt32(id));
@@ -319,9 +319,69 @@ namespace LMSWeb.Controllers
         public ActionResult PrintCheckList(string id)
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
-            var report = new ActionAsPdf("ShowCheckListItems", new { id = Convert.ToInt32(id), hide=1, clientId=sessionUser.CRMClientId });
+            var report = new ActionAsPdf("ShowCheckListItems", new { id = Convert.ToInt32(id), hide = 1, clientId = sessionUser.CRMClientId });
             return report;
-        }      
+        }
 
+        [HttpPost]
+        public bool AddAgreement(string jsonData)
+        {
+            bool status = false;
+            TblUser model = (TblUser)Session["UserSession"];
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            json_serializer.MaxJsonLength = int.MaxValue;
+            object[] objAgreementData = (object[])json_serializer.DeserializeObject(jsonData);
+
+            tblCRMAgreement objAgreement = new tblCRMAgreement();
+            foreach (Dictionary<string, object> item in objAgreementData)
+            {
+                objAgreement.ClientId = Convert.ToInt32(model.CRMClientId);
+                objAgreement.CreatedDate = DateTime.Now;
+                objAgreement.CreatedBy = model.UserId;
+                objAgreement.AgreementId = Convert.ToInt32(item["Id"]);
+                objAgreement.AgreementName = Convert.ToString(item["AgreementName"]);
+                objAgreement.AgreementContent = Convert.ToString(item["AgreementContent"]);
+                status = cr.AddOrUpdateAgreement(objAgreement);
+            }
+
+            return status;
+        }
+    
+        public ActionResult GetAgreementDetails(int AgreementId)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            TblUserViewModel objuserviewmodel = new TblUserViewModel();
+            objuserviewmodel.objCRMAgreement = cr.GetCRMAgreementById(AgreementId);
+            return Json(objuserviewmodel.objCRMAgreement, JsonRequestBehavior.AllowGet);             
+        }
+
+        public ActionResult GetAgreementList()
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            TblUserViewModel objuserviewmodel = new TblUserViewModel();
+            objuserviewmodel.lstCRMAgreement = cr.GetCRMAgreements(Convert.ToInt32(sessionUser.CRMClientId));
+            return PartialView("_AgreementList", objuserviewmodel);
+        }
+
+        public ActionResult ShowAgreement(int id, string hide, string clientId)
+        {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                TblUser sessionUser = (TblUser)Session["UserSession"];
+                clientId = sessionUser.CRMClientId;
+            }
+            tblCRMAgreement objAgreement = new tblCRMAgreement();
+            objAgreement = cr.GetCRMAgreementById(id);
+            
+            ViewBag.AgreementId = id;
+            ViewBag.Hide = hide;
+            return View(objAgreement);
+        }
+        public ActionResult PrintAgreement(string id)
+        {
+            TblUser sessionUser = (TblUser)Session["UserSession"];
+            var report = new ActionAsPdf("ShowAgreement", new { id = Convert.ToInt32(id), hide = 1, clientId = sessionUser.CRMClientId });
+            return report;
+        }
     }
 }

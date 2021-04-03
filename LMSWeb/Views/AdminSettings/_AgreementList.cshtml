@@ -8,10 +8,9 @@
             <input class="search-box" type="text" id="txtSearchAgreement" placeholder="Search Agreement by name..." />
         </div>
         <div class="col search-container" style="text-align:end;">
-            <button type="button" id="btnAgreementAdd" class="btn btn-primary profle-submit-btn "> Add Agreement</button>
+            <button type="button" id="btnAgreementAdd" onclick="OpenAddAgreementSection()" class="btn btn-primary profle-submit-btn "> Add Agreement</button>
         </div>
     </div>
-
     <div class="row mt-3" id="dvAgreementData">
         <div class="table-responsive">
             <table class="table" id="agreementTable">
@@ -35,10 +34,9 @@
                                     <td>@list.CreatedDate</td>
 
                                     <td style="text-align:center;">
-                                        <a href="#" onclick="OpenEditCheckList(@list.AgreementId)" class="login" title="Edit"><img src="~/assets/images/shape_editUser.png" /></a>
-                                        <a href="@Url.Action("ShowCheckListItems", "AdminSettings", new { id = list.AgreementId })" target="_blank" class="login" title="Print"><img src="~/assets/images/shape_Print.png" /></a>
+                                        <a href="#" onclick="OpenEditAgreement(@list.AgreementId)" class="login" title="Edit"><img src="~/assets/images/shape_editUser.png" /></a>
+                                        <a href="@Url.Action("ShowAgreement", "AdminSettings", new { id = list.AgreementId })" target="_blank" class="login" title="Print"><img src="~/assets/images/shape_Print.png" /></a>
                                     </td>
-
                                 </tr>
                             }
                         }

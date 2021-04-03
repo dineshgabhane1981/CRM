@@ -132,7 +132,7 @@
                 <div id="dvCheckList">@Html.Partial("~/Views/AdminSettings/_CheckList.cshtml", Model)</div>
             </div>
             <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="five-panel">
-                <div id="dvCreateAgreement">
+                <div id="dvCreateAgreement" style="display:none;">
                     @Html.Partial("~/Views/AdminSettings/_AddAgreement.cshtml", Model)                    
                 </div>
                 <div id="dvAgreementList">
@@ -180,6 +180,9 @@
                 return false;
             }
             AddCheckListItem();
+        });
+        $('#btnAgreementAdd').on("click", function () {
+            OpenAddAgreementSection();
         });
 
     });
@@ -241,7 +244,8 @@
                     toastr.success("User Updated");
                     $.ajax({
                         type: "POST",
-                        url: "/AdminSettings/GetClientLogo",
+                        //url: "/AdminSettings/GetClientLogo",
+                        url: '@Url.Action("GetClientLogo")',
                         data: '',
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -327,7 +331,8 @@
 
         $.ajax({
             type: "POST",
-            url: "/AdminSettings/GetAdminUserForEdit",
+            //url: "/AdminSettings/GetAdminUserForEdit",
+            url: '@Url.Action("GetAdminUserForEdit")',
             data: '{UserId: ' + JSON.stringify(id) + '}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -371,7 +376,8 @@
             $("#divLoader").show();
             $.ajax({
                 type: "POST",
-                url: "/AdminSettings/AddAdminUser",
+                //url: "/AdminSettings/AddAdminUser",
+                url: '@Url.Action("AddAdminUser")',
                 data: '{jsonData: ' + JSON.stringify(JSON.stringify(ItemObject)) + '}',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -392,7 +398,8 @@
 
                         $.ajax({
                             type: "POST",
-                            url: "/AdminSettings/GetAllAdminUsers",
+                            //url: "/AdminSettings/GetAllAdminUsers",
+                            url: '@Url.Action("GetAllAdminUsers")',
                             data: '',
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
@@ -496,7 +503,8 @@
         $("#divLoader").show();
         $.ajax({
             type: "POST",
-            url: "/AdminSettings/AddCheckList",
+            //url: "/AdminSettings/AddCheckList",
+            url: '@Url.Action("AddCheckList")',
             data: '{jsonData: ' + JSON.stringify(data) + '}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -510,7 +518,8 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/AdminSettings/GetCheckListData",
+                        //url: "/AdminSettings/GetCheckListData",
+                        url: '@Url.Action("GetCheckListData")',
                         data: '',
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
@@ -539,19 +548,20 @@
     }
 
     function OpenEditCheckList(id) {
-
+        $("#divLoader").show();
         $.ajax({
             type: "POST",
-            url: "/AdminSettings/GetCheckListItems",
+            //url: "/AdminSettings/GetCheckListItems",
+            url: '@Url.Action("GetCheckListItems")',
             data: '{ChecklistId: ' + JSON.stringify(id) + '}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
                 console.log(response);
                 console.log(response.objCheckList);
-                $("#txtCheckListId").val(response.objCheckList.Id);
-                $("#txtChecklistName").val(response.objCheckList.CheckListName);
-                $("#ddlChecklistVisaType").val(response.objCheckList.VisaType);
+                $("#txtCheckListId").val(response.Id);
+                $("#txtChecklistName").val(response.CheckListName);
+                $("#ddlChecklistVisaType").val(response.VisaType);
                 $("#dvCheckListItem").html("");
                 $.each(response.lstCheckListItem, function (index, value) {
                     var itemHTML = "<div class=\"multisteps-form__content\" id=dvItem" + value.ItemId + " style=\"display:flex;\">";
@@ -585,7 +595,112 @@
         $("#dvAddChecklist").show(1000);
     }
 
+    function OpenAddAgreementSection() {
+        $("#hdnAgreementId").val(0);
+        $("#txtAgreementName").val("");
+        $("#txtAgreementContent").summernote("reset");
+        $("#dvCreateAgreement").show(1000);
+    }
 
+    function CloseAddAgreementSection() {
+        $("#dvCreateAgreement").hide(1000);
+    }
+
+    function AddAgreementToDB() {
+        if ($("#txtAgreementName").val() == "") {
+            toastr.error('Please enter Agreement name');
+            $("#txtAgreementName").focus();
+            return false;
+        }
+        if ($("#txtAgreementContent").summernote("code") == "") {
+            toastr.error('Please enter Agreement Content');
+            $("#txtAgreementContent").focus();
+            return false;
+        }
+        var DataObject = [];
+        item = {}
+        item["Id"] = $("#hdnAgreementId").val();
+        item["AgreementName"] = $("#txtAgreementName").val();
+        item["AgreementContent"] = $("#txtAgreementContent").summernote("code");
+        DataObject.push(item);
+        var data = JSON.stringify(DataObject);
+
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddAgreement")',
+            data: '{jsonData: ' + JSON.stringify(data) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                console.log(response);
+                if (response.responseText == "True") {
+                    toastr.success('Agreement Added/Updated Successfully!');
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetAgreementList")',
+                        data: '',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $("#dvAgreementList").html(response);
+                            $("#divLoader").hide();
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                            $("#dvAgreementList").html(response.responseText);
+                            $("#divLoader").hide();
+
+                        }
+                    });
+
+
+                    $("#divLoader").hide();
+                }
+                else {
+                    toastr.error('error occured while saving data');
+                    $("#divLoader").hide();
+                }
+            }
+        });
+    }
+
+    function OpenEditAgreement(AgreementId) {
+        $("#divLoader").show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetAgreementDetails")',
+            data: '{AgreementId: ' + JSON.stringify(AgreementId) + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                $("#hdnAgreementId").val(response.AgreementId);
+                $("#txtAgreementName").val(response.AgreementName);
+                //$("#txtAgreementContent").val(response.AgreementContent);
+
+
+                $("#txtAgreementContent").summernote("code", response.AgreementContent);
+
+
+                $("#dvCreateAgreement").show(1000);
+                //$("#dvAddEditUser").html(response);
+                $("#divLoader").hide();
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                $("#divLoader").hide();
+
+            }
+        });
+
+    }
 </script>
 
 

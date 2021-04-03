@@ -1,0 +1,33 @@
+﻿@model LMSBL.DBModels.CRMNew.tblCRMAgreement
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PrintCheckList</title>
+</head>
+<body>
+    <div style="margin:50px;">
+        <span style="font-family: Verdana; font-size: 18px;"><b>Agreement Name - </b>@Model.AgreementName</span>
+        <span style="margin-left:100px;">
+
+            @if (string.IsNullOrEmpty(Convert.ToString(ViewBag.Hide)))
+            {
+                var id = @Model.AgreementId;
+                <a href="/AdminSettings/PrintAgreement/@id" target="_blank">Print</a>
+            }
+        </span>
+        <div>@Html.Raw(Model.AgreementContent)</div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        function HideLink() {
+            $("#lnkHide").hide();
+        }
+    </script>
+</body>
+</html>

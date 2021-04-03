@@ -298,6 +298,7 @@ namespace LMSBL.Repository
                 try
                 {
                     context.tblCRMAgreements.AddOrUpdate(objCRMAgreement);
+                    context.SaveChanges();
                     status = true;
                 }
                 catch (Exception ex)
@@ -308,5 +309,6 @@ namespace LMSBL.Repository
             return status;
         }
 
+      
     }
 }
