@@ -20,8 +20,7 @@ namespace LMSWeb.Controllers
         {
             CRMDashboardViewModel objDashboardViewModel = new CRMDashboardViewModel();
             try
-            {
-                
+            {                
                 TblUser sessionUser = (TblUser)Session["UserSession"];
                 
                 objDashboardViewModel.objCRMEnquiryList = dashboardRepo.GetCRMDashboardEnquiryList(sessionUser, 1);
@@ -34,6 +33,7 @@ namespace LMSWeb.Controllers
             catch(Exception ex)
             {
                 newException.AddException(ex);
+                return RedirectToAction("Error", "Home");
             }
             return View(objDashboardViewModel);
         }

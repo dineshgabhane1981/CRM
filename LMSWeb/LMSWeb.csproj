@@ -958,6 +958,7 @@
     <Content Include="Views\AdminSettings\_AgreementList.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Views\AdminSettings\ShowAgreement.cshtml" />
+    <Content Include="Views\Home\Error.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -44,7 +44,7 @@ namespace LMSWeb.Controllers
         {            
             CRMNotesViewModel objNotesViewModel = new CRMNotesViewModel();
             objNotesViewModel.lstNotes = crmnr.GetCRMUserFileNotesById(Id);
-            objNotesViewModel.lstNotesSubStages = crmnr.GetCRMUserFileNotesSubStagesById(Id);
+            objNotesViewModel.lstNotesSubStages = crmnr.GetCRMUserFileNotesSubStageIdsById(Id);
             var currentUser = crmUsersRepository.GetCRMUserById(Id);
                 
             //TempData["CurrentStage"] = 3;

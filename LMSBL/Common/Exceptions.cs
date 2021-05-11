@@ -16,7 +16,7 @@ namespace LMSBL.Common
             db.AddParameter("@ExceptionType", SqlDbType.Text, ex.GetType().Name.ToString());
             db.AddParameter("@ExceptionURL", SqlDbType.Text, exepurl);
             db.AddParameter("@ExceptionSource", SqlDbType.Text, ex.ToString());
-            db.ExecuteQuery("sp_AddError");
+            db.ExecuteQuery("sp_AddError");            
         }
 
         public void AddDummyException(string ex)

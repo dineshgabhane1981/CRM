@@ -26,11 +26,13 @@ namespace LMSWeb.Controllers
         CRMRepository cr = new CRMRepository();
         CRMUsersRepository crmUsersRepository = new CRMUsersRepository();
         // GET: AdminSettings
+        [HandleError]
         public ActionResult Index()
         {
             TblUserViewModel objuserviewmodel = new TblUserViewModel();
             try
             {
+                //int count = Convert.ToInt32("dinesh");
                 TblUser sessionUser = (TblUser)Session["UserSession"];
                 sessionUser.IsMyProfile = true;
 
@@ -50,12 +52,13 @@ namespace LMSWeb.Controllers
                 tblCRMAgreement objCRMAgreement = new tblCRMAgreement();
                 objuserviewmodel.objCRMAgreement = objCRMAgreement;
                 objuserviewmodel.lstCRMAgreement = cr.GetCRMAgreements(Convert.ToInt32(sessionUser.CRMClientId));
-
+                return View("Index", objuserviewmodel);
 
             }
             catch (Exception ex)
             {
                 newException.AddException(ex);
+                //return RedirectToAction("Error", "Home");
             }
             return View("Index", objuserviewmodel);
 
@@ -123,6 +126,7 @@ namespace LMSWeb.Controllers
             catch (Exception ex)
             {
                 newException.AddException(ex);
+                
             }
             return status;
         }
@@ -319,8 +323,26 @@ namespace LMSWeb.Controllers
         public ActionResult PrintCheckList(string id)
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
-            var report = new ActionAsPdf("ShowCheckListItems", new { id = Convert.ToInt32(id), hide = 1, clientId = sessionUser.CRMClientId });
-            return report;
+
+            var a = new ViewAsPdf();
+            a.ViewName = "ShowCheckListItems";
+            CheckListViewModel objChecklist = new CheckListViewModel();
+            objChecklist.CheckListObject = cr.GetCRMCheckListByID(Convert.ToInt32(sessionUser.CRMClientId), Convert.ToInt32(id));
+            objChecklist.lstCheckListItem = cr.GetCRMCheckListItem(Convert.ToInt32(id));
+            ViewBag.CheckListID = id;
+            ViewBag.Hide = 1;
+
+            a.Model = objChecklist;
+            var pdfBytes = a.BuildFile(this.ControllerContext);
+
+            // Optionally save the PDF to server in a proper IIS location.
+            var fileName = objChecklist.CheckListObject.CheckListName + ".pdf";
+            var path = Server.MapPath("~/Temp/" + fileName);
+            System.IO.File.WriteAllBytes(path, pdfBytes);
+
+            // return ActionResult
+            MemoryStream ms = new MemoryStream(pdfBytes);
+            return new FileStreamResult(ms, "application/pdf");
         }
 
         [HttpPost]
@@ -380,8 +402,25 @@ namespace LMSWeb.Controllers
         public ActionResult PrintAgreement(string id)
         {
             TblUser sessionUser = (TblUser)Session["UserSession"];
-            var report = new ActionAsPdf("ShowAgreement", new { id = Convert.ToInt32(id), hide = 1, clientId = sessionUser.CRMClientId });
-            return report;
+            var a = new ViewAsPdf();
+            a.ViewName = "ShowAgreement";
+            tblCRMAgreement objAgreement = new tblCRMAgreement();
+            objAgreement = cr.GetCRMAgreementById(Convert.ToInt32(id));
+
+            ViewBag.AgreementId = id;
+            ViewBag.Hide = 1;
+
+            a.Model = objAgreement;
+            var pdfBytes = a.BuildFile(this.ControllerContext);
+
+            // Optionally save the PDF to server in a proper IIS location.
+            var fileName = objAgreement.AgreementName + ".pdf";
+            var path = Server.MapPath("~/Temp/" + fileName);
+            System.IO.File.WriteAllBytes(path, pdfBytes);
+
+            // return ActionResult
+            MemoryStream ms = new MemoryStream(pdfBytes);
+            return new FileStreamResult(ms, "application/pdf");
         }
     }
 }

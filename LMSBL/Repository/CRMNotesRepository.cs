@@ -104,15 +104,15 @@ namespace LMSBL.Repository
             using (var context = new CRMContext())
             {               
                 objCRMNote = (from a in context.tblCRMNotes
-                              join b in context.tblCRMClientSubStages on a.SubStage equals b.SubStageId
+                              //join b in context.tblCRMClientSubStages on a.SubStage equals b.SubStageId
                               where a.ClientId == id
                               orderby a.SubStage descending, a.CreatedDate
                               select new FileNotesDetails
                               {
                                   ClientId = a.ClientId,
                                   Notes = a.Notes,
-                                  SubStage = b.SubStageId,
-                                  SubStageName = b.SubStageName,
+                                  SubStage = a.SubStage,
+                                  //SubStageName = b.SubStageName,
                                   CommunicationSource = a.CommunicationSource,
                                   CreatedDate = a.CreatedDate
 
@@ -135,7 +135,7 @@ namespace LMSBL.Repository
                               {
                                   ClientId = a.ClientId,
                                   Notes = a.Notes,
-                                  SubStage = b.SubStageId,
+                                  SubStage = a.SubStage,
                                   SubStageName = b.SubStageName,
                                   CommunicationSource = a.CommunicationSource,
                                   CreatedDate = a.CreatedDate
@@ -148,6 +148,44 @@ namespace LMSBL.Repository
                 foreach(var item in objCRMNote1)
                 {
                     lstItems.Add(item.Items[0].SubStageName);
+                }
+            }
+            return lstItems;
+        }
+
+        public List<tblCRMClientSubStage> GetCRMUserFileNotesSubStageIdsById(int id)
+        {
+            List<FileNotesDetails> objCRMNote = new List<FileNotesDetails>();
+            List<tblCRMClientSubStage> lstItems = new List<tblCRMClientSubStage>();
+            using (var context = new CRMContext())
+            {
+                //objCRMNote = context.tblCRMNotes.Where(a => a.ClientId == id).ToList();
+                objCRMNote = (from a in context.tblCRMNotes
+                              join b in context.tblCRMClientSubStages on a.SubStage equals b.SubStageId
+                              where a.ClientId == id
+                              orderby a.SubStage descending
+                              select new FileNotesDetails
+                              {
+                                  ClientId = a.ClientId,
+                                  Notes = a.Notes,
+                                  SubStage = a.SubStage,
+                                  SubStageName = b.SubStageName,
+                                  CommunicationSource = a.CommunicationSource,
+                                  CreatedDate = a.CreatedDate
+
+                              }).ToList();
+                var objCRMNote1 = objCRMNote.GroupBy(item => item.SubStage)
+                 .Select(group => new { Customer = group.ToString(), Items = group.ToList() })
+                 .ToList();
+
+                foreach (var item in objCRMNote1)
+                {
+                    tblCRMClientSubStage objSubStage = new tblCRMClientSubStage();
+                    objSubStage.ClientId = item.Items[0].ClientId;
+                    objSubStage.SubStageId = item.Items[0].SubStage.Value;
+                    objSubStage.SubStageName = item.Items[0].SubStageName;
+
+                    lstItems.Add(objSubStage);
                 }
             }
             return lstItems;

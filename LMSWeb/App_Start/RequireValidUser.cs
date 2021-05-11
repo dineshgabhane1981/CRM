@@ -21,44 +21,19 @@ namespace LMSWeb
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var sessionUser = (TblUser)filterContext.HttpContext.Session["UserSession"];
+            var sessionUser = filterContext.HttpContext.Session["UserSession"];
             var routeValues = filterContext.RequestContext.RouteData.Values["controller"].ToString();
-            if (sessionUser==null && !routeValues.Equals("Login") && !routeValues.Equals("Enquiry") && !routeValues.Equals("AdminSettings"))
+            if (sessionUser == null && !routeValues.Equals("Login"))
             {
                 if (filterContext.HttpContext.Request.IsAjaxRequest())
                 {
-
-                    //filterContext.HttpContext.Response.StatusCode = 401;
-                    //filterContext.Result = new JsonResult
-                    //{
-                    //    Data = new
-                    //    {
-                    //        Error = "NotAuthorized",
-                    //        LogOnUrl = FormsAuthentication.LoginUrl
-                    //    },
-                    //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                    //};
-                    //filterContext.HttpContext.Response.End();
-
+                    filterContext.HttpContext.Response.ClearContent();
+                    filterContext.HttpContext.Items["AjaxPermissionDenied"] = true;
                 }
                 else
                 {
-                    // filterContext.RouteData.Values.Add("LogoutMessage", "Session Expired");
-                    //System.Web.Mvc.TempDataDictionary TempData = new TempDataDictionary();                    
-                    //filterContext.Result = new RedirectResult("~/Login/Index");
-
-                    var values = new RouteValueDictionary(new
-                    {
-                        action = "Index",
-                        controller = "Login",
-                        logout = "foo bar baz"
-                    });
-                    filterContext.Result = new RedirectToRouteResult(values);
-
+                    filterContext.Result = new RedirectResult("~/Login/Index");
                 }
-
-
-
             }
             base.OnActionExecuting(filterContext);
         }

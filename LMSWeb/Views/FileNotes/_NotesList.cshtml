@@ -18,10 +18,10 @@
 
                         @foreach (var item1 in Model.lstNotesSubStages)
                         {
-                            <b> @item1 </b>
+                            <b> @item1.SubStageName </b>
                             foreach (var item in Model.lstNotes)
                             {
-                                if (item1 == item.SubStageName)
+                                if (item1.SubStageId == item.SubStage)
                                 {
                                     <div>
                                         <div>

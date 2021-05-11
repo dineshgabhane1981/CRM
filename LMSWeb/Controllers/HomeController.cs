@@ -84,5 +84,9 @@ namespace LMSWeb.Controllers
             homeViewModel.lstActivities = hm.GetAllLearnerActivities(model.TenantId, model.UserId, status);            
             return PartialView("_ActivityData", homeViewModel.lstActivities);
         }
+        public ActionResult Error()
+        {
+            return View();
+        }
     }
 }

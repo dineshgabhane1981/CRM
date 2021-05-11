@@ -144,15 +144,7 @@
                         <a href="@Url.Action("Logout", "Login")"><span class="fa fa-power-off mr-3" style="color:white;"></span> Log Out</a>
                     </li>
                 </ul>
-                <div>
-                    @*@if (!string.IsNullOrEmpty(model.CRMClientId))
-            {
-                if (clientModel[0].isLMS == true)
-                {
-                    LMSUrl = "http://" + LMSUrl + ":61705/Home";//Need to Change
-                    <p><a href="@LMSUrl" style="color:white;">Learning</a></p>
-                }
-            }*@
+                <div>                   
                     <p>
                         Copyright &copy;
                         <script>document.write(new Date().getFullYear());</script><br /> All rights reserved
@@ -163,13 +155,19 @@
         </nav>
 
         <div id="content" class="p-4">
-            
+
             @RenderBody()
         </div>
     </div>
-    @*<script src="~/assets/CRM/jquery.min.js"></script>*@
     <script src="~/assets/CRM/popper.js"></script>
     <script src="~/assets/CRM/bootstrap.min.js"></script>
     <script src="~/assets/CRM/main.js"></script>
+    <script>
+        $(document).ajaxError(function (xhr, props) {
+            if (props.status === 401) {
+            window.location.href = '@Url.Action("Index", "Login")';
+            }
+        });
+    </script>
 </body>
 </html>
