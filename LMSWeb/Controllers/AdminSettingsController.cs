@@ -416,6 +416,7 @@ namespace LMSWeb.Controllers
             // Optionally save the PDF to server in a proper IIS location.
             var fileName = objAgreement.AgreementName + ".pdf";
             var path = Server.MapPath("~/Temp/" + fileName);
+            //var path = "https://liacrm.com/CRM_Publish/Temp/" + fileName;
             System.IO.File.WriteAllBytes(path, pdfBytes);
 
             // return ActionResult

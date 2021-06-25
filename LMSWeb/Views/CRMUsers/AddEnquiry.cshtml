@@ -84,7 +84,7 @@
                                 <form class="multisteps-form__form">
                                     <!--Personal Information-->
                                     @Html.HiddenFor(model => model.Clone)
-                                    @Html.HiddenFor(model => model.ObjCRMUser.Id)
+                                    @Html.HiddenFor(model => model.ObjCRMUser.Id, new { @id = "hdnUserId"})
                                     @Html.HiddenFor(model => model.ObjCRMUser.CurrentStage)
                                     @Html.HiddenFor(model => model.ObjCRMUser.CurrentSubStage)
                                     @Html.HiddenFor(model => model.ObjCRMUser.AssignedTo)
@@ -602,8 +602,9 @@
                     var newUrl = "@baseURL/" + str2 + str1;
                     console.log(newUrl);
 
-
-                    window.location.href = newUrl;
+                    if ($("#hdnUserId").val() == "0") {
+                        window.location.href = newUrl;
+                    }
                 }
                 else {
                     toastr.success("User Saved");

@@ -28,8 +28,8 @@
    $("#divLoader").show();
         var SearchText =  JSON.stringify($("#txtSearch").val());
         $.ajax({
-            type: "POST",
-            url: "/CRMUsers/GetSearchClient",
+            type: "POST",            
+            url: '@Url.Action("GetSearchClient", "CRMUsers")',
             data: '{SearchText: ' + SearchText + '}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",

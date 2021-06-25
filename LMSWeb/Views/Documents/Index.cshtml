@@ -81,7 +81,7 @@
         $("#divLoader").show();
         $.ajax({
             type: "POST",
-            url: "/Documents/SaveDocumentLink",
+            url: '@Url.Action("SaveDocumentLink", "Documents")',
             data: '{Id: ' + JSON.stringify(clientId) + ', link: ' + JSON.stringify(link) + '}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -93,10 +93,10 @@
             error: function (response) {
                 console.log(response.responseText)
                 if (response.responseText == "True") {
-                    toastr.success("Document Link Saved");                    
+                    toastr.success("Document Link Saved");
                 }
                 else {
-                    toastr.error('error occured while saving Document Link');                    
+                    toastr.error('error occured while saving Document Link');
                 }
                 $("#divLoader").hide();
             }
@@ -196,7 +196,7 @@
         $("#divLoader").show();
         $.ajax({
             type: "POST",
-            url: "/Documents/LoadDocuments",
+            url: '@Url.Action("LoadDocuments", "Documents")', 
             data: '{Id: ' + JSON.stringify(id) + '}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -215,7 +215,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/Documents/GetDocumentLink",
+                    url: '@Url.Action("GetDocumentLink", "Documents")', 
                     data: '{Id: ' + JSON.stringify(id) + '}',
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",

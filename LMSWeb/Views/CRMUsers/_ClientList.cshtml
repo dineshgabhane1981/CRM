@@ -36,6 +36,10 @@
         margin-left: 20px;
         margin-right: 20px;
     }
+
+    #toast-container > .toast {
+        background-image: none !important;
+    }
 </style>
 
 
@@ -207,18 +211,22 @@
     function updateCRMUserStage(userId, stageId) {
         var uId = userId.substr(2, userId.length - 1);
         var sId = stageId.substr(1, stageId.length - 1);
+
         $.ajax({
             type: "POST",
-            url: "/CRMUsers/MoveUserToSubStage",
+            url: '@Url.Action("MoveUserToSubStage", "CRMUsers")',
             data: '{uId: "' + uId + '",sId: "' + sId + '"}',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                toastr.success("Client moved Successfully");
-                console.log(response);
-
                 $("#SS" + response[0]).text(response[1]);
                 $("#SS" + sId).text(response[2]);
+                if (sId == 7) {
+                    toastr.warning("Congratulations for Successful Outcome");
+                }
+                else {
+                    toastr.success("Client moved Successfully");
+                }
 
             },
             failure: function (response) {
