@@ -20,15 +20,16 @@ namespace LMSWeb.Controllers
         {
             CRMDashboardViewModel objDashboardViewModel = new CRMDashboardViewModel();
             try
-            {                
+            {
+                newException.AddDummyException("111");
                 TblUser sessionUser = (TblUser)Session["UserSession"];
                 
                 objDashboardViewModel.objCRMEnquiryList = dashboardRepo.GetCRMDashboardEnquiryList(sessionUser, 1);
-
+                newException.AddDummyException("222");
                 objDashboardViewModel.objCRMClientList = dashboardRepo.GetCRMDashboardClientList(sessionUser, 3);
                 objDashboardViewModel.objCRMInvoiceList = dashboardRepo.GetCRMDashboardInvoiceList(sessionUser);
                 objDashboardViewModel.objStageList = CRMRepo.GetCRMStagesList(Convert.ToInt32(sessionUser.CRMClientId));
-                
+                newException.AddDummyException("333");
             }
             catch(Exception ex)
             {

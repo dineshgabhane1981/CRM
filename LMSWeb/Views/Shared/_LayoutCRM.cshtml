@@ -134,6 +134,9 @@
                     <li class="@Html.IsSelected(controller: "Invoice", action: "Index")">
                         <a href="@Url.Action("Index", "Invoice")"><span class="fa fa-paper-plane mr-3" style="color:white;"></span> Invoice</a>
                     </li>
+                    <li class="@Html.IsSelected(controller: "CRMReports", action: "Index")">
+                        <a href="@Url.Action("Index", "CRMReports")"><span class="fa fa-list mr-3" style="color:white;"></span> Report</a>
+                    </li>
                     <li class="@Html.IsSelected(controller: "EnquiryForm", action: "Index")">
                         <a href="@Url.Action("Index", "EnquiryForm")"><span class="fa fa-wpforms mr-3" style="color:white;"></span> Enquiry Form</a>
                     </li>

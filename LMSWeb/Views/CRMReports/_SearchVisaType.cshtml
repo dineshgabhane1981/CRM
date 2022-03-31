@@ -1,0 +1,129 @@
+﻿@model LMSWeb.ViewModel.CRMDashboardViewModel
+
+<div class="container-fluid list-box">
+    <div class="pt-3 pl-3 pr-3 course-list-container ">
+
+        <div class="row">
+            <div class="col search-container">
+                <h5>Search Result</h5>
+            </div>
+        </div>
+        <div class="row mt-3" id="dvSearchData">
+            <div class="table-responsive">
+                <table class="table" style="border-bottom:0px !important;" id="searchTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Client Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Contact No</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Updated Date and Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            if (Model.objSearchList != null)
+                            {
+                                if (Model.objSearchList.Count > 0)
+                                {
+
+                                    foreach (var user in Model.objSearchList)
+                                    {
+                                        LMSWeb.App_Start.CommonFunctions common = new LMSWeb.App_Start.CommonFunctions();
+                                        string userId = common.EncryptString(Convert.ToString(user.Id));
+                                        string clientType = "Enquiry";
+                                        <tr>
+                                            <td>@user.Id </td>
+                                            <td>
+                                                @if (user.CurrentStage == 1)
+                                                {
+                                                    <a href="@Url.Action("AddEnquiry", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FirstName @user.LastName</a>
+                                                }
+                                                @if (user.CurrentStage == 2)
+                                                {
+                                                    <a href="@Url.Action("AddPotentialClient", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FirstName @user.LastName</a>
+                                                }
+                                                @if (user.CurrentStage == 3)
+                                                {
+                                                    <a href="@Url.Action("AddClient", "CRMUsers", new { myid = userId })" class="login" title="Edit">@user.FirstName @user.LastName</a>
+                                                }
+
+                                            </td>
+
+                                            <td>@user.Email</td>
+                                            <td>@user.MobileNo</td>
+                                            <td>
+                                                @if (user.CurrentStage == 1)
+                                                {
+                                                    clientType = "Enquiry";
+                                                }
+                                                @if (user.CurrentStage == 2)
+                                                {
+                                                    clientType = "Potential Client";
+                                                }
+                                                @if (user.CurrentStage == 3)
+                                                {
+                                                    clientType = "Client";
+                                                }
+                                                @clientType
+
+                                            </td>
+                                            <td>@user.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" align="center">No data available</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" align="center">No data available</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" align="center">No data available</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#searchTable').DataTable({
+            "aaSorting": [[1, "desc"]],
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "bFilter": true,
+            "pageLength": 10,
+            "pagingType": "simple_numbers",
+            aoColumnDefs: [
+                {
+                    bSortable: false,
+                    aTargets: [-1, -2]
+                }
+            ]
+        });
+
+        $('#searchTable_filter').hide();
+    });
+</script>

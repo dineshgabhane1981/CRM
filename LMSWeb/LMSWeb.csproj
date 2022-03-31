@@ -213,6 +213,7 @@
     <Compile Include="Controllers\AdminSettingsController.cs" />
     <Compile Include="Controllers\AssignmentController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
+    <Compile Include="Controllers\CRMReportsController.cs" />
     <Compile Include="Controllers\CRMUsersController.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\CRMController.cs" />
@@ -959,6 +960,9 @@
     <Content Include="Web.config" />
     <Content Include="Views\AdminSettings\ShowAgreement.cshtml" />
     <Content Include="Views\Home\Error.cshtml" />
+    <Content Include="Views\CRMReports\Index.cshtml" />
+    <Content Include="Views\CRMReports\_SearchVisaType.cshtml" />
+    <Content Include="Views\CRMReports\_SearchVisaStatus.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

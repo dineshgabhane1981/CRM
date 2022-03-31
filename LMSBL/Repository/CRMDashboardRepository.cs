@@ -138,6 +138,57 @@ namespace LMSBL.Repository
 
             return objResult;
         }
+        public List<tblCRMUser> GetStatusReportList(TblUser objUser, int searchText)
+        {
+            List<tblCRMUser> objResult = new List<tblCRMUser>();
+            int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+            using (var context = new CRMContext())
+            {
+                objResult = context.tblCRMUsers.Where(x => x.CurrentSubStage == searchText && x.ClientId== CRMClientId).OrderByDescending(a => a.UpdatedOn).ToList();
+                
+            }
 
+            return objResult;
+        }
+
+        public List<tblCRMUser> GetTypeReportList(TblUser objUser, string searchText)
+        {
+            List<tblCRMUser> objResult = new List<tblCRMUser>();
+            int CRMClientId = Convert.ToInt32(objUser.CRMClientId);
+            using (var context = new CRMContext())
+            {
+                //objResult = context.tblCRMUsers.Where(x => x.FirstName.Contains(searchText) || x.LastName.Contains(searchText)).OrderByDescending(a => a.UpdatedOn).ToList();
+                var objResult1 = (from a in context.tblCRMUsersVisaDetails
+                                  join b in context.tblCRMUsers on a.CRMUserId equals b.Id
+                                  where a.VisaType == searchText && b.ClientId == CRMClientId
+                                  select new ReportList
+                                  {
+                                      Id = b.Id,
+                                      FirstName = b.FirstName,
+                                      LastName = b.LastName,
+                                      CurrentStage = b.CurrentStage,
+                                      Email = b.Email,
+                                      MobileNo = b.MobileNo,
+                                      CreatedOn = b.CreatedOn
+
+                                  }).OrderByDescending(p => p.CreatedOn).ToList();
+
+                foreach (var item in objResult1)
+                {
+                    tblCRMUser objItem = new tblCRMUser();
+                    objItem.Id = item.Id;
+                    objItem.FirstName = item.FirstName;
+                    objItem.LastName = item.LastName;
+                    objItem.CurrentStage = item.CurrentStage;
+                    objItem.Email = item.Email;
+                    objItem.MobileNo = item.MobileNo;
+                    objItem.CreatedOn = item.CreatedOn;
+
+                    objResult.Add(objItem);
+                }
+            }
+
+            return objResult;
+        }
     }
 }

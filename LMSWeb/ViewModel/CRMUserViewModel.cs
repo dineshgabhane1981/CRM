@@ -25,7 +25,7 @@ namespace LMSWeb.ViewModel
         public tblCRMUsersLoginQualificationDetail ObjLoginAndQualificationDetails { get; set; }
         public tblCRMUsersQualification ObjCRMUserQualification { get; set; }
         public List<tblCRMUsersQualification> ObjCRMUserQualificationList { get; set; }
-        public List<string> lstNotesSubStages { get; set; }
+        public List<FileNotesDetails> lstNotesSubStages { get; set; }
         public List<SelectListItem> VisaCountriesList { get; set; }
         public List<SelectListItem> CountriesCodes { get; set; }
         public List<SelectListItem> SalesPersonsList { get; set; }
@@ -38,6 +38,7 @@ namespace LMSWeb.ViewModel
         public List<SelectListItem> SubStagesList { get; set; }
         public List<SelectListItem> StagesList { get; set; }
         public List<SelectListItem> UserList { get; set; }
+        public string ReportId { get; set; }
         public SelectListItem[] Gender()
         {
             return new SelectListItem[2] { new SelectListItem() { Text = "Male" }, new SelectListItem() { Text = "Female" } };

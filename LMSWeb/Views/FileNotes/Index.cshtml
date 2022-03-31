@@ -50,8 +50,7 @@
     $('#ddlclientlist').change(function () {
         $('#ddlclientlist option').each(function (index) {
             if (($(this).is(':selected'))) {
-                var id = this.value;
-
+                var id = this.value;               
                 if (id != null && id != "") {
                     console.log(id);
                     GetNotes(id);

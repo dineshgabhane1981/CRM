@@ -1,0 +1,185 @@
+﻿@model LMSWeb.ViewModel.CRMUserViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutCRM.cshtml";
+}
+<style>
+
+    body {
+        background: #CDDC39;
+        font-family: 'Arimo', sans-serif;
+    }
+
+    h2 {
+        color: #000;
+        text-align: center;
+        font-size: 2em;
+    }
+
+    .warpper {
+        display: grid;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tab {
+        cursor: pointer;
+        padding: 10px 20px;
+        margin: 0px 2px;
+        background-color: #2f4353 !important;
+        display: inline-block;
+        color: #fff;
+        border-radius: 3px 3px 0px 0px;
+        box-shadow: 0 0.5rem 0.8rem #00000080;
+    }
+
+    .tabs {
+        padding-left: 25px;
+    }
+
+    .panels {
+        background: #ffffff;
+        box-shadow: 0 2rem 2rem #00000080;
+        width: 100%;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .panel {
+        display: none;
+        animation: fadein .8s;
+    }
+
+    .panel-title {
+        font-size: 1.5em;
+        font-weight: bold
+    }
+
+    .radio {
+        display: none;
+    }
+
+    #one:checked ~ .panels #one-panel,
+    #two:checked ~ .panels #two-panel,
+    #three:checked ~ .panels #three-panel {
+        display: block
+    }
+
+    #one:checked ~ .tabs #one-tab,
+    #two:checked ~ .tabs #two-tab,
+    #three:checked ~ .tabs #three-tab {
+        background: #fff !important;
+        color: #000;
+        border-top: 3px solid #fff;
+        border-left: 3px solid #fff;
+        border-right: 3px solid #fff;
+        font-weight: bold;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+    }
+</style>
+
+
+<div class="warpper">
+    <input class="radio" id="one" name="group" type="radio" checked>
+    <input class="radio" id="two" name="group" type="radio">
+    <div class="tabs">
+        <label class="tab" id="one-tab" for="one">Visa Type Report</label>
+        <label class="tab" id="two-tab" for="two">Visa Status Report</label>
+    </div>
+    <div class="panels">
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" data-animation="scaleIn" id="one-panel">
+            <div class="pt-3 pl-3 pr-3 course-list-container">
+                @Html.DropDownListFor(model => model.ReportId, new SelectList(Model.VisaStatusList, "Value", "Text"), "Visa Type", htmlAttributes: new { @class = "input150", @id = "ddlVisaType", tabindex = 22 })
+                <button style="margin-left: 0px;" type="button" id="btnSearchType" class="btn btn-primary js-btn-prev hoverable"><b>Search</b></button>
+            </div>
+
+            <div class="row p-4" id="dvTypeResult" style="display:none;">
+
+            </div>
+        </div>
+
+        <div class="multisteps-form__panel shadow p-4 m-4 list-box bg-white panel" id="two-panel">
+            <div class="pt-3 pl-3 pr-3 course-list-container">
+                @Html.DropDownListFor(model => model.ReportId, new SelectList(Model.SubStagesList, "Value", "Text"), "Visa Status", htmlAttributes: new { @class = "input150", @id = "ddlSubStatus", tabindex = 22 })
+                <button style="margin-left: 0px;" type="button" id="btnSearchStatus" class="btn btn-primary js-btn-prev hoverable"><b>Search</b></button>
+            </div>
+
+            <div class="row p-4" id="dvStatusResult" style="display:none;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#btnSearchType').on("click", function () {
+            if ($("#ddlVisaType").val() != "") {
+                SearchVisaTypeClients();
+            }
+            else {
+                toastr.error('Please select visa type to search');                
+            }
+        });
+        $('#btnSearchStatus').on("click", function () {
+            if ($("#ddlSubStatus").val() != "") {
+                SearchStatusClients();
+            }
+            else {
+                toastr.error('Please select visa status to search');
+            }
+        });
+    });
+    function SearchVisaTypeClients() {
+        $("#divLoader").show();
+        var SearchText = JSON.stringify($("#ddlVisaType").val());
+        $.ajax({
+            type: "POST",
+            url: "/CRMReports/GetSearchTypeResult",
+            data: '{SearchText: ' + SearchText + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(111);
+                $('#dvTypeResult').html(response);
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                console.log(2222);
+                console.log(response);
+                $('#dvTypeResult').html(response.responseText);
+                $('#dvTypeResult').show(1000)
+                $("#divLoader").hide();
+            }
+        });
+    }
+
+    function SearchStatusClients() {
+        $("#divLoader").show();
+        var SearchText = JSON.stringify($("#ddlSubStatus").val());
+        $.ajax({
+            type: "POST",
+            url: "/CRMReports/GetSearchStatusResult",
+            data: '{SearchText: ' + SearchText + '}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(111);
+                $('#dvStatusResult').html(response);
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+                console.log(2222);
+                console.log(response);
+                $('#dvStatusResult').html(response.responseText);
+                $('#dvStatusResult').show(1000)
+                $("#divLoader").hide();
+            }
+        });
+    }
+</script>
+

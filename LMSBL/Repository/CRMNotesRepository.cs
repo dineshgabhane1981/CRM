@@ -120,9 +120,10 @@ namespace LMSBL.Repository
             }
             return objCRMNote;
         }
-        public List<string> GetCRMUserFileNotesSubStagesById(int id)
+        public List<FileNotesDetails> GetCRMUserFileNotesSubStagesById(int id)
         {
             List<FileNotesDetails> objCRMNote = new List<FileNotesDetails>();
+            List<FileNotesDetails> objReturnCRMNote = new List<FileNotesDetails>();
             List<string> lstItems = new List<string>();
             using (var context = new CRMContext())
             {
@@ -147,10 +148,15 @@ namespace LMSBL.Repository
                 
                 foreach(var item in objCRMNote1)
                 {
+                    FileNotesDetails newItem = new FileNotesDetails();
                     lstItems.Add(item.Items[0].SubStageName);
+                    newItem.SubStage = item.Items[0].SubStage;
+                    newItem.SubStageName = item.Items[0].SubStageName;
+                    objReturnCRMNote.Add(newItem);
+
                 }
             }
-            return lstItems;
+            return objReturnCRMNote;
         }
 
         public List<tblCRMClientSubStage> GetCRMUserFileNotesSubStageIdsById(int id)
